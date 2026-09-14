@@ -1,0 +1,1762 @@
+{
+  "name": "Cypress Ridge",
+  "status": "Initial UW",
+  "location": "Waller County, TX",
+  "scenarios": [
+    {
+      "name": "Main",
+      "inputs": {
+        "tract": {
+          "project_name": "Cypress Ridge",
+          "gross_acreage": 640.0,
+          "purchase_price_per_acre": 45000.0,
+          "closing_costs_pct": 0.045,
+          "land_escalator": 0.05,
+          "closing_date": "2027-03-01",
+          "plants": [
+            {
+              "type": "WWTP"
+            },
+            {
+              "type": "Water Plant"
+            },
+            {
+              "type": "Lift Station"
+            }
+          ],
+          "det_storage_rate": 1.1,
+          "det_depth": 9.0,
+          "det_num_projects": 6,
+          "det_cost_per_cy": 10.0,
+          "amenities": [
+            {
+              "type": "Large Amenity Center",
+              "acres": 6.0
+            },
+            {
+              "type": "Small Amenity Center",
+              "acres": 3.0
+            }
+          ],
+          "parks_pct": 0.03,
+          "drill_site_acres": 4.5,
+          "other_netouts": [
+            {
+              "desc": "Pipeline easement",
+              "acres": 3.0
+            },
+            {
+              "desc": "Gas well setback",
+              "acres": 3.0
+            }
+          ],
+          "roads": [
+            {
+              "type": "4 Lane",
+              "lf": 4000.0,
+              "width": 80.0,
+              "road_setback": 10.0,
+              "landscaping_setback": 10.0
+            },
+            {
+              "type": "2 Lane",
+              "lf": 3850.0,
+              "width": 60.0,
+              "road_setback": 5.0,
+              "landscaping_setback": 8.0
+            }
+          ],
+          "commercial_pod_acres": 22.0,
+          "residential_pod_acres": 12.0
+        },
+        "costs": {
+          "default_other_pct": 0.17,
+          "sectional_other_pct": 0.17,
+          "landscaping_other_pct": 0.12,
+          "contingency": 0.05,
+          "site_work_pct": 0.01,
+          "fenced_pct": 0.25,
+          "cost_per_mailbox": 200.0,
+          "cost_per_streetlight": 1700.0,
+          "default_start_month": 1,
+          "takedowns": [
+            {
+              "period": 0,
+              "pct": 0.5
+            },
+            {
+              "period": 36,
+              "pct": 0.5
+            }
+          ],
+          "plant_costs": [
+            {
+              "base_cost": 5500000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 2000000.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 3000000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 750000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            }
+          ],
+          "amenity_costs": [
+            {
+              "base_cost": 4500000.0,
+              "other_pct": null,
+              "start_month": 6
+            },
+            {
+              "base_cost": 1800000.0,
+              "other_pct": null,
+              "start_month": 30
+            }
+          ],
+          "det_costs": [],
+          "other_costs": [
+            {
+              "base_cost": 1200000.0,
+              "other_pct": null,
+              "start_month": 3,
+              "duration": 6
+            },
+            {
+              "base_cost": 600000.0,
+              "other_pct": null,
+              "start_month": 2,
+              "duration": 3
+            }
+          ],
+          "road_costs": [
+            {
+              "other_pct": null,
+              "start_month": 1,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 150.0
+            },
+            {
+              "other_pct": null,
+              "start_month": 12,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 200.0
+            }
+          ],
+          "lot_sizes": [
+            {
+              "front_footage": 25.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 30.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 35.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 40.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 280000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 45.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 320000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 50.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 360000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 4000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 55.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 60.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 430000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 5000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 65.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 70.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 75.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 80.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 560000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 6500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 85.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 90.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 95.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 100.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            }
+          ],
+          "prof_svc_pct": 0.015,
+          "dmf_pct": 0.025,
+          "personnel_monthly": 50000.0,
+          "marketing_personnel_monthly": 15000.0,
+          "legal_monthly": 10000.0,
+          "mud_monthly": 35000.0,
+          "insurance_monthly": 10000.0,
+          "bookkeeping_monthly": 10000.0,
+          "mud_pct": 0.2
+        },
+        "revenue": {
+          "timing_method": "50/25/25",
+          "bem_period": 9,
+          "bem_pct": 0.18,
+          "brokerage_fees": 0.03,
+          "lot_closing_costs": 0.015,
+          "price_per_ff": [
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0
+          ],
+          "res_pods": [
+            {
+              "price_per_acre": 350000.0,
+              "closing_costs_pct": 0.045,
+              "implied_lots_per_acre": 3.5,
+              "impact_fee_per_lot": 10000.0,
+              "sale_period": 12
+            }
+          ],
+          "comm_pods": [
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 12,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            },
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 36,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            }
+          ],
+          "mud_bond": {
+            "toggle": true,
+            "debt_ratio": 0.12,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          },
+          "wcid_bond": {
+            "toggle": true,
+            "debt_ratio": 0.042,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          }
+        },
+        "lookups": {
+          "plants": {},
+          "amenities": {},
+          "roads": {}
+        }
+      }
+    },
+    {
+      "name": "Faster pace",
+      "inputs": {
+        "tract": {
+          "project_name": "Cypress Ridge",
+          "gross_acreage": 640.0,
+          "purchase_price_per_acre": 45000.0,
+          "closing_costs_pct": 0.045,
+          "land_escalator": 0.05,
+          "closing_date": "2027-03-01",
+          "plants": [
+            {
+              "type": "WWTP"
+            },
+            {
+              "type": "Water Plant"
+            },
+            {
+              "type": "Lift Station"
+            }
+          ],
+          "det_storage_rate": 1.1,
+          "det_depth": 9.0,
+          "det_num_projects": 6,
+          "det_cost_per_cy": 10.0,
+          "amenities": [
+            {
+              "type": "Large Amenity Center",
+              "acres": 6.0
+            },
+            {
+              "type": "Small Amenity Center",
+              "acres": 3.0
+            }
+          ],
+          "parks_pct": 0.03,
+          "drill_site_acres": 4.5,
+          "other_netouts": [
+            {
+              "desc": "Pipeline easement",
+              "acres": 3.0
+            },
+            {
+              "desc": "Gas well setback",
+              "acres": 3.0
+            }
+          ],
+          "roads": [
+            {
+              "type": "4 Lane",
+              "lf": 4000.0,
+              "width": 80.0,
+              "road_setback": 10.0,
+              "landscaping_setback": 10.0
+            },
+            {
+              "type": "2 Lane",
+              "lf": 3850.0,
+              "width": 60.0,
+              "road_setback": 5.0,
+              "landscaping_setback": 8.0
+            }
+          ],
+          "commercial_pod_acres": 22.0,
+          "residential_pod_acres": 12.0
+        },
+        "costs": {
+          "default_other_pct": 0.17,
+          "sectional_other_pct": 0.17,
+          "landscaping_other_pct": 0.12,
+          "contingency": 0.05,
+          "site_work_pct": 0.01,
+          "fenced_pct": 0.25,
+          "cost_per_mailbox": 200.0,
+          "cost_per_streetlight": 1700.0,
+          "default_start_month": 1,
+          "takedowns": [
+            {
+              "period": 0,
+              "pct": 0.5
+            },
+            {
+              "period": 36,
+              "pct": 0.5
+            }
+          ],
+          "plant_costs": [
+            {
+              "base_cost": 5500000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 2000000.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 3000000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 750000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            }
+          ],
+          "amenity_costs": [
+            {
+              "base_cost": 4500000.0,
+              "other_pct": null,
+              "start_month": 6
+            },
+            {
+              "base_cost": 1800000.0,
+              "other_pct": null,
+              "start_month": 30
+            }
+          ],
+          "det_costs": [],
+          "other_costs": [
+            {
+              "base_cost": 1200000.0,
+              "other_pct": null,
+              "start_month": 3,
+              "duration": 6
+            },
+            {
+              "base_cost": 600000.0,
+              "other_pct": null,
+              "start_month": 2,
+              "duration": 3
+            }
+          ],
+          "road_costs": [
+            {
+              "other_pct": null,
+              "start_month": 1,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 150.0
+            },
+            {
+              "other_pct": null,
+              "start_month": 12,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 200.0
+            }
+          ],
+          "lot_sizes": [
+            {
+              "front_footage": 25.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 30.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 35.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 40.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 8.4,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 280000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 45.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 8.4,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 320000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 50.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 8.4,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 360000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 4000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 55.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 60.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 8.4,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 430000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 5000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 65.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 70.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 75.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 80.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 8.4,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 560000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 6500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 85.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 90.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 95.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 100.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            }
+          ],
+          "prof_svc_pct": 0.015,
+          "dmf_pct": 0.025,
+          "personnel_monthly": 50000.0,
+          "marketing_personnel_monthly": 15000.0,
+          "legal_monthly": 10000.0,
+          "mud_monthly": 35000.0,
+          "insurance_monthly": 10000.0,
+          "bookkeeping_monthly": 10000.0,
+          "mud_pct": 0.2
+        },
+        "revenue": {
+          "timing_method": "50/25/25",
+          "bem_period": 9,
+          "bem_pct": 0.18,
+          "brokerage_fees": 0.03,
+          "lot_closing_costs": 0.015,
+          "price_per_ff": [
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0,
+            1800.0
+          ],
+          "res_pods": [
+            {
+              "price_per_acre": 350000.0,
+              "closing_costs_pct": 0.045,
+              "implied_lots_per_acre": 3.5,
+              "impact_fee_per_lot": 10000.0,
+              "sale_period": 12
+            }
+          ],
+          "comm_pods": [
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 12,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            },
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 36,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            }
+          ],
+          "mud_bond": {
+            "toggle": true,
+            "debt_ratio": 0.12,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          },
+          "wcid_bond": {
+            "toggle": true,
+            "debt_ratio": 0.042,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          }
+        },
+        "lookups": {
+          "plants": {},
+          "amenities": {},
+          "roads": {}
+        }
+      }
+    },
+    {
+      "name": "Lower lot price",
+      "inputs": {
+        "tract": {
+          "project_name": "Cypress Ridge",
+          "gross_acreage": 640.0,
+          "purchase_price_per_acre": 45000.0,
+          "closing_costs_pct": 0.045,
+          "land_escalator": 0.05,
+          "closing_date": "2027-03-01",
+          "plants": [
+            {
+              "type": "WWTP"
+            },
+            {
+              "type": "Water Plant"
+            },
+            {
+              "type": "Lift Station"
+            }
+          ],
+          "det_storage_rate": 1.1,
+          "det_depth": 9.0,
+          "det_num_projects": 6,
+          "det_cost_per_cy": 10.0,
+          "amenities": [
+            {
+              "type": "Large Amenity Center",
+              "acres": 6.0
+            },
+            {
+              "type": "Small Amenity Center",
+              "acres": 3.0
+            }
+          ],
+          "parks_pct": 0.03,
+          "drill_site_acres": 4.5,
+          "other_netouts": [
+            {
+              "desc": "Pipeline easement",
+              "acres": 3.0
+            },
+            {
+              "desc": "Gas well setback",
+              "acres": 3.0
+            }
+          ],
+          "roads": [
+            {
+              "type": "4 Lane",
+              "lf": 4000.0,
+              "width": 80.0,
+              "road_setback": 10.0,
+              "landscaping_setback": 10.0
+            },
+            {
+              "type": "2 Lane",
+              "lf": 3850.0,
+              "width": 60.0,
+              "road_setback": 5.0,
+              "landscaping_setback": 8.0
+            }
+          ],
+          "commercial_pod_acres": 22.0,
+          "residential_pod_acres": 12.0
+        },
+        "costs": {
+          "default_other_pct": 0.17,
+          "sectional_other_pct": 0.17,
+          "landscaping_other_pct": 0.12,
+          "contingency": 0.05,
+          "site_work_pct": 0.01,
+          "fenced_pct": 0.25,
+          "cost_per_mailbox": 200.0,
+          "cost_per_streetlight": 1700.0,
+          "default_start_month": 1,
+          "takedowns": [
+            {
+              "period": 0,
+              "pct": 0.5
+            },
+            {
+              "period": 36,
+              "pct": 0.5
+            }
+          ],
+          "plant_costs": [
+            {
+              "base_cost": 5500000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 2000000.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 3000000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            },
+            {
+              "base_cost": 750000.0,
+              "other_pct": null,
+              "start_month": 1,
+              "ph2_base_cost": 0.0,
+              "ph2_other_pct": null,
+              "ph2_start_month": null
+            }
+          ],
+          "amenity_costs": [
+            {
+              "base_cost": 4500000.0,
+              "other_pct": null,
+              "start_month": 6
+            },
+            {
+              "base_cost": 1800000.0,
+              "other_pct": null,
+              "start_month": 30
+            }
+          ],
+          "det_costs": [],
+          "other_costs": [
+            {
+              "base_cost": 1200000.0,
+              "other_pct": null,
+              "start_month": 3,
+              "duration": 6
+            },
+            {
+              "base_cost": 600000.0,
+              "other_pct": null,
+              "start_month": 2,
+              "duration": 3
+            }
+          ],
+          "road_costs": [
+            {
+              "other_pct": null,
+              "start_month": 1,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 150.0
+            },
+            {
+              "other_pct": null,
+              "start_month": 12,
+              "landscaping_per_sf": 2.0,
+              "light_spacing": 200.0
+            }
+          ],
+          "lot_sizes": [
+            {
+              "front_footage": 25.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 30.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 35.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 40.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 280000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 45.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 320000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 3500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 50.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 360000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 4000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 55.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 60.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 430000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 5000.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 65.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 70.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 75.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 80.0,
+              "on": true,
+              "yield_per_ac": 5.5,
+              "pace": 7.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 580.0,
+              "paving_per_ff": 440.0,
+              "landscaping_per_lot": 2000.0,
+              "urd_per_lot": 35.0,
+              "lots_per_streetlight": 4.0,
+              "fence_cost_per_ff": 94.0,
+              "build_time": 6,
+              "home_price": 560000.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 25.0,
+              "escalation": 0.06,
+              "fence_per_ff": 65.0,
+              "marketing_fee": 6500.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.02
+            },
+            {
+              "front_footage": 85.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 90.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 95.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            },
+            {
+              "front_footage": 100.0,
+              "on": false,
+              "yield_per_ac": 0.0,
+              "pace": 0.0,
+              "dev_start_month": 1,
+              "wsd_per_ff": 0.0,
+              "paving_per_ff": 0.0,
+              "landscaping_per_lot": 0.0,
+              "urd_per_lot": 0.0,
+              "lots_per_streetlight": 0.0,
+              "fence_cost_per_ff": 0.0,
+              "build_time": 12,
+              "home_price": 0.0,
+              "av_pct": 0.85,
+              "premium_per_ff": 0.0,
+              "escalation": 0.0,
+              "fence_per_ff": 0.0,
+              "marketing_fee": 0.0,
+              "lot_av_pct": 0.5,
+              "lot_tax_rate": 0.022
+            }
+          ],
+          "prof_svc_pct": 0.015,
+          "dmf_pct": 0.025,
+          "personnel_monthly": 50000.0,
+          "marketing_personnel_monthly": 15000.0,
+          "legal_monthly": 10000.0,
+          "mud_monthly": 35000.0,
+          "insurance_monthly": 10000.0,
+          "bookkeeping_monthly": 10000.0,
+          "mud_pct": 0.2
+        },
+        "revenue": {
+          "timing_method": "50/25/25",
+          "bem_period": 9,
+          "bem_pct": 0.18,
+          "brokerage_fees": 0.03,
+          "lot_closing_costs": 0.015,
+          "price_per_ff": [
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0,
+            1620.0
+          ],
+          "res_pods": [
+            {
+              "price_per_acre": 350000.0,
+              "closing_costs_pct": 0.045,
+              "implied_lots_per_acre": 3.5,
+              "impact_fee_per_lot": 10000.0,
+              "sale_period": 12
+            }
+          ],
+          "comm_pods": [
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 12,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            },
+            {
+              "price_per_sf": 8.0,
+              "closing_costs_pct": 0.045,
+              "sale_period": 36,
+              "av_per_acre": 1200000.0,
+              "av_delay_months": 18
+            }
+          ],
+          "mud_bond": {
+            "toggle": true,
+            "debt_ratio": 0.12,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          },
+          "wcid_bond": {
+            "toggle": true,
+            "debt_ratio": 0.042,
+            "first_bond_period": 48,
+            "bond_interval": 12,
+            "pct_to_dev": 0.85,
+            "receivables_fee": 0.025
+          }
+        },
+        "lookups": {
+          "plants": {},
+          "amenities": {},
+          "roads": {}
+        }
+      }
+    }
+  ]
+}
