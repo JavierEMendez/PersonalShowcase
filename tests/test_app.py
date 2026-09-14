@@ -13,7 +13,7 @@ def test_landing_renders() -> None:
     assert response.status_code == 200
     assert "Mendez Valdez" in response.text
     assert "Cypress Ridge" in response.text
-    assert "Harbor Point Industrial" in response.text
+    assert "Sawyer Bend Apartments" in response.text
     assert "/static/site.css" in response.text
 
 
@@ -21,7 +21,7 @@ def test_landing_renders() -> None:
     ("path", "title", "pill"),
     [
         ("/underwriting", "Cypress Ridge", "Lower lot price"),
-        ("/copilot", "Harbor Point Industrial", "Downside"),
+        ("/copilot", "Sawyer Bend Apartments", "Downside"),
     ],
 )
 def test_tool_stubs_render(path: str, title: str, pill: str) -> None:

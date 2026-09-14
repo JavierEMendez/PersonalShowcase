@@ -7,13 +7,13 @@ A public, hosted showcase of two products built by Javier Mendez Valdez with Cla
 Two products live under one Railway app and one domain:
 
 1. `/underwriting`: MPC Underwriting. A port of the calculation engine from a private internal repo (EmberApps, `calc.py`, cloned as a sibling directory for reference), rebuilt here on synthetic data. It is an unlevered residential land pro forma: it returns unlevered XIRR, gross and net margin, and per-acre and per-lot metrics. It has no debt, equity waterfall, or equity multiple. Do not describe it as if it did.
-2. `/copilot`: Deal-to-Portfolio Copilot. New. Income-property acquisition workflow in four steps: Screen, Underwrite, Recommend, Monitor.
+2. `/copilot`: Multifamily Copilot (the deal-to-portfolio workflow). New. Apartment acquisition workflow in four steps: Screen, Underwrite, Recommend, Monitor. Its model follows the structure of a private multifamily buyer's model, inventoried in `private/multifamily-model-inventory.md`: rent roll to market with loss-to-lease burn-off, unit renovation program with premiums, per-unit operating budget with tax reassessment, loan sized on the lesser of LTV, DSCR and debt yield with an interest-only period, exit on forward NOI, and an LP/GP waterfall.
 
-Read `docs/handoff.md` first, then `private/strategy-brief.md`, `private/mpc-tool-inventory.md`, `docs/design-standard.md`, and `docs/synthetic-deals.md`. The `private/` folder is gitignored: it holds the strategy brief and the inventory of the internal tool being ported, and it never gets committed or quoted in public docs, README, or copy. The approved mockups are in `design/` as HTML and PNG. Match them.
+Read `docs/handoff.md` first, then `private/strategy-brief.md`, `private/mpc-tool-inventory.md`, `private/multifamily-model-inventory.md`, `docs/design-standard.md`, and `docs/synthetic-deals.md`. The `private/` folder is gitignored: it holds the strategy brief and the inventories of the internal tool and model being ported, and it never gets committed or quoted in public docs, README, or copy. The approved mockups are in `design/` as HTML and PNG. Match them.
 
 ## Non-negotiables
 
-- Public demos run on the synthetic deals in `docs/synthetic-deals.md` (Cypress Ridge, Harbor Point Industrial) plus real public market data (FRED, Census/ACS, appraisal district records, TxDOT, SEC EDGAR). Nothing from Ember's book: no client names, real tract IDs, builder data, internal figures, Ember logos, or Ember template files.
+- Public demos run on the synthetic deals in `docs/synthetic-deals.md` (Cypress Ridge, Sawyer Bend Apartments) plus real public market data (FRED, Census/ACS, appraisal district records, TxDOT, SEC EDGAR). Nothing from Ember's book: no client names, real tract IDs, builder data, internal figures, Ember logos, or Ember template files.
 - The site loads a pre-seeded deal with no login and no API key. Anyone with the link can evaluate it. Editing inputs works in the browser session; saving requires nothing.
 - Numbers are the product. Consistent decimals, units in the panel header, tabular figures, right-aligned numerics, negative values in parentheses in tables, and totals recomputed from rounded lines so every table foots.
 - No AI tells in any copy, README, or generated memo (lint-ignore): no em dashes, no "it's not X, it's Y" or "X, not Y" constructions, no "delve", "leverage", "robust", "seamless", "unlock", "empower", no exclamation points, no rhetorical questions. Short declarative sentences. Say the number, then what it means.
@@ -45,7 +45,7 @@ Executive, bank style. An institutional IC memo and a lender term sheet, rendere
 app/            FastAPI app, routes, templates, static/site.css
 core/
   underwriting/ MPC land model: netouts, allocation, sections, revenue, av, bonds, opex, summary, irr
-  copilot/      noi, capital_stack, waterfall, sensitivity, screen, memo, monitor
+  copilot/      rent_roll, renovation, operations, debt, capital_stack, waterfall, sensitivity, screen, memo, monitor
 data/           synthetic deal seeds (JSON) and public dataset loaders
 design/         approved mockups: landing.html, underwriting.html, copilot.html and PNGs
 docs/           handoff, design standard, synthetic deals, decisions log
@@ -64,7 +64,7 @@ README.md
 - Commit messages: imperative, one line, no emoji. Branch per feature, PR to `main`.
 - Do not add features that need explanation to a non-technical reader. If it needs a tooltip, reconsider it.
 - Do not start the Copilot UI before `core/copilot/` has passing tests and an Excel export.
-- Scenarios and cases: the MPC tool ships with Main, Faster pace, and Lower lot price; the Copilot ships with Base, Downside, and Lender. Their input deltas are defined in `docs/synthetic-deals.md`.
+- Scenarios and cases: the MPC tool ships with Main, Faster pace, and Lower lot price; the Multifamily Copilot ships with Base, Downside, and Lender. Their input deltas are defined in `docs/synthetic-deals.md`.
 - When copy is generated (memo, README), run `scripts/lint_copy.py`, which fails on em dashes and the banned phrase list.
 
 ## Build order
@@ -72,9 +72,9 @@ README.md
 1. Scaffold: FastAPI app, `site.css` from `docs/design-standard.md`, landing page built from `design/landing.html`, routes `/underwriting` and `/copilot` stubbed with the deal header and empty summary strip. Deploy to Railway. Confirm the fonts load and the page matches the PNG.
 2. Port `core/underwriting/` from EmberApps `calc.py`, module by module, with tests. Produce the Cypress Ridge fixture from the port and check it against the mockup figures in `docs/synthetic-deals.md` (they were hand-built; the port's outputs become the source of truth and the mockup figures are updated to match).
 3. `/underwriting` performance screen from `design/underwriting.html`: summary strip, financial summary, acreage, sensitivity grid (server-side, HTMX), net cash flow by year. Then the input tabs. Then scenarios and Excel export.
-4. `core/copilot/`: NOI build, sources and uses, debt service, DSCR, levered and unlevered IRR, equity multiple, single-variable stress table. Excel export. Tests against Harbor Point figures.
-5. `/copilot` underwrite screen from `design/copilot.html`, with the Monitor panel fed from the same model.
-6. Screen: extraction with citations and confidence over a synthetic OM and rent roll PDF; eval set of 15 assumptions.
+4. `core/copilot/`: multifamily model following `private/multifamily-model-inventory.md`: rent roll by floor plan to market rent with loss-to-lease burn-off, renovation program and premiums, revenue deductions, per-unit operating budget with tax reassessment, loan sizing on the lesser of LTV, DSCR and debt yield with interest-only then amortization, sources and uses, exit on forward NOI, unlevered and levered IRR, equity multiple, LP/GP waterfall, single-variable stress table. Excel export. Tests against the Sawyer Bend figures in `docs/synthetic-deals.md`; the model's outputs then become the source of truth.
+5. `/copilot` underwrite screen using the panel layout of `design/copilot.html` with the multifamily content from `docs/synthetic-deals.md` (the mockup's industrial figures are superseded), with the Monitor panel fed from the same model.
+6. Screen: extraction with citations and confidence over a synthetic OM, rent roll, and T-12 PDF; eval set of 15 assumptions.
 7. Recommend: IC memo generation from model outputs; eval set; "what the model cannot tell you" section required.
 8. README rewritten as an IC memo: outcome first, GIF demo, "how to evaluate this in five minutes", architecture, decision log link. Case study in `docs/`.
 

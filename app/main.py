@@ -54,9 +54,9 @@ UNDERWRITING_DEAL: dict[str, Any] = {
 }
 
 COPILOT_DEAL: dict[str, Any] = {
-    "eyebrow": "Sample deal · Industrial · Acquisition",
-    "title": "Harbor Point Industrial",
-    "facts": "312,000 SF · 3 buildings · Northwest Houston · 95.0% leased · 5-year hold",
+    "eyebrow": "Sample deal · Multifamily · Value-add acquisition",
+    "title": "Sawyer Bend Apartments",
+    "facts": "288 units · Built 2016 · Northwest Houston · 94.1% occupied · 5-year hold",
     "cases": ["Base", "Downside", "Lender"],
     "active_case": "Base",
     "steps": ["Screen", "Underwrite", "Recommend", "Monitor"],
@@ -65,10 +65,10 @@ COPILOT_DEAL: dict[str, Any] = {
         "Purchase price",
         "Going-in cap",
         "Levered IRR",
+        "LP IRR",
         "Equity multiple",
         "DSCR, year 1",
         "LTV",
-        "Exit cap",
         "Exit value",
     ],
 }
