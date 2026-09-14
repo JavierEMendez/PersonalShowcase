@@ -3,6 +3,7 @@
 
 Usage: python scripts/lint_copy.py README.md docs/*.md app/templates/*.html
 """
+
 import re
 import sys
 
@@ -20,6 +21,7 @@ BANNED = [
     (r"\bnot just [^.]{1,60}, but\b", "'not just X, but Y' construction"),
     (r"(?<!<)!(?=[\s\"'\)]|$)", "exclamation point"),
 ]
+
 
 def main(paths):
     failures = 0
@@ -42,6 +44,7 @@ def main(paths):
         return 1
     print("copy lint passed")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

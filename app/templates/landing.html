@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ site.wordmark }} · Underwriting and portfolio systems{% endblock %}
+{% block body %}
+<div class="nav">
+  <div class="brand">
+    <a class="wordmark" href="/">{{ site.wordmark }}</a>
+  </div>
+  <div class="nav-links">
+    <a href="/underwriting">Underwriting</a>
+    <a href="/copilot">Copilot</a>
+    <a href="#method">Method</a>
+    <a href="{{ site.repo_url }}">GitHub</a>
+    <a class="btn-outline" href="/underwriting">Open the demo</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">Underwriting and portfolio systems</div>
+    <h1 class="display">I build transaction tools that improve decision making.</h1>
+    <p class="lede">Two working systems for residential land and income-property transactions. Each takes deal inputs, returns a full pro forma, and produces the memo a committee would read. Built in Python, deployed on Railway, developed with Claude Code.</p>
+    <div class="cta-row">
+      <a class="btn-cta" href="/underwriting">Open the underwriting demo</a>
+      <a class="text-link" href="#method">Read how it was built</a>
+    </div>
+  </div>
+  <div class="hero-side">
+    <div class="sample-panel">
+      <div class="panel-head" style="margin-bottom: 0;">
+        <div class="eyebrow">Sample deal · Cypress Ridge</div>
+        <div class="note">640 ac · Waller County, TX</div>
+      </div>
+      <table>
+        <tbody>
+          <tr class="sub"><td>Total revenue</td><td class="r num">$412.6M</td></tr>
+          <tr class="sub"><td>Gross costs</td><td class="r num">318.4</td></tr>
+          <tr class="total"><td>Gross margin</td><td class="r num">$94.2M</td></tr>
+          <tr class="sub"><td>Net margin</td><td class="r num">71.5</td></tr>
+          <tr class="sub"><td>Unlevered IRR</td><td class="r num">18.4%</td></tr>
+          <tr class="sub"><td>Total lots</td><td class="r num">2,412</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Synthetic tract. Figures in $ millions unless noted.</div>
+    </div>
+  </div>
+</div>
+
+<div class="proof">
+  <div class="proof-grid">
+    <div><div class="figure proof-figure num">10 sheets</div><div class="proof-text">Excel land model ported to Python and reconciled to the workbook by test.</div></div>
+    <div><div class="figure proof-figure num">360 months</div><div class="proof-text">Monthly pro forma with revenue, cost, and cash flow by line item.</div></div>
+    <div><div class="figure proof-figure num">49 cells</div><div class="proof-text">Two-axis sensitivity grid, up to 7 × 7, recalculated on the server in one request.</div></div>
+    <div><div class="figure proof-figure num">Live formulas</div><div class="proof-text">Excel export keeps every formula live so reviewers can audit in their own tool.</div></div>
+  </div>
+</div>
+
+<div class="section" id="underwriting">
+  <div class="span-5 section-copy">
+    <div class="eyebrow">01 · Residential land</div>
+    <h2 class="section-title">MPC Underwriting</h2>
+    <p class="section-text">A master planned community land model that runs in the browser. Enter tract, cost, and revenue inputs and the engine returns developable acreage after net-outs, lot allocation by front footage, section pacing, takedown revenue with builder earnest money, MUD and WCID reimbursements, and an unlevered IRR on the closing-date convention. Scenarios can be saved, compared, and promoted.</p>
+    <table class="fact-table"><tbody>
+      <tr class="sub"><td class="k">Inputs</td><td class="v">Tract, cost, revenue, and lookup tables</td></tr>
+      <tr class="sub"><td class="k">Returns</td><td class="v">Monthly pro forma, margins, IRR, per-acre and per-lot metrics</td></tr>
+      <tr class="sub"><td class="k">Analysis</td><td class="v">Named scenarios, two-axis sensitivity grid, change history</td></tr>
+      <tr class="sub"><td class="k">Export</td><td class="v">Excel with live formulas, PDF summary</td></tr>
+    </tbody></table>
+    <a class="text-link" href="/underwriting">Open MPC Underwriting →</a>
+  </div>
+  <div class="span-7">
+    <div class="panel panel-lg">
+      <div class="panel-head">
+        <div class="eyebrow">Sensitivity · Unlevered IRR</div>
+        <div class="note">Lot price per front foot × sales pace</div>
+      </div>
+      <table>
+        <thead><tr><th>Pace (lots / mo)</th><th class="r">$1,620</th><th class="r">$1,710</th><th class="r">$1,800</th><th class="r">$1,890</th><th class="r">$1,980</th></tr></thead>
+        <tbody>
+          <tr><td class="num">8.4</td><td class="r num heat-5">17.9%</td><td class="r num heat-6">20.1%</td><td class="r num heat-7">22.3%</td><td class="r num heat-8">24.4%</td><td class="r num heat-9">26.5%</td></tr>
+          <tr><td class="num">7.7</td><td class="r num heat-4">16.6%</td><td class="r num heat-5">18.7%</td><td class="r num heat-6">20.6%</td><td class="r num heat-7">22.6%</td><td class="r num heat-8">24.5%</td></tr>
+          <tr><td class="num">7.0</td><td class="r num heat-3">14.9%</td><td class="r num heat-4">16.7%</td><td class="r num heat-5 base-case">18.4%</td><td class="r num heat-6">20.2%</td><td class="r num heat-7">21.9%</td></tr>
+          <tr><td class="num">6.3</td><td class="r num heat-2">13.1%</td><td class="r num heat-3">14.6%</td><td class="r num heat-4">16.1%</td><td class="r num heat-5">17.6%</td><td class="r num heat-6">19.1%</td></tr>
+          <tr><td class="num">5.6</td><td class="r num heat-1">11.0%</td><td class="r num heat-2">12.4%</td><td class="r num heat-3">13.7%</td><td class="r num heat-4">15.0%</td><td class="r num heat-5">16.3%</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top: 10px;">Base case outlined. Price in 5% steps, pace in 10% steps.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="copilot">
+  <div class="span-7">
+    <div class="panel panel-lg">
+      <div class="panel-head">
+        <div class="eyebrow">Extracted assumptions · Harbor Point Industrial</div>
+        <div class="note">Source cited for every figure</div>
+      </div>
+      <table>
+        <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr><td>Rentable area</td><td class="r num">312,000 SF</td><td class="src">OM p. 4</td><td>High</td></tr>
+          <tr><td>In-place rent, NNN</td><td class="r num">$9.10 / SF</td><td class="src">Rent roll</td><td>High</td></tr>
+          <tr><td>Occupancy</td><td class="r num">95.0%</td><td class="src">Rent roll</td><td>High</td></tr>
+          <tr><td>Market rent growth</td><td class="r num">3.0% / yr</td><td class="src">Analyst input</td><td>Medium</td></tr>
+          <tr><td>Exit cap rate</td><td class="r num">6.90%</td><td class="src">Comp set, 6 sales</td><td>Medium</td></tr>
+          <tr><td>Senior loan rate</td><td class="r num">6.10%</td><td class="src">Term sheet p. 1</td><td>High</td></tr>
+        </tbody>
+      </table>
+      <div class="figure-strip cols-4">
+        <div><div class="eyebrow">Levered IRR</div><div class="figure num">12.8%</div></div>
+        <div><div class="eyebrow">Equity multiple</div><div class="figure num">1.73×</div></div>
+        <div><div class="eyebrow">DSCR, year 1</div><div class="figure num">1.53×</div></div>
+        <div><div class="eyebrow">Bid · ask $41.6M</div><div class="figure num">$38.0M</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="span-5 section-copy">
+    <div class="eyebrow">02 · Income property</div>
+    <h2 class="section-title">Deal-to-Portfolio Copilot</h2>
+    <p class="section-text">One workflow from offering memo to asset management. Screen extracts assumptions from the OM and rent roll with a source citation for each figure. Underwrite builds the NOI, capital stack, and stress table and exports the model to Excel. Recommend drafts the investment committee memo from the model. Monitor tracks covenants, DSCR, and maturities after close.</p>
+    <table class="fact-table"><tbody>
+      <tr class="sub"><td class="k">Screen</td><td class="v">Assumptions extracted with citations and confidence, checked against an eval set</td></tr>
+      <tr class="sub"><td class="k">Underwrite</td><td class="v">NOI build, sources and uses, debt sizing, sensitivities, downside case</td></tr>
+      <tr class="sub"><td class="k">Recommend</td><td class="v">IC memo that cites the model and states what the model cannot tell you</td></tr>
+      <tr class="sub"><td class="k">Monitor</td><td class="v">Covenant tests, DSCR and debt yield, maturity ladder, variance flags</td></tr>
+    </tbody></table>
+    <a class="text-link" href="/copilot">Open the Copilot →</a>
+  </div>
+</div>
+
+<div class="section method" id="method">
+  <div class="span-4 section-copy tight">
+    <div class="eyebrow">Method</div>
+    <h2 class="section-title">How it was built</h2>
+    <p class="section-text">The code was written with Claude Code against a written standard. The standard, the decision log, and the tests are in the repository.</p>
+  </div>
+  <div class="span-8">
+    <table class="method-table">
+      <tbody>
+        <tr><td class="k">Reconciled to Excel</td><td>Every model function has a test that reproduces a hand-checked case from the original workbook. A change that breaks reconciliation fails the build.</td></tr>
+        <tr><td class="k">Decisions on record</td><td>Product and architecture decisions are dated entries in docs/decisions.md: what was chosen, why, and what was rejected.</td></tr>
+        <tr><td class="k">Evaluated, then trusted</td><td>The two steps that use a language model, extraction and memo drafting, ship with eval sets and a written list of failure modes. Model math never runs through a language model.</td></tr>
+        <tr><td class="k">Synthetic by design</td><td>Demo deals are invented. Market inputs come from public sources: FRED, Census, appraisal district records, and SEC filings. No client data is used.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section about" id="about">
+  <div class="span-7 section-copy tight">
+    <div class="eyebrow">About</div>
+    <h2 class="section-title">Javier Mendez Valdez</h2>
+    <p class="section-text narrow">Real estate investment and development in Houston. Land acquisition and underwriting, capital raises, investor relations, and deal structuring for master planned communities and commercial projects. Part-time MBA, Rice University. These tools started as internal systems and were rebuilt here on synthetic data.</p>
+  </div>
+  <div class="span-5 hero-side">
+    <table class="fact-table narrow">
+      <tbody>
+        <tr class="sub"><td class="k">LinkedIn</td><td class="v"><a href="{{ site.linkedin_url }}">{{ site.linkedin_label }}</a></td></tr>
+        <tr class="sub"><td class="k">GitHub</td><td class="v"><a href="{{ site.github_url }}">{{ site.github_label }}</a></td></tr>
+        {% if site.contact_email %}<tr class="sub"><td class="k">Email</td><td class="v"><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <div>Demos run on synthetic deals with public market data. No client information.</div>
+  <div>Python · FastAPI · Postgres · Railway · Claude Code</div>
+</div>
+{% endblock %}

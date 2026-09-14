@@ -23,6 +23,15 @@ Executive, bank-style standard: warm near-white ground, charcoal ink, navy accen
 ## 2026-09-14 · Harbor Point priced as a bid below ask
 The Copilot sample deal recommends a $38.0M bid against a $41.6M ask, because at the ask the levered IRR is 4.9% against a 12% threshold. Shows the tool producing a pricing decision rather than confirming the seller's number. Rejected: a deal that simply clears the hurdle at the ask.
 
+## 2026-09-14 · Fixed 1440px page width
+Pages render at the 1440px design width on every device (viewport meta set to 1440, page container 1440px centered) instead of a responsive layout. The reader is a partner on a laptop; on a phone the page scales down and reads like the PNG render rather than reflowing dense tables into a single column. Rejected: a responsive grid, which would need a second layout for every table and panel.
+
+## 2026-09-14 · Contact email from the environment
+The About section shows an email row only when the CONTACT_EMAIL environment variable is set on Railway. Keeps a personal address out of the public repository and lets it change without a commit. Rejected: hardcoding the address in the template.
+
+## 2026-09-14 · Docker build on Railway
+Railway builds from the repository Dockerfile (python:3.12-slim, pinned requirements.txt) with a /health check, rather than Nixpacks autodetection. The build is reproducible and the same image runs locally. Rejected: Nixpacks, which picks the Python version and start command implicitly.
+
 ## Deferred
 - Financing layer (debt draw, interest, waterfall, equity multiple) for the MPC tool.
 - Benchmark module (public comps) for the Copilot.

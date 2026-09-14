@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Deal-to-Portfolio Copilot · {{ deal.title }}{% endblock %}
+{% block body %}
+<div class="topbar">
+  <div class="topbar-left" style="gap: 36px;">
+    <div class="brand">
+      <a class="wordmark" href="/">{{ site.wordmark }}</a>
+      <span class="crumb">/</span><span class="product">Deal-to-Portfolio Copilot</span>
+    </div>
+    <div class="stepper">
+      {% for name in deal.steps %}
+      {% set n = loop.index %}
+      {% if not loop.first %}<div class="step-line"></div>{% endif %}
+      <div class="step {% if n < deal.active_step %}done{% elif n == deal.active_step %}active{% else %}pending{% endif %}">
+        <span class="step-num num">{{ n }}</span><span class="step-label">{{ name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="actions">
+    <span class="btn">Export model to Excel</span>
+    <span class="btn btn-primary">Draft IC memo</span>
+  </div>
+</div>
+
+<div class="deal-head">
+  <div class="deal-head-copy">
+    <div class="eyebrow">{{ deal.eyebrow }}</div>
+    <div class="deal-title-row">
+      <h1 class="deal-title">{{ deal.title }}</h1>
+      <div class="deal-facts">{{ deal.facts }}</div>
+    </div>
+  </div>
+  <div class="pills">
+    <span class="eyebrow">Case</span>
+    {% for name in deal.cases %}<span class="pill {% if name == deal.active_case %}active{% endif %}">{{ name }}</span>{% endfor %}
+  </div>
+</div>
+
+<div class="kpis strip">
+  {% for label in deal.kpis %}
+  <div class="kpi">
+    <div class="eyebrow">{{ label }}</div>
+    <div class="figure num"></div>
+    <div class="note"></div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="tool-note">Figures appear when the copilot model is built in build step 4.</div>
+{% endblock %}
