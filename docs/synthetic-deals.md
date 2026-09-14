@@ -105,80 +105,81 @@ Loss to lease 4.7% ($71 per unit per month), burning off through lease rollover 
 
 Remaining six for the seed file: T-12 other income $115 per unit per month (T-12, High); controllable expenses $4,700 per unit (T-12 with buyer adjustments, Medium); insurance $850 per unit (broker quote, High); exit cap rate 5.50% (comp set, 5 sales, Medium); lender terms 65% LTV, 1.25× DSCR, 7.5% debt yield, 36 months interest only, 30-year amortization, 7-year term (term sheet p. 1, High); replacement reserves $300 per unit (lender requirement, High).
 
-### Underwrite (base case)
+### Underwrite (base case, engine output, `tests/fixtures/sawyer_bend.json`)
 | Item | Value |
 |---|---|
-| Purchase price | $46.0M ($159,722 / unit, $175 / SF) |
+| Purchase price | $46.0M ($159,722 / unit, $176 / SF) |
 | Closing costs / loan fees / acquisition fee | $0.51M / $0.22M / $0.46M |
-| Capital budget | $2.63M ($9,128 / unit): 120 interiors at $9,500 ($1.14M), exterior and amenities $0.85M, deferred maintenance $0.40M, contingency 10% $0.24M |
+| Capital budget | $2.63M ($9,128 / unit): 120 interiors at $9,500 ($1.14M), exterior, amenities and deferred maintenance $1.25M, contingency 10% $0.24M |
 | Total uses | $49.8M |
-| Agency loan | $29.9M, 65.0% LTV (binding constraint; DSCR would allow $30.5M, debt yield $35.6M), 60.0% of uses, 5.75% fixed, 36 months interest only then 30-year amortization, 7-year term maturing March 2033, annual debt service $1.72M interest only and $2.09M amortizing |
+| Agency loan | $29.9M, 65.0% LTV (binding constraint LTV; DSCR would allow $30.1M, debt yield $35.2M), 60.0% of uses, 5.75% fixed, 36 months interest only then 30-year amortization, 7-year term maturing March 2033, annual debt service $1.72M interest only and $2.09M amortizing |
 | Equity | $19.9M (40.0% of uses): LP $17.9M (90%), GP $2.0M (10%) |
-| Going-in cap | 5.81% (year 1 NOI $2.67M); 5.29% at the ask |
-| Debt yield | 8.9% |
-| Exit | 5.50% cap on year 6 NOI $3.37M: gross value $61.3M ($212,937 / unit), sale costs 1.5% $0.92M, loan payoff $29.1M, net proceeds after debt $31.3M |
-| Unlevered IRR | 9.5% |
-| Levered IRR | 13.5% (threshold 12%) |
-| Equity multiple | 1.81× |
-| LP IRR / multiple | 12.4% / 1.73× |
-| GP IRR with promote | 22.0% |
-| Levered IRR at $50.5M ask | 6.8% (1.36×) |
+| Going-in cap | 5.74% (year 1 NOI $2.64M); 5.04% at the ask |
+| Debt yield | 8.8% |
+| Exit | 5.50% cap on forward NOI $3.46M: gross value $62.8M ($218,145 / unit), sale costs 1.5% $0.94M, loan payoff $29.1M, net proceeds after debt $32.8M |
+| Unlevered IRR | 10.2% |
+| Levered IRR | 14.8% (threshold 12%) |
+| Equity multiple | 1.89× |
+| LP IRR / multiple | 13.0% / 1.76× |
+| GP IRR with promote | 27.0% (promote $2.41M) |
+| Levered IRR at $50.5M ask | 7.9% (1.43×) |
 
-Waterfall: 90 / 10 LP / GP; 8% preferred return and return of capital pro rata; 70 / 30 to a 12% LP IRR; 50 / 50 thereafter. Acquisition fee 1% of price; asset management fee 0.5% of equity per year.
+Waterfall: 90 / 10 LP / GP; 8% preferred return and return of capital pro rata; 70 / 30 to a 12% LP IRR; 50 / 50 thereafter. Acquisition fee 1% of price; asset management fee 0.5% of equity per year. Cash through the tiers: preferred return and capital $28.3M, 70 / 30 to 12% lp irr $6.8M, 50 / 50 thereafter $2.6M.
 
 ### Operating budget, year 1 ($ per unit per year)
-Controllable $4,700: payroll 1,350; repairs and maintenance 650; turnover 250; contract services 300; marketing 175; administrative 225; utilities 900; insurance 850. Real estate taxes $3,378 (2.35% on 90% of price). Management fee 2.75% of EGI ($490). Total operating expenses $8,569 (48.0% of EGI). Replacement reserves $300. Growth: market rents 3.0%, other income 3.0%, controllable expenses 2.5%, taxes 3.0%.
+Controllable $4,700: payroll 1,350; repairs and maintenance 650; turnover 250; contract services 300; marketing 175; administrative 225; utilities 900; insurance 850. Real estate taxes $3,378 (2.35% on 90% of price). Management fee 2.75% of EGI ($488). Total operating expenses $8,566; taxes are 39% of the total. Growth: market rents 3.0% compounded monthly, other income 3.0%, controllable expenses 2.5% stepped yearly, taxes 3.0%.
 
-### NOI ($ thousands)
+### Pro forma ($ thousands, engine output)
 | Line | Y1 | Y2 | Y3 | Y4 | Y5 |
 |---|---|---|---|---|---|
-| Gross potential rent at market | 5,223 | 5,380 | 5,541 | 5,707 | 5,878 |
-| Loss to lease | (122) | (54) | (55) | (57) | (59) |
-| Renovation premium | 52 | 161 | 222 | 228 | 235 |
-| Vacancy | (309) | (329) | (342) | (353) | (363) |
-| Concessions | (26) | (27) | (29) | (29) | (30) |
-| Non-revenue units | (36) | (37) | (38) | (40) | (41) |
-| Bad debt | (39) | (41) | (43) | (44) | (45) |
-| Net rental income | 4,743 | 5,052 | 5,255 | 5,412 | 5,575 |
-| Other income | 397 | 409 | 422 | 434 | 447 |
-| Effective gross income | 5,140 | 5,461 | 5,676 | 5,847 | 6,022 |
+| Gross potential rent at market | 5,294 | 5,453 | 5,617 | 5,785 | 5,959 |
+| Loss to lease | (136) | (55) | (56) | (58) | (60) |
+| Renovation premium | 27 | 132 | 220 | 231 | 238 |
+| Renovation vacancy | (69) | (95) | (24) | 0 | 0 |
+| Vacancy | (311) | (332) | (347) | (358) | (368) |
+| Concessions | (26) | (28) | (29) | (30) | (31) |
+| Non-revenue units | (37) | (38) | (39) | (40) | (41) |
+| Bad debt | (39) | (41) | (43) | (45) | (46) |
+| Net rental income | 4,703 | 4,997 | 5,298 | 5,486 | 5,651 |
+| Other income | 403 | 415 | 427 | 440 | 453 |
+| Effective gross income | 5,106 | 5,412 | 5,726 | 5,927 | 6,105 |
 | Controllable expenses | (1,354) | (1,387) | (1,422) | (1,458) | (1,494) |
 | Real estate taxes | (973) | (1,002) | (1,032) | (1,063) | (1,095) |
-| Management fee | (141) | (150) | (156) | (161) | (166) |
-| Net operating income | 2,672 | 2,922 | 3,066 | 3,165 | 3,267 |
+| Management fee | (140) | (149) | (157) | (163) | (168) |
+| Net operating income | 2,639 | 2,874 | 3,114 | 3,243 | 3,348 |
 | Replacement reserves | (86) | (89) | (91) | (93) | (95) |
 | Debt service | (1,719) | (1,719) | (1,719) | (2,094) | (2,094) |
 | Asset management fee | (100) | (100) | (100) | (100) | (100) |
-| Cash flow after debt service | 767 | 1,014 | 1,156 | 879 | 979 |
-| DSCR | 1.55× | 1.70× | 1.78× | 1.51× | 1.56× |
-| Cash-on-cash | 3.9% | 5.1% | 5.8% | 4.4% | 4.9% |
+| Cash flow after debt service | 733 | 966 | 1,204 | 956 | 1,059 |
+| DSCR | 1.53× | 1.67× | 1.81× | 1.55× | 1.60× |
+| Cash-on-cash | 3.7% | 4.9% | 6.0% | 4.8% | 5.3% |
 
-Year 6 NOI $3,373k sets the exit value.
+Forward NOI for the exit (months 61 to 72) is $3,455k.
 
 ### Stress table (single variable, base held otherwise, loan held at $29.9M)
 | Stress | Levered IRR | DSCR yr 1 | Minimum DSCR | Covenant 1.25× |
 |---|---|---|---|---|
-| Exit cap 6.25% | 8.3% | 1.55× | 1.51× | Holds |
-| Occupancy 90% | 9.5% | 1.44× | 1.40× | Holds |
-| Renovation premium $75 | 11.9% | 1.54× | 1.46× | Holds |
-| Loan rate 6.50% | 12.5% | 1.38× | 1.38× | Holds |
-| Rent growth 1% | 5.7% | 1.55× | 1.37× | Holds |
-| Taxes reassessed to 100% of price | 11.5% | 1.49× | 1.46× | Holds |
+| Exit cap 6.25% | 9.6% | 1.53× | 1.53× | Holds |
+| Occupancy 90% | 10.8% | 1.42× | 1.42× | Holds |
+| Renovation premium $75 | 13.2% | 1.53× | 1.50× | Holds |
+| Loan rate 6.50% | 13.8% | 1.36× | 1.36× | Holds |
+| Rent growth 1% | 6.1% | 1.51× | 1.38× | Holds |
+| Taxes reassessed to 100% of price | 12.8% | 1.47× | 1.47× | Holds |
 
-Downside case: levered IRR 0.3%, equity multiple 1.01×, minimum DSCR 1.32×. Lender case: loan $25.3M at 55% LTV, debt yield 10.4%, DSCR 1.80× in year 1, levered IRR 6.6%.
+Downside case: levered IRR 1.0%, equity multiple 1.04×, minimum DSCR 1.34×. Lender case: loan $25.3M at 55% LTV, debt yield 10.1%, DSCR 1.76× in year 1, levered IRR 7.3%.
 
 ### IC memo (Recommend output)
 Recommendation: bid $46.0M, subject to a tax reassessment estimate from the appraisal district and a scope walk of the unit interiors. Do not pursue at the $50.5M ask.
 
-At $46.0M the deal returns a 13.5% levered IRR and a 1.81× multiple, 150 bps above the 12% threshold, with a year 1 DSCR of 1.55× against a 1.25× covenant. At the $50.5M ask the levered IRR falls to 6.8%. Returns are most sensitive to market rent growth: at 1% the IRR is 5.7%. The renovation premium carries the value-add thesis: at $75 rather than $145 the IRR is 11.9%. No single stress breaches the covenant; the floor is 1.37× at 1% rent growth. The risk in this deal is to equity return, not to the debt.
+At $46.0M the deal returns a 14.8% levered IRR and a 1.89× multiple, 275 bps above the 12% threshold, with a year 1 DSCR of 1.53× against a 1.25× covenant. At the $50.5M ask the levered IRR falls to 7.9%. Returns are most sensitive to market rent growth: at 1% the IRR is 6.1%. The renovation premium carries the value-add thesis: at $75 rather than $145 the IRR is 13.2%. No single stress breaches the covenant; the floor is 1.36× at 1% rent growth. The risk in this deal is to equity return, not to the debt.
 
 What the model cannot tell you: whether the appraisal district reassesses to the purchase price (taxes are 39% of operating expenses); whether the $145 premium holds once 120 more renovated units reach the submarket; the condition of roofs and HVAC beyond the property condition sample; the seller's appetite for a bid 8.9% below ask.
 
 ### Monitor (post-close, Q2 of year 1)
 | Test | Covenant | Underwritten | Actual | Cushion | Status |
 |---|---|---|---|---|---|
-| DSCR | 1.25× | 1.55× | 1.58× | 0.33× | In compliance |
-| Debt yield | 7.5% | 8.9% | 9.1% | 160 bps | In compliance |
+| DSCR | 1.25× | 1.53× | 1.56× | 0.31× | In compliance |
+| Debt yield | 7.5% | 8.8% | 9.0% | 153 bps | In compliance |
 | Occupancy | 85.0% | 94.0% | 94.8% | 980 bps | In compliance |
 | Renovations completed | | 15 of 120 | 12 of 120 | (3) units | Behind plan |
 | Interest-only expiry | March 2029 | | 33 months | | Amortization begins in 33 months |

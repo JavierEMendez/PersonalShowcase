@@ -35,14 +35,14 @@
 </div>
 
 <div class="kpis strip">
-  {% for label in deal.kpis %}
+  {% for label, figure, note in deal.kpis %}
   <div class="kpi">
     <div class="eyebrow">{{ label }}</div>
-    <div class="figure num"></div>
-    <div class="note"></div>
+    <div class="figure num">{{ figure }}</div>
+    <div class="note">{{ note }}</div>
   </div>
   {% endfor %}
 </div>
 
-<div class="tool-note">Figures appear when the multifamily model is built in build step 4.</div>
+<div class="tool-note">Figures from the multifamily engine, base case. The full underwrite screen arrives in build step 5.</div>
 {% endblock %}

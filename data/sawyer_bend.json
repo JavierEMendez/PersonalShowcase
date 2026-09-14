@@ -1,0 +1,364 @@
+{
+  "name": "Sawyer Bend Apartments",
+  "status": "Underwrite",
+  "location": "Northwest Houston",
+  "cases": [
+    {
+      "name": "Base",
+      "inputs": {
+        "property": {
+          "name": "Sawyer Bend Apartments",
+          "location": "Northwest Houston",
+          "year_built": 2016,
+          "floor_plans": [
+            {
+              "code": "A1",
+              "unit_type": "1 x 1",
+              "units": 144,
+              "sf": 720.0,
+              "occupied": 136,
+              "in_place_rent": 1245.0,
+              "market_rent": 1310.0
+            },
+            {
+              "code": "B2",
+              "unit_type": "2 x 2",
+              "units": 120,
+              "sf": 1050.0,
+              "occupied": 113,
+              "in_place_rent": 1585.0,
+              "market_rent": 1660.0
+            },
+            {
+              "code": "C2",
+              "unit_type": "3 x 2",
+              "units": 24,
+              "sf": 1320.0,
+              "occupied": 22,
+              "in_place_rent": 1890.0,
+              "market_rent": 1975.0
+            }
+          ],
+          "non_revenue_units": 2
+        },
+        "revenue": {
+          "market_rent_growth": 0.03,
+          "loss_to_lease_burn_months": 12,
+          "steady_loss_to_lease": 0.01,
+          "vacancy": 0.06,
+          "concessions": 0.005,
+          "bad_debt": 0.0075,
+          "other_income_per_unit_month": 115.0,
+          "other_income_growth": 0.03
+        },
+        "renovation": {
+          "units": 120,
+          "cost_per_unit": 9500.0,
+          "premium_per_month": 145.0,
+          "start_month": 4,
+          "duration_months": 24,
+          "downtime_months": 1
+        },
+        "capital": {
+          "exterior": 850000.0,
+          "deferred_maintenance": 400000.0,
+          "marketing": 0.0,
+          "contingency_pct": 0.1,
+          "construction_management_fee_pct": 0.0
+        },
+        "operating": {
+          "per_unit": {
+            "Payroll": 1350.0,
+            "Repairs and maintenance": 650.0,
+            "Turnover": 250.0,
+            "Contract services": 300.0,
+            "Marketing": 175.0,
+            "Administrative": 225.0,
+            "Utilities": 900.0,
+            "Insurance": 850.0
+          },
+          "expense_growth": 0.025,
+          "tax_rate": 0.0235,
+          "tax_assessed_share": 0.9,
+          "tax_growth": 0.03,
+          "management_fee_pct": 0.0275,
+          "reserves_per_unit": 300.0
+        },
+        "acquisition": {
+          "purchase_price": 46000000.0,
+          "asking_price": 50500000.0,
+          "closing_date": "2026-03-01",
+          "closing_costs_pct": 0.011,
+          "acquisition_fee_pct": 0.01,
+          "hold_months": 60
+        },
+        "loan": {
+          "ltv_max": 0.65,
+          "dscr_min": 1.25,
+          "debt_yield_min": 0.075,
+          "rate": 0.0575,
+          "io_months": 36,
+          "amortization_years": 30,
+          "term_months": 84,
+          "fee_pct": 0.0075,
+          "amount_override": null,
+          "covenant_dscr": 1.25
+        },
+        "exit": {
+          "cap_rate": 0.055,
+          "sale_costs_pct": 0.015
+        },
+        "equity": {
+          "lp_share": 0.9,
+          "preferred_return": 0.08,
+          "tiers": [
+            {
+              "hurdle_irr": 0.12,
+              "lp_split": 0.7
+            }
+          ],
+          "residual_lp_split": 0.5,
+          "asset_management_fee_pct": 0.005
+        }
+      }
+    },
+    {
+      "name": "Downside",
+      "inputs": {
+        "property": {
+          "name": "Sawyer Bend Apartments",
+          "location": "Northwest Houston",
+          "year_built": 2016,
+          "floor_plans": [
+            {
+              "code": "A1",
+              "unit_type": "1 x 1",
+              "units": 144,
+              "sf": 720.0,
+              "occupied": 136,
+              "in_place_rent": 1245.0,
+              "market_rent": 1310.0
+            },
+            {
+              "code": "B2",
+              "unit_type": "2 x 2",
+              "units": 120,
+              "sf": 1050.0,
+              "occupied": 113,
+              "in_place_rent": 1585.0,
+              "market_rent": 1660.0
+            },
+            {
+              "code": "C2",
+              "unit_type": "3 x 2",
+              "units": 24,
+              "sf": 1320.0,
+              "occupied": 22,
+              "in_place_rent": 1890.0,
+              "market_rent": 1975.0
+            }
+          ],
+          "non_revenue_units": 2
+        },
+        "revenue": {
+          "market_rent_growth": 0.015,
+          "loss_to_lease_burn_months": 12,
+          "steady_loss_to_lease": 0.01,
+          "vacancy": 0.08,
+          "concessions": 0.005,
+          "bad_debt": 0.0075,
+          "other_income_per_unit_month": 115.0,
+          "other_income_growth": 0.03
+        },
+        "renovation": {
+          "units": 120,
+          "cost_per_unit": 9500.0,
+          "premium_per_month": 100.0,
+          "start_month": 4,
+          "duration_months": 24,
+          "downtime_months": 1
+        },
+        "capital": {
+          "exterior": 850000.0,
+          "deferred_maintenance": 400000.0,
+          "marketing": 0.0,
+          "contingency_pct": 0.1,
+          "construction_management_fee_pct": 0.0
+        },
+        "operating": {
+          "per_unit": {
+            "Payroll": 1350.0,
+            "Repairs and maintenance": 650.0,
+            "Turnover": 250.0,
+            "Contract services": 300.0,
+            "Marketing": 175.0,
+            "Administrative": 225.0,
+            "Utilities": 900.0,
+            "Insurance": 850.0
+          },
+          "expense_growth": 0.025,
+          "tax_rate": 0.0235,
+          "tax_assessed_share": 0.9,
+          "tax_growth": 0.03,
+          "management_fee_pct": 0.0275,
+          "reserves_per_unit": 300.0
+        },
+        "acquisition": {
+          "purchase_price": 46000000.0,
+          "asking_price": 50500000.0,
+          "closing_date": "2026-03-01",
+          "closing_costs_pct": 0.011,
+          "acquisition_fee_pct": 0.01,
+          "hold_months": 60
+        },
+        "loan": {
+          "ltv_max": 0.65,
+          "dscr_min": 1.25,
+          "debt_yield_min": 0.075,
+          "rate": 0.0575,
+          "io_months": 36,
+          "amortization_years": 30,
+          "term_months": 84,
+          "fee_pct": 0.0075,
+          "amount_override": 29900000.0,
+          "covenant_dscr": 1.25
+        },
+        "exit": {
+          "cap_rate": 0.06,
+          "sale_costs_pct": 0.015
+        },
+        "equity": {
+          "lp_share": 0.9,
+          "preferred_return": 0.08,
+          "tiers": [
+            {
+              "hurdle_irr": 0.12,
+              "lp_split": 0.7
+            }
+          ],
+          "residual_lp_split": 0.5,
+          "asset_management_fee_pct": 0.005
+        }
+      }
+    },
+    {
+      "name": "Lender",
+      "inputs": {
+        "property": {
+          "name": "Sawyer Bend Apartments",
+          "location": "Northwest Houston",
+          "year_built": 2016,
+          "floor_plans": [
+            {
+              "code": "A1",
+              "unit_type": "1 x 1",
+              "units": 144,
+              "sf": 720.0,
+              "occupied": 136,
+              "in_place_rent": 1245.0,
+              "market_rent": 1310.0
+            },
+            {
+              "code": "B2",
+              "unit_type": "2 x 2",
+              "units": 120,
+              "sf": 1050.0,
+              "occupied": 113,
+              "in_place_rent": 1585.0,
+              "market_rent": 1660.0
+            },
+            {
+              "code": "C2",
+              "unit_type": "3 x 2",
+              "units": 24,
+              "sf": 1320.0,
+              "occupied": 22,
+              "in_place_rent": 1890.0,
+              "market_rent": 1975.0
+            }
+          ],
+          "non_revenue_units": 2
+        },
+        "revenue": {
+          "market_rent_growth": 0.02,
+          "loss_to_lease_burn_months": 12,
+          "steady_loss_to_lease": 0.01,
+          "vacancy": 0.07,
+          "concessions": 0.005,
+          "bad_debt": 0.0075,
+          "other_income_per_unit_month": 115.0,
+          "other_income_growth": 0.03
+        },
+        "renovation": {
+          "units": 120,
+          "cost_per_unit": 9500.0,
+          "premium_per_month": 145.0,
+          "start_month": 4,
+          "duration_months": 24,
+          "downtime_months": 1
+        },
+        "capital": {
+          "exterior": 850000.0,
+          "deferred_maintenance": 400000.0,
+          "marketing": 0.0,
+          "contingency_pct": 0.1,
+          "construction_management_fee_pct": 0.0
+        },
+        "operating": {
+          "per_unit": {
+            "Payroll": 1350.0,
+            "Repairs and maintenance": 650.0,
+            "Turnover": 250.0,
+            "Contract services": 300.0,
+            "Marketing": 175.0,
+            "Administrative": 225.0,
+            "Utilities": 900.0,
+            "Insurance": 850.0
+          },
+          "expense_growth": 0.025,
+          "tax_rate": 0.0235,
+          "tax_assessed_share": 0.9,
+          "tax_growth": 0.03,
+          "management_fee_pct": 0.0275,
+          "reserves_per_unit": 300.0
+        },
+        "acquisition": {
+          "purchase_price": 46000000.0,
+          "asking_price": 50500000.0,
+          "closing_date": "2026-03-01",
+          "closing_costs_pct": 0.011,
+          "acquisition_fee_pct": 0.01,
+          "hold_months": 60
+        },
+        "loan": {
+          "ltv_max": 0.55,
+          "dscr_min": 1.25,
+          "debt_yield_min": 0.075,
+          "rate": 0.0575,
+          "io_months": 36,
+          "amortization_years": 30,
+          "term_months": 84,
+          "fee_pct": 0.0075,
+          "amount_override": null,
+          "covenant_dscr": 1.25
+        },
+        "exit": {
+          "cap_rate": 0.0575,
+          "sale_costs_pct": 0.015
+        },
+        "equity": {
+          "lp_share": 0.9,
+          "preferred_return": 0.08,
+          "tiers": [
+            {
+              "hurdle_irr": 0.12,
+              "lp_split": 0.7
+            }
+          ],
+          "residual_lp_split": 0.5,
+          "asset_management_fee_pct": 0.005
+        }
+      }
+    }
+  ]
+}

@@ -89,25 +89,25 @@
   <div class="span-7">
     <div class="panel panel-lg">
       <div class="panel-head">
-        <div class="eyebrow">Extracted assumptions · Sawyer Bend Apartments</div>
+        {% set mf = sample.multifamily %}<div class="eyebrow">Extracted assumptions · Sawyer Bend Apartments</div>
         <div class="note">Source cited for every figure</div>
       </div>
       <table>
         <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
         <tbody>
           <tr><td>Units</td><td class="r num">288</td><td class="src">OM p. 3</td><td>High</td></tr>
-          <tr><td>In-place rent</td><td class="r num">$1,440 / unit</td><td class="src">Rent roll</td><td>High</td></tr>
+          <tr><td>In-place rent</td><td class="r num">{{ mf.summary.avg_in_place_rent | money }} / unit</td><td class="src">Rent roll</td><td>High</td></tr>
           <tr><td>Occupancy</td><td class="r num">94.1%</td><td class="src">Rent roll</td><td>High</td></tr>
-          <tr><td>Market rent</td><td class="r num">$1,511 / unit</td><td class="src">Comp survey, 8 properties</td><td>Medium</td></tr>
+          <tr><td>Market rent</td><td class="r num">{{ mf.summary.avg_market_rent | money }} / unit</td><td class="src">Comp survey, 8 properties</td><td>Medium</td></tr>
           <tr><td>Renovation premium</td><td class="r num">$145 / mo</td><td class="src">Renovated comps</td><td>Medium</td></tr>
           <tr><td>Agency loan rate</td><td class="r num">5.75%</td><td class="src">Term sheet p. 1</td><td>High</td></tr>
         </tbody>
       </table>
       <div class="figure-strip cols-4">
-        <div><div class="eyebrow">Levered IRR</div><div class="figure num">13.5%</div></div>
-        <div><div class="eyebrow">Equity multiple</div><div class="figure num">1.81×</div></div>
-        <div><div class="eyebrow">DSCR, year 1</div><div class="figure num">1.55×</div></div>
-        <div><div class="eyebrow">Bid · ask $50.5M</div><div class="figure num">$46.0M</div></div>
+        <div><div class="eyebrow">Levered IRR</div><div class="figure num">{{ mf.returns.levered_irr | pct }}</div></div>
+        <div><div class="eyebrow">Equity multiple</div><div class="figure num">{{ mf.returns.equity_multiple | mult }}</div></div>
+        <div><div class="eyebrow">DSCR, year 1</div><div class="figure num">{{ mf.summary.dscr_year1 | mult }}</div></div>
+        <div><div class="eyebrow">Bid · ask {{ mf.summary.asking_price | money_m }}</div><div class="figure num">{{ mf.summary.purchase_price | money_m }}</div></div>
       </div>
     </div>
   </div>
