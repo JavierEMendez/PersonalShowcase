@@ -55,46 +55,40 @@
         {% endfor %}
       </tbody></table>
     </div>
-    <div class="grid-12">
-      <div class="span-7">
-        <div class="panel">
+    <div class="grid-2">
+      <div class="panel">
           <div class="panel-head"><div class="eyebrow">Amenities</div><div class="note">build time from Lookups</div></div>
-          <table class="form-grid"><thead><tr><th>Type</th><th class="r">Base cost</th><th class="r">Other %</th><th class="r">Start</th></tr></thead><tbody>
+          <div class="scroll-x"><table class="form-grid"><thead><tr><th>Type</th><th class="r">Base cost</th><th class="r">Other %</th><th class="r">Start</th></tr></thead><tbody>
             {% for i in range(6) %}{% set ac = c.amenity_costs[i] if i < c.amenity_costs | length else none %}{% set atype = t.amenities[i].type if i < t.amenities | length else "None" %}
             <tr class="sub"><td class="k">{{ i + 1 }} · {{ atype }}</td><td class="r">{{ f.number("costs.amenity_costs." ~ i ~ ".base_cost", ac.base_cost if ac else none) }}</td><td class="r">{{ f.percent("costs.amenity_costs." ~ i ~ ".other_pct", ac.other_pct if ac and ac.other_pct is not none else none, "sm") }}</td><td class="r">{{ f.number("costs.amenity_costs." ~ i ~ ".start_month", ac.start_month if ac else none, "1", "sm", 1) }}</td></tr>
             {% endfor %}
-          </tbody></table>
-        </div>
+          </tbody></table></div>
       </div>
-      <div class="span-5">
-        <div class="panel">
-          <div class="panel-head"><div class="eyebrow">Detention projects</div><div class="note">excavation shared equally</div></div>
-          <table class="form-grid"><thead><tr><th>Project</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Months</th><th class="r">Landscaping $ / ft</th></tr></thead><tbody>
-            {% for i in range(6) %}{% set dc = c.det_costs[i] if i < c.det_costs | length else none %}
-            <tr class="sub"><td class="k">{{ i + 1 }}</td><td class="r">{{ f.percent("costs.det_costs." ~ i ~ ".other_pct", dc.other_pct if dc and dc.other_pct is not none else none, "sm") }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".start_month", dc.start_month if dc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".duration", dc.duration if dc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".landscaping_per_foot", dc.landscaping_per_foot if dc else none, "any", "sm") }}</td></tr>
-            {% endfor %}
-          </tbody></table>
-        </div>
-      </div>
-      <div class="span-6">
-        <div class="panel">
+      <div class="panel">
           <div class="panel-head"><div class="eyebrow">Other items</div><div class="note">rows pair with the Tract net-outs</div></div>
-          <table class="form-grid"><thead><tr><th>Item</th><th class="r">Base cost</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Months</th></tr></thead><tbody>
+          <div class="scroll-x"><table class="form-grid"><thead><tr><th>Item</th><th class="r">Base cost</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Months</th></tr></thead><tbody>
             {% for i in range(6) %}{% set oc = c.other_costs[i] if i < c.other_costs | length else none %}{% set desc = t.other_netouts[i].desc if i < t.other_netouts | length else "" %}
             <tr class="sub"><td class="k">{{ i + 1 }}{% if desc %} · {{ desc }}{% endif %}</td><td class="r">{{ f.number("costs.other_costs." ~ i ~ ".base_cost", oc.base_cost if oc else none) }}</td><td class="r">{{ f.percent("costs.other_costs." ~ i ~ ".other_pct", oc.other_pct if oc and oc.other_pct is not none else none, "sm") }}</td><td class="r">{{ f.number("costs.other_costs." ~ i ~ ".start_month", oc.start_month if oc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.other_costs." ~ i ~ ".duration", oc.duration if oc else none, "1", "sm", 1) }}</td></tr>
             {% endfor %}
-          </tbody></table>
-        </div>
+          </tbody></table></div>
       </div>
-      <div class="span-6">
-        <div class="panel">
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+          <div class="panel-head"><div class="eyebrow">Detention projects</div><div class="note">excavation shared equally</div></div>
+          <div class="scroll-x"><table class="form-grid"><thead><tr><th>Project</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Months</th><th class="r">Landscaping $ / ft</th></tr></thead><tbody>
+            {% for i in range(6) %}{% set dc = c.det_costs[i] if i < c.det_costs | length else none %}
+            <tr class="sub"><td class="k">{{ i + 1 }}</td><td class="r">{{ f.percent("costs.det_costs." ~ i ~ ".other_pct", dc.other_pct if dc and dc.other_pct is not none else none, "sm") }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".start_month", dc.start_month if dc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".duration", dc.duration if dc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.det_costs." ~ i ~ ".landscaping_per_foot", dc.landscaping_per_foot if dc else none, "any", "sm") }}</td></tr>
+            {% endfor %}
+          </tbody></table></div>
+      </div>
+      <div class="panel">
           <div class="panel-head"><div class="eyebrow">Collector roads</div><div class="note">build time = 6 months + 1 per 300 LF</div></div>
-          <table class="form-grid"><thead><tr><th>Road</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Landscaping $ / SF</th><th class="r">Light spacing (LF)</th></tr></thead><tbody>
+          <div class="scroll-x"><table class="form-grid"><thead><tr><th>Road</th><th class="r">Other %</th><th class="r">Start</th><th class="r">Landscaping $ / SF</th><th class="r">Light spacing (LF)</th></tr></thead><tbody>
             {% for i in range(6) %}{% set rc = c.road_costs[i] if i < c.road_costs | length else none %}{% set rtype = t.roads[i].type if i < t.roads | length else "" %}
             <tr class="sub"><td class="k">{{ i + 1 }}{% if rtype %} · {{ rtype }}{% endif %}</td><td class="r">{{ f.percent("costs.road_costs." ~ i ~ ".other_pct", rc.other_pct if rc and rc.other_pct is not none else none, "sm") }}</td><td class="r">{{ f.number("costs.road_costs." ~ i ~ ".start_month", rc.start_month if rc else none, "1", "sm", 1) }}</td><td class="r">{{ f.number("costs.road_costs." ~ i ~ ".landscaping_per_sf", rc.landscaping_per_sf if rc else none, "any", "sm") }}</td><td class="r">{{ f.number("costs.road_costs." ~ i ~ ".light_spacing", rc.light_spacing if rc else none, "any", "sm") }}</td></tr>
             {% endfor %}
-          </tbody></table>
-        </div>
+          </tbody></table></div>
       </div>
     </div>
     <div class="panel">
