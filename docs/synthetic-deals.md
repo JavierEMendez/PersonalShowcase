@@ -34,47 +34,45 @@ Residential master planned community land deal. Status: Initial UW. Scenarios: M
 | Detention | (101.7) |
 | Parks and green space | (19.2) |
 | Collector roads | (18.6) |
-| Plants | (14.3) |
+| Plants | (14.2) |
 | Amenities | (9.0) |
-| Other net-outs | (10.5) |
+| Drill sites and other net-outs | (10.5) |
 | Developable | 466.7 (72.9%) |
 | Commercial pods | (22.0) |
 | Residential pods | (12.0) |
 | Residential developable | 432.7 |
 
-### Summary
-Unlevered IRR 18.4%. Total revenue $412.6M. Gross costs $318.4M (77.2% of revenue). Gross margin $94.2M (22.8% of revenue, 29.6% of costs). Net margin $71.5M (17.3%). Total lots 2,412. Project length 134 months (11.2 years). Peak cumulative cash need $92.2M at month 34. Revenue per developable acre $884k. Infrastructure per lot $24.1k.
+### Summary (engine output, `tests/fixtures/cypress_ridge.json`)
+Unlevered IRR 17.4%. Total revenue $379.1M. Gross costs $291.7M (76.9% of revenue). Gross margin $87.4M (23.1% of revenue, 30.0% of costs). Net margin $72.5M (19.1%). Total lots 2,380. Project length 101 months (8.4 years). Peak cumulative cash need $87.1M at month 37; breakeven in year 6. Revenue per residential developable acre $876k. Infrastructure per lot $90.9k. Scenarios: Faster pace 19.5%, Lower lot price 11.9%.
 
 ### Financial summary ($ millions)
-Revenue: Lot sales 318.9; MUD proceeds 34.2; WCID proceeds 11.9; Escalations 12.1; Lot premiums 9.4; Marketing fees 8.7; Commercial pod sales 6.6; Residential pod sales 6.2; Fence fees 4.6. Total revenue 412.6.
+Revenue: Lot sales 235.6; MUD proceeds 83.2; WCID proceeds 29.1; Marketing fees 10.5; Commercial pod sales 7.3; Residential pod sales 4.4; Escalations 3.6; Lot premiums 3.3; Fence fees 2.1. Total revenue 379.1.
 
-Costs: Sections 158.5; Land 30.1; Collector roads 22.6; Plants 14.2; Contingency 13.6; Detention 9.8; Brokerage 9.6; Marketing 8.7; Amenities 8.4; Landscaping 7.9; all other (fencing 5.9, dry utilities 2.7, site work 4.1, legal 1.1, lot taxes 3.6, MUD and HOA 1.9, insurance 1.1, closing 4.8, mailboxes 0.5, professional services 6.2, other items 3.1) 35.0. Gross costs 318.4.
+Costs: Sections 156.2; Land 32.4; Detention 13.3; Plants 13.2; Contingency 11.1; Marketing 10.5; Collector roads 8.8; Landscaping 8.6; Amenities 7.4; Brokerage 7.1; all other (fencing 3.1; dry utilities 1.2; site work 2.4; legal 0.8; lot taxes 2.4; MUD and HOA 0.6; insurance 0.9; closing 3.5; mailboxes 0.5; professional services 5.7; other items 2.1) 23.2. Gross costs 291.7.
 
-Below the line: Development management fee 7.4; Personnel 12.8; Bookkeeping 1.3; Receivables fees 1.2. Total 22.7. Net margin 71.5.
+Below the line: Development management fee 5.6; Personnel 5.6; Bookkeeping 0.9; Receivables fees 2.8. Total 14.9. Net margin 72.5.
 
 ### Net cash flow by year ($ millions)
 | Year | Net | Cumulative |
 |---|---|---|
-| 1 | (38.2) | (38.2) |
-| 2 | (41.6) | (79.8) |
-| 3 | (12.4) | (92.2) |
-| 4 | 8.9 | (83.3) |
-| 5 | 21.7 | (61.6) |
-| 6 | 26.3 | (35.3) |
-| 7 | 24.8 | (10.5) |
-| 8 | 22.1 | 11.6 |
-| 9 | 19.6 | 31.2 |
-| 10 | 15.4 | 46.6 |
-| 11 | 24.9 | 71.5 |
+| 1 | -27.6 | -27.6 |
+| 2 | -32.4 | -60.0 |
+| 3 | -2.3 | -62.3 |
+| 4 | 54.2 | -8.1 |
+| 5 | -3.3 | -11.4 |
+| 6 | 20.2 | 8.8 |
+| 7 | 45.1 | 53.9 |
+| 8 | 17.0 | 71.0 |
+| 9 | 1.5 | 72.5 |
 
-### Sensitivity (unlevered IRR; rows pace in lots / mo at 10% steps, columns lot price $ / FF at 5% steps; base case center)
+### Sensitivity (unlevered IRR; rows pace in lots / mo at 10% steps, columns lot price $ / FF at 5% steps; base case centre)
 | Pace | 1,620 | 1,710 | 1,800 | 1,890 | 1,980 |
 |---|---|---|---|---|---|
-| 8.4 | 17.9% | 20.1% | 22.3% | 24.4% | 26.5% |
-| 7.7 | 16.6% | 18.7% | 20.6% | 22.6% | 24.5% |
-| 7.0 | 14.9% | 16.7% | 18.4% | 20.2% | 21.9% |
-| 6.3 | 13.1% | 14.6% | 16.1% | 17.6% | 19.1% |
-| 5.6 | 11.0% | 12.4% | 13.7% | 15.0% | 16.3% |
+| 8.4 | 13.3% | 16.4% | 19.5% | 22.7% | 25.9% |
+| 7.7 | 12.6% | 15.5% | 18.4% | 21.4% | 24.4% |
+| 7.0 | 11.9% | 14.6% | 17.4% | 20.2% | 23.0% |
+| 6.3 | 11.0% | 13.6% | 16.2% | 18.8% | 21.4% |
+| 5.6 | 10.1% | 12.5% | 14.8% | 17.2% | 19.6% |
 
 ## Sawyer Bend Apartments (Multifamily Copilot)
 

@@ -1,58 +1,35 @@
 """FastAPI entry point.
 
-Routes render Jinja2 templates. Model logic lives in core/ and is not imported here yet
-(build step 1 is the scaffold only).
+Routes render Jinja2 templates. Model logic lives in core/; the web layer calls into it.
 """
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
-BASE_DIR = Path(__file__).resolve().parent
+from app import underwriting
+from app.templating import STATIC_DIR, render
+from core.underwriting.engine import run
+from core.underwriting.sensitivity import build_grid
 
-app = FastAPI(title="Mendez Valdez", docs_url=None, redoc_url=None)
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-templates = Jinja2Templates(directory=BASE_DIR / "templates")
+app = FastAPI(title="Javier Mendez", docs_url=None, redoc_url=None)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.include_router(underwriting.router)
 
-SITE: dict[str, str] = {
-    "wordmark": "Javier Mendez",
-    "repo_url": "https://github.com/JavierEMendez/PersonalShowcase",
-    "github_url": "https://github.com/JavierEMendez",
-    "github_label": "github.com/JavierEMendez",
-    "linkedin_url": "https://linkedin.com/in/javieremendez",
-    "linkedin_label": "linkedin.com/in/javieremendez",
-    # Public contact address. Optional; the About row is omitted when unset.
-    "contact_email": os.environ.get("CONTACT_EMAIL", ""),
+# Landing-page sample figures come from the engine, so they always match the tool.
+_MAIN = underwriting.SEED[0].inputs
+LANDING_SAMPLE: dict[str, Any] = {
+    "summary": run(_MAIN).summary,
+    "grid": build_grid(_MAIN),
+    "acres": _MAIN.tract.gross_acreage,
+    "location": underwriting.META["location"],
 }
 
-# Deal headers for the two tool stubs. Figures arrive with the model ports (build steps 2 and 4).
-UNDERWRITING_DEAL: dict[str, Any] = {
-    "eyebrow": "Sample deal · Initial UW",
-    "title": "Cypress Ridge",
-    "facts": "640.0 ac · Waller County, TX · Closing Mar 2027 · $45,000 / ac",
-    "scenarios": ["Main", "Faster pace", "Lower lot price"],
-    "active_scenario": "Main",
-    "tabs": ["Performance", "Tract", "Costs", "Revenue", "Cashflows", "Lookups"],
-    "active_tab": "Performance",
-    "kpis": [
-        "Unlevered IRR",
-        "Total revenue",
-        "Gross costs",
-        "Gross margin",
-        "Net margin",
-        "Return on cost",
-        "Peak cash need",
-        "Project length",
-    ],
-}
-
+# Deal header for the Multifamily Copilot stub. Figures arrive with the model in build step 4.
 COPILOT_DEAL: dict[str, Any] = {
     "eyebrow": "Sample deal · Multifamily · Value-add acquisition",
     "title": "Sawyer Bend Apartments",
@@ -74,18 +51,9 @@ COPILOT_DEAL: dict[str, Any] = {
 }
 
 
-def render(request: Request, name: str, **context: Any) -> HTMLResponse:
-    return templates.TemplateResponse(request, name, {"site": SITE, **context})
-
-
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request) -> HTMLResponse:
-    return render(request, "landing.html")
-
-
-@app.get("/underwriting", response_class=HTMLResponse)
-async def underwriting(request: Request) -> HTMLResponse:
-    return render(request, "underwriting.html", deal=UNDERWRITING_DEAL)
+    return render(request, "landing.html", sample=LANDING_SAMPLE)
 
 
 @app.get("/copilot", response_class=HTMLResponse)

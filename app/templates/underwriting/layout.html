@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ site.wordmark }} · Land Underwriting{% endblock %}
+{% block body %}
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span><span class="lockup-sep">/</span><span class="lockup-product">Land Underwriting</span></a>
+    <div class="tabs">
+      {% for key, label, href in tabs %}<a href="{{ href }}{{ query }}" class="{% if key == active_tab %}active{% endif %}">{{ label }}</a>{% endfor %}
+    </div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/underwriting/export.xlsx{{ query }}">Export Excel</a>
+    {% if active_tab in ("tract", "costs", "revenue", "lookups") %}
+    <button class="btn btn-primary" type="submit" form="inputs-form">Recalculate</button>
+    {% else %}
+    <a class="btn btn-primary" href="{{ tabs | selectattr(0, 'equalto', active_tab) | map(attribute=2) | first }}{{ query }}">Recalculate</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="deal-head">
+  <div class="deal-head-copy">
+    <div class="eyebrow">Sample deal · {{ meta.status }}</div>
+    <div class="deal-title-row">
+      <h1 class="deal-title">{{ meta.name }}</h1>
+      <div class="deal-facts">{{ facts }}</div>
+    </div>
+  </div>
+  {% include "underwriting/_pills.html" %}
+</div>
+
+{% include "underwriting/_summary_strip.html" %}
+
+<div class="tool-body" id="tab-body">
+{% block tab %}{% endblock %}
+</div>
+{% endblock %}

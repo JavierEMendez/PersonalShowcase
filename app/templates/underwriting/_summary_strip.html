@@ -1,0 +1,11 @@
+{% set s = out.summary %}
+<div class="kpis strip" id="summary-strip"{% if partial %} hx-swap-oob="true"{% endif %}>
+  <div class="kpi"><div class="eyebrow">Unlevered IRR</div><div class="figure num">{{ s.unlevered_irr | pct }}</div><div class="note">XIRR, actual / 365</div></div>
+  <div class="kpi"><div class="eyebrow">Total revenue</div><div class="figure num">{{ s.total_revenue | money_m }}</div><div class="note">{{ s.total_lots | num }} lots delivered</div></div>
+  <div class="kpi"><div class="eyebrow">Gross costs</div><div class="figure num">{{ s.gross_costs | money_m }}</div><div class="note">{{ (s.gross_costs / s.total_revenue if s.total_revenue else 0) | pct }} of revenue</div></div>
+  <div class="kpi"><div class="eyebrow">Gross margin</div><div class="figure num">{{ s.gross_margin | money_m }}</div><div class="note">{{ s.gross_margin_of_revenue | pct }} of revenue</div></div>
+  <div class="kpi"><div class="eyebrow">Net margin</div><div class="figure num">{{ s.net_margin | money_m }}</div><div class="note">{{ s.net_margin_of_revenue | pct }} of revenue</div></div>
+  <div class="kpi"><div class="eyebrow">Return on cost</div><div class="figure num">{{ s.return_on_cost | pct }}</div><div class="note">Gross profit / gross costs</div></div>
+  <div class="kpi"><div class="eyebrow">Peak cash need</div><div class="figure num neg">{{ s.peak_cash_need | money_m }}</div><div class="note">Cumulative, month {{ s.peak_cash_month }}</div></div>
+  <div class="kpi"><div class="eyebrow">Project length</div><div class="figure num">{{ s.project_length_months | years }}</div><div class="note">{{ s.project_length_months }} months{% if s.breakeven_year %} · breakeven in year {{ s.breakeven_year }}{% endif %}</div></div>
+</div>

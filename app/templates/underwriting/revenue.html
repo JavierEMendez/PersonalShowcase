@@ -1,0 +1,78 @@
+{% extends "underwriting/_partial.html" if partial else "underwriting/layout.html" %}
+{% import "underwriting/_forms.html" as f %}
+{% block tab %}
+{% set r = inputs.revenue %}
+{% set c = inputs.costs %}
+{{ f.form_open("revenue", scenario) }}
+{{ f.errors_block(errors) }}
+<div class="section-note">Edits recalculate the scenario in this browser session. A blank field resets to the model default.</div>
+<div class="grid-12">
+  <div class="span-4 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Lot takedowns</div><div class="note">builder earnest money ahead of the first take</div></div>
+      <table class="form-table"><tbody>
+        {{ f.row("Timing method", "takes after delivery", f.select("revenue.timing_method", r.timing_method, ["1 Takedown", "50/50", "50/25/25", "25/25/25/25"])) }}
+        {{ f.row("Earnest money period", "months before T1", f.number("revenue.bem_period", r.bem_period, "1", "", 0)) }}
+        {{ f.row("Earnest money", "% of lot revenue", f.percent("revenue.bem_pct", r.bem_pct)) }}
+        {{ f.row("Brokerage fees", "% of lot revenue", f.percent("revenue.brokerage_fees", r.brokerage_fees)) }}
+        {{ f.row("Lot closing costs", "% of lot revenue", f.percent("revenue.lot_closing_costs", r.lot_closing_costs)) }}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Lot price per front foot</div><div class="note">by project year of the first take</div></div>
+      <table class="form-grid"><thead><tr><th>Year</th><th class="r">$ / FF</th></tr></thead><tbody>
+        {% for price in r.price_per_ff %}
+        <tr class="sub"><td class="k">Year {{ loop.index0 }}</td><td class="r">{{ f.number("revenue.price_per_ff." ~ loop.index0, price) }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">District bonds</div><div class="note">reimbursements on cumulative assessed value</div></div>
+      <table class="form-grid"><thead><tr><th></th><th class="r">MUD</th><th class="r">WCID</th></tr></thead><tbody>
+        <tr class="sub"><td class="k">On</td><td class="r">{{ f.check("revenue.mud_bond.toggle", r.mud_bond.toggle) }}</td><td class="r">{{ f.check("revenue.wcid_bond.toggle", r.wcid_bond.toggle) }}</td></tr>
+        <tr class="sub"><td class="k">Debt ratio, % of AV</td><td class="r">{{ f.percent("revenue.mud_bond.debt_ratio", r.mud_bond.debt_ratio, "sm") }}</td><td class="r">{{ f.percent("revenue.wcid_bond.debt_ratio", r.wcid_bond.debt_ratio, "sm") }}</td></tr>
+        <tr class="sub"><td class="k">First bond month</td><td class="r">{{ f.number("revenue.mud_bond.first_bond_period", r.mud_bond.first_bond_period, "1", "sm", 0) }}</td><td class="r">{{ f.number("revenue.wcid_bond.first_bond_period", r.wcid_bond.first_bond_period, "1", "sm", 0) }}</td></tr>
+        <tr class="sub"><td class="k">Interval, months</td><td class="r">{{ f.number("revenue.mud_bond.bond_interval", r.mud_bond.bond_interval, "1", "sm", 0) }}</td><td class="r">{{ f.number("revenue.wcid_bond.bond_interval", r.wcid_bond.bond_interval, "1", "sm", 0) }}</td></tr>
+        <tr class="sub"><td class="k">Share to developer</td><td class="r">{{ f.percent("revenue.mud_bond.pct_to_dev", r.mud_bond.pct_to_dev, "sm") }}</td><td class="r">{{ f.percent("revenue.wcid_bond.pct_to_dev", r.wcid_bond.pct_to_dev, "sm") }}</td></tr>
+        <tr class="sub"><td class="k">Receivables fee</td><td class="r">{{ f.percent("revenue.mud_bond.receivables_fee", r.mud_bond.receivables_fee, "sm") }}</td><td class="r">{{ f.percent("revenue.wcid_bond.receivables_fee", r.wcid_bond.receivables_fee, "sm") }}</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="span-8 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Homes by lot size</div><div class="note">drives assessed value, premiums, fees and lot taxes · active rows from the Costs tab</div></div>
+      <div class="scroll-x">
+      <table class="form-grid"><thead><tr><th>FF</th><th class="r">Build time (mo)</th><th class="r">Home price</th><th class="r">AV %</th><th class="r">Premium $ / FF</th><th class="r">Escalation % / yr</th><th class="r">Fence fee $ / FF</th><th class="r">Marketing fee $ / lot</th><th class="r">Lot AV %</th><th class="r">Lot tax rate %</th></tr></thead><tbody>
+        {% for ls in c.lot_sizes %}{% set i = loop.index0 %}{% set p = "costs.lot_sizes." ~ i ~ "." %}
+        <tr class="sub{% if not ls.on %} off{% endif %}"><td class="k num">{{ ls.front_footage | int }}{% if ls.on %} · on{% endif %}</td><td class="r">{{ f.number(p ~ "build_time", ls.build_time, "1", "sm", 0) }}</td><td class="r">{{ f.number(p ~ "home_price", ls.home_price) }}</td><td class="r">{{ f.percent(p ~ "av_pct", ls.av_pct, "sm") }}</td><td class="r">{{ f.number(p ~ "premium_per_ff", ls.premium_per_ff, "any", "sm") }}</td><td class="r">{{ f.percent(p ~ "escalation", ls.escalation, "sm") }}</td><td class="r">{{ f.number(p ~ "fence_per_ff", ls.fence_per_ff, "any", "sm") }}</td><td class="r">{{ f.number(p ~ "marketing_fee", ls.marketing_fee, "any", "sm") }}</td><td class="r">{{ f.percent(p ~ "lot_av_pct", ls.lot_av_pct, "sm") }}</td><td class="r">{{ f.percent(p ~ "lot_tax_rate", ls.lot_tax_rate, "sm") }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+      </div>
+    </div>
+    <div class="grid-12">
+      <div class="span-6">
+        <div class="panel">
+          <div class="panel-head"><div class="eyebrow">Residential pods</div><div class="note">share the residential pod acres equally</div></div>
+          <table class="form-grid"><thead><tr><th>Pod</th><th class="r">$ / ac</th><th class="r">Closing %</th><th class="r">Lots / ac</th><th class="r">Impact fee $ / lot</th><th class="r">Sale month</th></tr></thead><tbody>
+            {% for i in range(6) %}{% set pod = r.res_pods[i] if i < r.res_pods | length else none %}{% set p = "revenue.res_pods." ~ i ~ "." %}
+            <tr class="sub"><td class="k">{{ i + 1 }}</td><td class="r">{{ f.number(p ~ "price_per_acre", pod.price_per_acre if pod else none) }}</td><td class="r">{{ f.percent(p ~ "closing_costs_pct", pod.closing_costs_pct if pod else none, "sm") }}</td><td class="r">{{ f.number(p ~ "implied_lots_per_acre", pod.implied_lots_per_acre if pod else none, "any", "sm") }}</td><td class="r">{{ f.number(p ~ "impact_fee_per_lot", pod.impact_fee_per_lot if pod else none, "any", "sm") }}</td><td class="r">{{ f.number(p ~ "sale_period", pod.sale_period if pod else none, "1", "sm", 1) }}</td></tr>
+            {% endfor %}
+          </tbody></table>
+        </div>
+      </div>
+      <div class="span-6">
+        <div class="panel">
+          <div class="panel-head"><div class="eyebrow">Commercial pods</div><div class="note">share the commercial pod acres equally</div></div>
+          <table class="form-grid"><thead><tr><th>Pod</th><th class="r">$ / SF</th><th class="r">Closing %</th><th class="r">Sale month</th><th class="r">AV $ / ac</th><th class="r">AV delay (mo)</th></tr></thead><tbody>
+            {% for i in range(6) %}{% set pod = r.comm_pods[i] if i < r.comm_pods | length else none %}{% set p = "revenue.comm_pods." ~ i ~ "." %}
+            <tr class="sub"><td class="k">{{ i + 1 }}</td><td class="r">{{ f.number(p ~ "price_per_sf", pod.price_per_sf if pod else none, "any", "sm") }}</td><td class="r">{{ f.percent(p ~ "closing_costs_pct", pod.closing_costs_pct if pod else none, "sm") }}</td><td class="r">{{ f.number(p ~ "sale_period", pod.sale_period if pod else none, "1", "sm", 1) }}</td><td class="r">{{ f.number(p ~ "av_per_acre", pod.av_per_acre if pod else none) }}</td><td class="r">{{ f.number(p ~ "av_delay_months", pod.av_delay_months if pod else none, "1", "sm", 0) }}</td></tr>
+            {% endfor %}
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}

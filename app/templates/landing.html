@@ -26,16 +26,17 @@
     <div class="sample-panel">
       <div class="panel-head" style="margin-bottom: 0;">
         <div class="eyebrow">Sample deal · Cypress Ridge</div>
-        <div class="note">640 ac · Waller County, TX</div>
+        <div class="note">{{ sample.acres | num }} ac · {{ sample.location }}</div>
       </div>
       <table>
         <tbody>
-          <tr class="sub"><td>Total revenue</td><td class="r num">$412.6M</td></tr>
-          <tr class="sub"><td>Gross costs</td><td class="r num">318.4</td></tr>
-          <tr class="total"><td>Gross margin</td><td class="r num">$94.2M</td></tr>
-          <tr class="sub"><td>Net margin</td><td class="r num">71.5</td></tr>
-          <tr class="sub"><td>Unlevered IRR</td><td class="r num">18.4%</td></tr>
-          <tr class="sub"><td>Total lots</td><td class="r num">2,412</td></tr>
+          {% set s = sample.summary %}
+          <tr class="sub"><td>Total revenue</td><td class="r num">{{ s.total_revenue | money_m }}</td></tr>
+          <tr class="sub"><td>Gross costs</td><td class="r num">{{ s.gross_costs | millions }}</td></tr>
+          <tr class="total"><td>Gross margin</td><td class="r num">{{ s.gross_margin | money_m }}</td></tr>
+          <tr class="sub"><td>Net margin</td><td class="r num">{{ s.net_margin | millions }}</td></tr>
+          <tr class="sub"><td>Unlevered IRR</td><td class="r num">{{ s.unlevered_irr | pct }}</td></tr>
+          <tr class="sub"><td>Total lots</td><td class="r num">{{ s.total_lots | num }}</td></tr>
         </tbody>
       </table>
       <div class="note">Synthetic tract. Figures in $ millions unless noted.</div>
@@ -48,7 +49,7 @@
     <div><div class="figure proof-figure num">10 sheets</div><div class="proof-text">Excel land model ported to Python and reconciled to the workbook by test.</div></div>
     <div><div class="figure proof-figure num">21 cost lines</div><div class="proof-text">Every budget line from land takedowns to contingency, scheduled by month and footed to the total.</div></div>
     <div><div class="figure proof-figure num">Unlevered XIRR</div><div class="proof-text">Returns on the closing-date convention, before any financing, so the land thesis stands on its own.</div></div>
-    <div><div class="figure proof-figure num">Live formulas</div><div class="proof-text">Excel export keeps every formula live so reviewers can audit in their own tool.</div></div>
+    <div><div class="figure proof-figure num">Live formulas</div><div class="proof-text">Excel export writes the monthly schedule with totals, margins, and XIRR as live formulas, so reviewers can audit in their own tool.</div></div>
   </div>
 </div>
 
@@ -72,13 +73,11 @@
         <div class="note">Lot price per front foot × sales pace</div>
       </div>
       <table>
-        <thead><tr><th>Pace (lots / mo)</th><th class="r">$1,620</th><th class="r">$1,710</th><th class="r">$1,800</th><th class="r">$1,890</th><th class="r">$1,980</th></tr></thead>
+        <thead><tr><th>Pace (lots / mo)</th>{% for label in sample.grid.col_labels %}<th class="r">{{ label }}</th>{% endfor %}</tr></thead>
         <tbody>
-          <tr><td class="num">8.4</td><td class="r num heat-5">17.9%</td><td class="r num heat-6">20.1%</td><td class="r num heat-7">22.3%</td><td class="r num heat-8">24.4%</td><td class="r num heat-9">26.5%</td></tr>
-          <tr><td class="num">7.7</td><td class="r num heat-4">16.6%</td><td class="r num heat-5">18.7%</td><td class="r num heat-6">20.6%</td><td class="r num heat-7">22.6%</td><td class="r num heat-8">24.5%</td></tr>
-          <tr><td class="num">7.0</td><td class="r num heat-3">14.9%</td><td class="r num heat-4">16.7%</td><td class="r num heat-5 base-case">18.4%</td><td class="r num heat-6">20.2%</td><td class="r num heat-7">21.9%</td></tr>
-          <tr><td class="num">6.3</td><td class="r num heat-2">13.1%</td><td class="r num heat-3">14.6%</td><td class="r num heat-4">16.1%</td><td class="r num heat-5">17.6%</td><td class="r num heat-6">19.1%</td></tr>
-          <tr><td class="num">5.6</td><td class="r num heat-1">11.0%</td><td class="r num heat-2">12.4%</td><td class="r num heat-3">13.7%</td><td class="r num heat-4">15.0%</td><td class="r num heat-5">16.3%</td></tr>
+          {% for row in sample.grid.rows %}
+          <tr><td class="num">{{ row.label }}</td>{% for cell in row.cells %}<td class="r num heat-{{ cell.heat }}{% if cell.base %} base-case{% endif %}">{{ cell.value | pct }}</td>{% endfor %}</tr>
+          {% endfor %}
         </tbody>
       </table>
       <div class="note" style="margin-top: 10px;">Base case outlined. Price in 5% steps, pace in 10% steps.</div>

@@ -1,0 +1,27 @@
+<div class="panel" id="sensitivity">
+  <div class="panel-head">
+    <div class="eyebrow">Sensitivity · {{ metric_labels[grid.metric] }}</div>
+    <div class="note">{{ axis_labels[grid.col_axis] }} in {{ (grid.col_step * 100) | round | int }}% steps × {{ axis_labels[grid.row_axis] | lower }} in {{ (grid.row_step * 100) | round | int }}% steps</div>
+  </div>
+  <table>
+    <thead><tr><th>{{ axis_labels[grid.row_axis] }}</th>{% for label in grid.col_labels %}<th class="r">{{ label }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in grid.rows %}
+      <tr><td class="num">{{ row.label }}</td>{% for cell in row.cells %}<td class="r num heat-{{ cell.heat }}{% if cell.base %} base-case{% endif %}">{% if cell.value is none %}n/a{% else %}{{ cell.value | pct }}{% endif %}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <details class="axes">
+    <summary class="panel-foot"><span>{{ grid.note }}</span><span class="text-link">Change axes</span></summary>
+    <form class="axes-form" hx-get="/underwriting/sensitivity" hx-trigger="change" hx-target="#sensitivity" hx-swap="outerHTML" hx-include="this">
+      <input type="hidden" name="scenario" value="{{ scenario }}">
+      <label>Rows <select name="row_axis">{% for key, label in axis_labels.items() %}<option value="{{ key }}"{% if key == grid.row_axis %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+      <label>Step <select name="row_step">{% for v in (0.05, 0.10, 0.20, 0.25) %}<option value="{{ v }}"{% if (v - grid.row_step) | abs < 1e-9 %} selected{% endif %}>{{ (v * 100) | round | int }}%</option>{% endfor %}</select></label>
+      <label>Each side <select name="row_steps">{% for v in (1, 2, 3) %}<option value="{{ v }}"{% if v == grid_params.row_steps %} selected{% endif %}>{{ v }}</option>{% endfor %}</select></label>
+      <label>Columns <select name="col_axis">{% for key, label in axis_labels.items() %}<option value="{{ key }}"{% if key == grid.col_axis %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+      <label>Step <select name="col_step">{% for v in (0.05, 0.10, 0.20, 0.25) %}<option value="{{ v }}"{% if (v - grid.col_step) | abs < 1e-9 %} selected{% endif %}>{{ (v * 100) | round | int }}%</option>{% endfor %}</select></label>
+      <label>Each side <select name="col_steps">{% for v in (1, 2, 3) %}<option value="{{ v }}"{% if v == grid_params.col_steps %} selected{% endif %}>{{ v }}</option>{% endfor %}</select></label>
+      <label>Metric <select name="metric">{% for key, label in metric_labels.items() %}<option value="{{ key }}"{% if key == grid.metric %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    </form>
+  </details>
+</div>

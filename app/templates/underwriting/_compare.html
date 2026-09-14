@@ -1,0 +1,18 @@
+{% if compare | length > 1 %}
+<div class="panel" id="compare">
+  <div class="panel-head">
+    <div class="eyebrow">Scenario comparison</div>
+    <div class="note">{{ compare | length }} scenarios · active scenario in bold</div>
+  </div>
+  <table>
+    <thead><tr><th>Metric</th>{% for name, _ in compare %}<th class="r">{{ name }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for label, key, fmt in compare_metrics %}
+      <tr class="sub"><td>{{ label }}</td>
+        {% for name, s in compare %}{% set v = s[key] %}<td class="r num{% if name == scenario %} active-col{% endif %}">{% if fmt == "money_m" %}{{ v | money_m }}{% elif fmt == "pct" %}{{ v | pct }}{% else %}{{ v | num }}{% endif %}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}

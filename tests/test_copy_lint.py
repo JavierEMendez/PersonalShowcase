@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_copy_lint_passes() -> None:
     targets = [
-        *sorted((ROOT / "app" / "templates").glob("*.html")),
+        *sorted((ROOT / "app" / "templates").rglob("*.html")),
         *sorted((ROOT / "docs").glob("*.md")),
         ROOT / "README.md",
         ROOT / "CLAUDE.md",

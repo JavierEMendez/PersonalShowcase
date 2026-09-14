@@ -25,4 +25,4 @@ jobs:
       - name: Pytest
         run: pytest -q
       - name: Copy lint
-        run: python scripts/lint_copy.py README.md CLAUDE.md docs/*.md app/templates/*.html
+        run: python scripts/lint_copy.py README.md CLAUDE.md docs/*.md app/templates/*.html app/templates/underwriting/*.html

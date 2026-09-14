@@ -1,0 +1,36 @@
+{# Input macros. Percent fields are shown as percentages and stored as fractions (see app/forms.py). #}
+{% macro number(path, value, step="any", cls="", min=None) -%}
+<input class="input r {{ cls }}" type="number" name="{{ path }}" value="{{ value if value is not none else '' }}" step="{{ step }}"{% if min is not none %} min="{{ min }}"{% endif %}>
+{%- endmacro %}
+
+{% macro percent(path, value, cls="") -%}
+<input class="input r {{ cls }}" type="number" name="{{ path }}" value="{{ (value * 100) | round(4) if value is not none else '' }}" step="any">
+{%- endmacro %}
+
+{% macro text(path, value, cls="") -%}
+<input class="input {{ cls }}" type="text" name="{{ path }}" value="{{ value if value is not none else '' }}">
+{%- endmacro %}
+
+{% macro date(path, value) -%}
+<input class="input" type="date" name="{{ path }}" value="{{ value if value else '' }}">
+{%- endmacro %}
+
+{% macro select(path, value, options) -%}
+<select name="{{ path }}">{% for opt in options %}<option value="{{ opt }}"{% if opt == value %} selected{% endif %}>{{ opt if opt else "None" }}</option>{% endfor %}</select>
+{%- endmacro %}
+
+{% macro check(path, value) -%}
+<input type="checkbox" name="{{ path }}" value="on"{% if value %} checked{% endif %}>
+{%- endmacro %}
+
+{% macro row(label, unit, field) -%}
+<tr class="sub"><td class="k">{{ label }}</td><td class="r">{{ field }}</td><td class="unit">{{ unit }}</td></tr>
+{%- endmacro %}
+
+{% macro form_open(tab, scenario) -%}
+<form id="inputs-form" method="post" action="/underwriting/inputs/{{ tab }}?scenario={{ scenario | urlencode }}" hx-post="/underwriting/inputs/{{ tab }}?scenario={{ scenario | urlencode }}" hx-trigger="change delay:250ms, submit" hx-target="#tab-body" hx-swap="outerHTML" hx-indicator="body">
+{%- endmacro %}
+
+{% macro errors_block(errors) -%}
+{% if errors %}<div class="errors">The last change was not applied.{% for e in errors %} {{ e }}.{% endfor %}</div>{% endif %}
+{%- endmacro %}

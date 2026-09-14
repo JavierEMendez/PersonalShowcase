@@ -1,0 +1,77 @@
+{% extends "underwriting/layout.html" %}
+{% block tab %}
+{% set s = out.summary %}
+<div class="grid-12">
+  <div class="span-5">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Financial summary</div><div class="note">$ millions</div></div>
+      <table>
+        <thead><tr><th>Line</th><th class="r">Amount</th><th class="r">% of costs</th><th class="r">% of revenue</th></tr></thead>
+        <tbody>
+          {% for label, v in revenue_rows %}<tr class="sub"><td class="indent">{{ label }}</td><td class="r num">{{ v | millions }}</td><td></td><td class="r num">{{ (v / out.revenue.total if out.revenue.total else 0) | pct }}</td></tr>{% endfor %}
+          <tr class="total"><td>Total revenue</td><td class="r num">{{ out.revenue.total | millions }}</td><td></td><td class="r num">100.0%</td></tr>
+          {% for label, v in cost_rows %}<tr class="sub"><td class="indent">{{ label }}</td><td class="r num">{{ v | millions }}</td><td class="r num">{{ (v / out.costs.total if out.costs.total else 0) | pct }}</td><td class="r num">{{ (v / out.revenue.total if out.revenue.total else 0) | pct }}</td></tr>{% endfor %}
+          <tr class="total"><td>Gross costs</td><td class="r num">{{ out.costs.total | millions }}</td><td class="r num">100.0%</td><td class="r num">{{ (out.costs.total / out.revenue.total if out.revenue.total else 0) | pct }}</td></tr>
+          <tr class="total"><td>Gross margin</td><td class="r num">{{ s.gross_margin | millions }}</td><td class="r num">{{ s.gross_margin_of_costs | pct }}</td><td class="r num">{{ s.gross_margin_of_revenue | pct }}</td></tr>
+          {% for label, v in below_rows %}<tr class="sub"><td class="indent">{{ label }}</td><td class="r num">{{ v | millions }}</td><td></td><td class="r num">{{ (v / out.revenue.total if out.revenue.total else 0) | pct }}</td></tr>{% endfor %}
+          <tr class="total"><td>Net margin</td><td class="r num">{{ s.net_margin | millions }}</td><td class="r num">{{ (s.net_margin / out.costs.total if out.costs.total else 0) | pct }}</td><td class="r num">{{ s.net_margin_of_revenue | pct }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="span-3 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Acreage</div><div class="note">acres</div></div>
+      {% set a = out.acreage %}
+      <table>
+        <tbody>
+          <tr class="sub"><td>Gross</td><td class="r num">{{ a.gross | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Detention</td><td class="r num">{{ (-a.detention) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Parks and green space, {{ (inputs.tract.parks_pct * 100) | round | int }}%</td><td class="r num">{{ (-a.parks) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Collector roads</td><td class="r num">{{ (-a.roads) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Plants</td><td class="r num">{{ (-a.plants) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Amenities</td><td class="r num">{{ (-a.amenities) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Drill sites and other net-outs</td><td class="r num">{{ (-(a.drill_sites + a.other)) | num(1) }}</td></tr>
+          <tr class="total"><td>Developable</td><td class="r num">{{ a.developable | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Commercial pods</td><td class="r num">{{ (-a.commercial_pods) | num(1) }}</td></tr>
+          <tr class="sub"><td class="indent">Residential pods</td><td class="r num">{{ (-a.residential_pods) | num(1) }}</td></tr>
+          <tr class="total"><td>Residential developable</td><td class="r num">{{ a.residential_developable | num(1) }}</td></tr>
+        </tbody>
+      </table>
+      <div class="figure-strip cols-3">
+        <div><div class="eyebrow">Developable</div><div class="figure num">{{ (a.developable / a.gross if a.gross else 0) | pct }}</div></div>
+        <div><div class="eyebrow">Rev / dev acre</div><div class="figure num">{{ s.rev_per_dev_acre | money_k }}</div></div>
+        <div><div class="eyebrow">Infra / lot</div><div class="figure num">{{ s.infra_per_lot | money_k }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="span-4 stack">
+    {% include "underwriting/_sensitivity.html" %}
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Net cash flow by year</div><div class="note">$ millions · unlevered{% if s.breakeven_year %} · breakeven in year {{ s.breakeven_year }}{% endif %}</div></div>
+      {% set peak = out.yearly | map(attribute="net") | map("abs") | max %}
+      <table>
+        <thead><tr><th>Period</th><th class="r">Net cash flow</th><th></th><th class="r">Cumulative</th></tr></thead>
+        <tbody>
+          {% for y in out.yearly %}
+          {% set width = (y.net | abs) / peak * 50 if peak else 0 %}
+          <tr class="sub">
+            <td class="num nowrap">Year {{ y.year }}</td>
+            <td class="r num {{ 'neg' if y.net < 0 else 'pos' }}">{{ y.net | millions }}</td>
+            <td class="bar-cell">{% if y.net < 0 %}<div class="bar"><div class="bar-neg" style="width: {{ '%.1f' % width }}%;"></div><div class="bar-half"></div></div>{% else %}<div class="bar"><div class="bar-half"></div><div class="bar-pos" style="width: {{ '%.1f' % width }}%;"></div></div>{% endif %}</td>
+            <td class="r num {{ 'neg' if y.cumulative < 0 else 'pos' }}">{{ y.cumulative | millions }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="total"><td>Total</td><td class="r num">{{ s.net_margin | millions }}</td><td></td><td class="r num">{{ out.yearly[-1].cumulative | millions }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="span-12">
+    {% include "underwriting/_compare.html" %}
+  </div>
+</div>
+{% endblock %}

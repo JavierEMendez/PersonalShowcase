@@ -1,0 +1,85 @@
+{% extends "underwriting/_partial.html" if partial else "underwriting/layout.html" %}
+{% import "underwriting/_forms.html" as f %}
+{% block tab %}
+{% set t = inputs.tract %}
+{{ f.form_open("tract", scenario) }}
+{{ f.errors_block(errors) }}
+<div class="section-note">Edits recalculate the scenario in this browser session. A blank field resets to the model default.</div>
+<div class="grid-12">
+  <div class="span-4 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Tract</div><div class="note">land and closing</div></div>
+      <table class="form-table"><tbody>
+        {{ f.row("Project name", "", f.text("tract.project_name", t.project_name, "wide")) }}
+        {{ f.row("Gross acreage", "ac", f.number("tract.gross_acreage", t.gross_acreage)) }}
+        {{ f.row("Purchase price", "$ / ac", f.number("tract.purchase_price_per_acre", t.purchase_price_per_acre)) }}
+        {{ f.row("Closing costs", "% of price", f.percent("tract.closing_costs_pct", t.closing_costs_pct)) }}
+        {{ f.row("Land escalator", "% / yr", f.percent("tract.land_escalator", t.land_escalator)) }}
+        {{ f.row("Closing date", "drives XIRR", f.date("tract.closing_date", t.closing_date)) }}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Detention and open space</div><div class="note"></div></div>
+      <table class="form-table"><tbody>
+        {{ f.row("Storage rate", "ac-ft / ac", f.number("tract.det_storage_rate", t.det_storage_rate)) }}
+        {{ f.row("Depth", "ft", f.number("tract.det_depth", t.det_depth)) }}
+        {{ f.row("Detention projects", "count", f.number("tract.det_num_projects", t.det_num_projects, "1", "", 0)) }}
+        {{ f.row("Excavation cost", "$ / CY", f.number("tract.det_cost_per_cy", t.det_cost_per_cy)) }}
+        {{ f.row("Parks and green space", "% of gross", f.percent("tract.parks_pct", t.parks_pct)) }}
+        {{ f.row("Drill site acres", "ac", f.number("tract.drill_site_acres", t.drill_site_acres)) }}
+        {{ f.row("Commercial pod acres", "ac", f.number("tract.commercial_pod_acres", t.commercial_pod_acres)) }}
+        {{ f.row("Residential pod acres", "ac", f.number("tract.residential_pod_acres", t.residential_pod_acres)) }}
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="span-4 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Plants</div><div class="note">acres and build time from Lookups</div></div>
+      <table class="form-grid"><thead><tr><th>Row</th><th>Type</th></tr></thead><tbody>
+        {% for i in range(8) %}{% set p = t.plants[i] if i < t.plants | length else none %}
+        <tr class="sub"><td class="k">{{ i + 1 }}</td><td>{{ f.select("tract.plants." ~ i ~ ".type", p.type if p else "None", ["None", "WWTP", "Water Plant", "Lift Station"]) }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Amenities</div><div class="note">acres net out of the tract</div></div>
+      <table class="form-grid"><thead><tr><th>Row</th><th>Type</th><th class="r">Acres</th></tr></thead><tbody>
+        {% for i in range(6) %}{% set a = t.amenities[i] if i < t.amenities | length else none %}
+        <tr class="sub"><td class="k">{{ i + 1 }}</td><td>{{ f.select("tract.amenities." ~ i ~ ".type", a.type if a else "None", ["None", "Pocket Park", "Small Amenity Center", "Large Amenity Center"]) }}</td><td class="r">{{ f.number("tract.amenities." ~ i ~ ".acres", a.acres if a else none, "any", "sm") }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Other net-outs</div><div class="note">easements, setbacks, ROW</div></div>
+      <table class="form-grid"><thead><tr><th>Row</th><th>Description</th><th class="r">Acres</th></tr></thead><tbody>
+        {% for i in range(6) %}{% set o = t.other_netouts[i] if i < t.other_netouts | length else none %}
+        <tr class="sub"><td class="k">{{ i + 1 }}</td><td>{{ f.text("tract.other_netouts." ~ i ~ ".desc", o.desc if o else "") }}</td><td class="r">{{ f.number("tract.other_netouts." ~ i ~ ".acres", o.acres if o else none, "any", "sm") }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="span-4 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Collector roads</div><div class="note">right of way = LF × (width + 2 × setbacks)</div></div>
+      <table class="form-grid"><thead><tr><th>Row</th><th>Type</th><th class="r">LF</th><th class="r">Width</th><th class="r">Road setback</th><th class="r">Landscaping setback</th></tr></thead><tbody>
+        {% for i in range(6) %}{% set r = t.roads[i] if i < t.roads | length else none %}
+        <tr class="sub"><td class="k">{{ i + 1 }}</td><td>{{ f.select("tract.roads." ~ i ~ ".type", r.type if r else "", ["", "2 Lane", "4 Lane"]) }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".lf", r.lf if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".width", r.width if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".road_setback", r.road_setback if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".landscaping_setback", r.landscaping_setback if r else none, "any", "sm") }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Acreage result</div><div class="note">acres</div></div>
+      {% set a = out.acreage %}
+      <table><tbody>
+        <tr class="sub"><td>Net-outs</td><td class="r num">{{ (-a.net_out_total) | num(1) }}</td></tr>
+        <tr class="total"><td>Developable</td><td class="r num">{{ a.developable | num(1) }}</td></tr>
+        <tr class="total"><td>Residential developable</td><td class="r num">{{ a.residential_developable | num(1) }}</td></tr>
+        <tr class="sub"><td>Total lots</td><td class="r num">{{ out.summary.total_lots | num }}</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}

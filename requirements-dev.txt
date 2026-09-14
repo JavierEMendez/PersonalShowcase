@@ -2,3 +2,4 @@ pytest>=8
 httpx>=0.27
 ruff>=0.6
 mypy>=1.11
+types-openpyxl>=3.1

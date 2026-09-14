@@ -1,0 +1,44 @@
+{% extends "underwriting/_partial.html" if partial else "underwriting/layout.html" %}
+{% import "underwriting/_forms.html" as f %}
+{% block tab %}
+{% set lk = inputs.lookups %}
+{{ f.form_open("lookups", scenario) }}
+{{ f.errors_block(errors) }}
+<div class="section-note">Master tables the tract inputs look up. Edits apply to this scenario only; a blank field resets to the master value.</div>
+<div class="grid-12">
+  <div class="span-4">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Plants</div><div class="note">acres net out, months to build</div></div>
+      <table class="form-grid"><thead><tr><th>Type</th><th class="r">Acres</th><th class="r">Months</th></tr></thead><tbody>
+        {% for name, acres, months in (("WWTP", 10.0, 8), ("Water Plant", 3.5, 8), ("Lift Station", 0.75, 3)) %}
+        {% set row = lk.plants[name] if name in lk.plants else none %}
+        <tr class="sub"><td class="k">{{ name }}</td><td class="r">{{ f.number("lookups.plants." ~ name ~ ".acres", row.acres if row else acres, "any", "sm") }}</td><td class="r">{{ f.number("lookups.plants." ~ name ~ ".duration", row.duration if row else months, "1", "sm", 0) }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="span-4">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Amenities</div><div class="note">default acres, months to build</div></div>
+      <table class="form-grid"><thead><tr><th>Type</th><th class="r">Acres</th><th class="r">Months</th></tr></thead><tbody>
+        {% for name, acres, months in (("Pocket Park", 0.5, 2), ("Small Amenity Center", 3.0, 8), ("Large Amenity Center", 6.0, 12)) %}
+        {% set row = lk.amenities[name] if name in lk.amenities else none %}
+        <tr class="sub"><td class="k">{{ name }}</td><td class="r">{{ f.number("lookups.amenities." ~ name ~ ".acres", row.acres if row else acres, "any", "sm") }}</td><td class="r">{{ f.number("lookups.amenities." ~ name ~ ".duration", row.duration if row else months, "1", "sm", 0) }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="span-4">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Collector roads</div><div class="note">$ per linear foot</div></div>
+      <table class="form-grid"><thead><tr><th>Type</th><th class="r">Water, sewer, drainage</th><th class="r">Paving</th></tr></thead><tbody>
+        {% for name, wsd, paving in (("2 Lane", 450, 343), ("4 Lane", 460, 663)) %}
+        {% set row = lk.roads[name] if name in lk.roads else none %}
+        <tr class="sub"><td class="k">{{ name }}</td><td class="r">{{ f.number("lookups.roads." ~ name ~ ".wsd", row.wsd if row else wsd, "any", "sm") }}</td><td class="r">{{ f.number("lookups.roads." ~ name ~ ".paving", row.paving if row else paving, "any", "sm") }}</td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}

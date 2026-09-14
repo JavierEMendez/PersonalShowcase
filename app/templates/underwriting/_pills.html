@@ -1,0 +1,33 @@
+<div class="pills">
+  <span class="eyebrow">Scenario</span>
+  {% for name in scenarios %}
+    {% if name == scenario %}
+      <span class="pill active">{{ name }}</span>
+    {% else %}
+      <a class="pill" href="{{ tabs | selectattr(0, 'equalto', active_tab) | map(attribute=2) | first }}?scenario={{ name | urlencode }}">{{ name }}</a>
+    {% endif %}
+  {% endfor %}
+  <details class="pill-menu">
+    <summary class="pill-add">+ Add</summary>
+    <div class="pill-popover">
+      <form method="post" action="/underwriting/scenarios/add" class="pill-form">
+        <input type="hidden" name="source" value="{{ scenario }}">
+        <label class="note" for="new-scenario">Copy of {{ scenario }} named</label>
+        <input id="new-scenario" class="input" type="text" name="name" placeholder="Scenario name" maxlength="40">
+        <button class="btn btn-primary" type="submit">Add</button>
+      </form>
+      <form method="post" action="/underwriting/scenarios/rename" class="pill-form">
+        <input type="hidden" name="name" value="{{ scenario }}">
+        <label class="note" for="rename-scenario">Rename {{ scenario }} to</label>
+        <input id="rename-scenario" class="input" type="text" name="new_name" placeholder="New name" maxlength="40">
+        <button class="btn" type="submit">Rename</button>
+      </form>
+      <div class="pill-form pill-form-row">
+        {% if scenarios | length > 1 and scenario != scenarios[0] %}
+        <form method="post" action="/underwriting/scenarios/delete"><input type="hidden" name="name" value="{{ scenario }}"><button class="btn" type="submit">Remove {{ scenario }}</button></form>
+        {% endif %}
+        <form method="post" action="/underwriting/scenarios/reset"><button class="btn" type="submit">Reset to seed</button></form>
+      </div>
+    </div>
+  </details>
+</div>

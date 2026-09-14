@@ -1,0 +1,37 @@
+{% extends "underwriting/layout.html" %}
+{% block tab %}
+<div class="stack">
+  <div class="panel">
+    <div class="panel-head"><div class="eyebrow">Cash flow by year</div><div class="note">$ millions · line items aggregated from the monthly schedule</div></div>
+    <div class="scroll-x">
+    <table class="years">
+      <thead><tr><th>Line</th>{% for y in years %}<th class="r">Year {{ y }}</th>{% endfor %}<th class="r">Total</th></tr></thead>
+      <tbody>
+        {% for key, label in rev_cats %}<tr class="sub"><td class="indent">{{ label }}</td>{% for y in years %}<td class="r num">{{ by_year[y][key] | millions }}</td>{% endfor %}<td class="r num">{{ totals[key] | millions }}</td></tr>{% endfor %}
+        <tr class="total"><td>Revenue</td>{% for y in years %}<td class="r num">{{ by_year[y]["revenue"] | millions }}</td>{% endfor %}<td class="r num">{{ totals["revenue"] | millions }}</td></tr>
+        {% for key, label in cost_cats %}<tr class="sub"><td class="indent">{{ label }}</td>{% for y in years %}<td class="r num">{{ by_year[y][key] | millions }}</td>{% endfor %}<td class="r num">{{ totals[key] | millions }}</td></tr>{% endfor %}
+        <tr class="total"><td>Costs</td>{% for y in years %}<td class="r num">{{ by_year[y]["cost"] | millions }}</td>{% endfor %}<td class="r num">{{ totals["cost"] | millions }}</td></tr>
+        <tr class="total"><td>Net cash flow</td>{% for y in years %}<td class="r num {{ 'neg' if by_year[y]['net'] < 0 else 'pos' }}">{{ by_year[y]["net"] | millions }}</td>{% endfor %}<td class="r num">{{ totals["net"] | millions }}</td></tr>
+        {% set ns = namespace(cum=0) %}
+        <tr class="sub"><td>Cumulative</td>{% for y in years %}{% set ns.cum = ns.cum + by_year[y]["net"] %}<td class="r num {{ 'neg' if ns.cum < 0 else 'pos' }}">{{ ns.cum | millions }}</td>{% endfor %}<td></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="eyebrow">Monthly detail</div><div class="note">$ thousands · month 1 is the closing month · {{ out.cf_monthly | length }} months</div></div>
+    <div class="scroll-x scroll-y">
+    <table class="monthly">
+      <thead><tr><th>Month</th><th class="r">Year</th><th class="r">Revenue</th><th class="r">Cost</th><th class="r">Net</th><th class="r">Cumulative</th><th class="r">Lot sales</th><th class="r">Pods</th><th class="r">MUD / WCID</th><th class="r">Land</th><th class="r">Sections</th><th class="r">Plants</th><th class="r">Detention</th><th class="r">Roads</th><th class="r">Amenities</th><th class="r">Other</th><th class="r">Landscaping</th><th class="r">Fencing</th><th class="r">Dry utilities</th><th class="r">Site work</th><th class="r">DMF</th><th class="r">Operating</th></tr></thead>
+      <tbody>
+        {% set ns = namespace(cum=0) %}
+        {% for m in out.cf_monthly %}{% set ns.cum = ns.cum + m.net %}
+        <tr class="sub"><td class="num">{{ m.month }}</td><td class="r num">{{ m.year }}</td><td class="r num">{{ (m.revenue / 1000) | num }}</td><td class="r num">{{ (m.cost / 1000) | num }}</td><td class="r num {{ 'neg' if m.net < 0 else 'pos' }}">{{ (m.net / 1000) | num }}</td><td class="r num {{ 'neg' if ns.cum < 0 else 'pos' }}">{{ (ns.cum / 1000) | num }}</td><td class="r num">{{ (m.rev_lot_sales / 1000) | num }}</td><td class="r num">{{ ((m.rev_res_pods + m.rev_comm_pods) / 1000) | num }}</td><td class="r num">{{ (m.rev_mud_wcid / 1000) | num }}</td><td class="r num">{{ (m.cost_land / 1000) | num }}</td><td class="r num">{{ (m.cost_sections / 1000) | num }}</td><td class="r num">{{ (m.cost_plants / 1000) | num }}</td><td class="r num">{{ (m.cost_detention / 1000) | num }}</td><td class="r num">{{ (m.cost_roads / 1000) | num }}</td><td class="r num">{{ (m.cost_amenities / 1000) | num }}</td><td class="r num">{{ (m.cost_other / 1000) | num }}</td><td class="r num">{{ (m.cost_landscaping / 1000) | num }}</td><td class="r num">{{ (m.cost_fencing / 1000) | num }}</td><td class="r num">{{ (m.cost_dry_utilities / 1000) | num }}</td><td class="r num">{{ (m.cost_site_work / 1000) | num }}</td><td class="r num">{{ (m.cost_dmf / 1000) | num }}</td><td class="r num">{{ (m.cost_operating / 1000) | num }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
