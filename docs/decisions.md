@@ -18,7 +18,7 @@ The internal tool's documentation claims debt terms and equity multiple; its eng
 Executive, bank-style standard: warm near-white ground, charcoal ink, navy accent, Source Serif 4 and IBM Plex Sans, tabular numerals, 2px radii, no shadows or gradients, eight-figure summary strip on every tool screen. Rejected: reusing the employer theme (employer branding on a personal showcase) and Inter (overused).
 
 ## 2026-09-14 · Wordmark
-"Mendez Valdez" as the working wordmark. To be confirmed by Javi.
+"Javier Mendez Valdez" with a small headshot at the top left of every page, confirmed by Javi. Superseded the working wordmark "Mendez Valdez".
 
 ## 2026-09-14 · Harbor Point priced as a bid below ask
 The Copilot sample deal recommends a $38.0M bid against a $41.6M ask, because at the ask the levered IRR is 4.9% against a 12% threshold. Shows the tool producing a pricing decision rather than confirming the seller's number. Rejected: a deal that simply clears the hurdle at the ask.

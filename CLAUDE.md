@@ -17,7 +17,7 @@ Read `docs/handoff.md` first, then `private/strategy-brief.md`, `private/mpc-too
 - The site loads a pre-seeded deal with no login and no API key. Anyone with the link can evaluate it. Editing inputs works in the browser session; saving requires nothing.
 - Numbers are the product. Consistent decimals, units in the panel header, tabular figures, right-aligned numerics, negative values in parentheses in tables, and totals recomputed from rounded lines so every table foots.
 - No AI tells in any copy, README, or generated memo (lint-ignore): no em dashes, no "it's not X, it's Y" or "X, not Y" constructions, no "delve", "leverage", "robust", "seamless", "unlock", "empower", no exclamation points, no rhetorical questions. Short declarative sentences. Say the number, then what it means.
-- Wordmark is "Mendez Valdez" until told otherwise. No employer branding anywhere. Public docs, README, and copy refer to the source of the MPC tool as "an internal underwriting tool" and never quote figures, defaults, file names, or module descriptions from `private/`.
+- Wordmark is "Javier Mendez Valdez" with a headshot (app/static/headshot.jpg) at the top left. No employer branding anywhere. Public docs, README, and copy refer to the source of the MPC tool as "an internal underwriting tool" and never quote figures, defaults, file names, or module descriptions from `private/`.
 
 ## Design standard (summary; full spec in docs/design-standard.md)
 

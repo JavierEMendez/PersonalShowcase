@@ -101,7 +101,10 @@ td.src { color: var(--muted); }
 .topbar-left { display: flex; align-items: center; gap: 32px; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .wordmark { font-family: var(--serif); font-size: 17px; font-weight: 600; letter-spacing: .02em; color: var(--ink); }
-.wordmark:hover { color: var(--ink); text-decoration: none; }
+.brand-link { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
+.brand-link:hover { color: var(--ink); text-decoration: none; }
+.avatar { width: 28px; height: 28px; border-radius: 2px; object-fit: cover; display: block; }
+.nav .avatar { width: 32px; height: 32px; }
 .crumb { color: var(--muted); font-size: 13px; }
 .product { font-size: 13px; font-weight: 500; color: var(--ink); }
 .tabs { display: flex; align-items: center; gap: 22px; font-size: 13px; font-weight: 500; }
