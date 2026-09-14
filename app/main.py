@@ -22,7 +22,7 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 SITE: dict[str, str] = {
-    "wordmark": "Javier Mendez Valdez",
+    "wordmark": "Javier Mendez",
     "repo_url": "https://github.com/JavierEMendez/PersonalShowcase",
     "github_url": "https://github.com/JavierEMendez",
     "github_label": "github.com/JavierEMendez",

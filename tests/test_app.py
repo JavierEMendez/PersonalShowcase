@@ -43,3 +43,16 @@ def test_stylesheet_served() -> None:
     response = client.get("/static/site.css")
     assert response.status_code == 200
     assert "--accent: #0F2A44" in response.text
+
+
+def test_brand_assets_and_titles() -> None:
+    manifest = client.get("/static/brand/site.webmanifest")
+    assert manifest.status_code == 200
+    assert manifest.headers["content-type"].startswith("application/manifest+json")
+    assert client.get("/static/brand/mark.svg").headers["content-type"].startswith("image/svg+xml")
+    assert client.get("/static/brand/favicon.ico").status_code == 200
+    landing = client.get("/").text
+    assert "<title>Javier Mendez</title>" in landing
+    assert 'href="/static/brand/mark.svg" type="image/svg+xml"' in landing
+    assert "<title>Javier Mendez · Land Underwriting</title>" in client.get("/underwriting").text
+    assert "<title>Javier Mendez · Multifamily Copilot</title>" in client.get("/copilot").text

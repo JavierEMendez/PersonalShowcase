@@ -1,10 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ site.wordmark }} · Underwriting and portfolio systems{% endblock %}
+{% block title %}{{ site.wordmark }}{% endblock %}
 {% block body %}
 <div class="nav">
-  <div class="brand">
-    <a class="brand-link" href="/"><img class="avatar" src="/static/headshot.jpg" alt="Javier Mendez Valdez" width="32" height="32"><span class="wordmark">{{ site.wordmark }}</span></a>
-  </div>
+  <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span></a>
   <div class="nav-links">
     <a href="/underwriting">Land Underwriting</a>
     <a href="/copilot">Multifamily Copilot</a>

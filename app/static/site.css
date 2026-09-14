@@ -99,15 +99,13 @@ td.src { color: var(--muted); }
 /* Tool screens */
 .topbar { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 32px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .topbar-left { display: flex; align-items: center; gap: 32px; }
-.brand { display: flex; align-items: center; gap: 10px; }
-.wordmark { font-family: var(--serif); font-size: 17px; font-weight: 600; letter-spacing: .02em; color: var(--ink); }
-.brand-link { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); }
-.brand-link:hover { color: var(--ink); text-decoration: none; }
-.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: block; flex: none; border: 1px solid var(--border); }
-.nav .avatar { width: 40px; height: 40px; }
-.nav .brand-link { gap: 14px; }
-.crumb { color: var(--muted); font-size: 13px; }
-.product { font-size: 13px; font-weight: 500; color: var(--ink); }
+/* Brand lockup: JM mark, wordmark, optional product segment (docs/brand-mark.md) */
+.lockup { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.lockup:hover { color: var(--ink); text-decoration: none; }
+.lockup img { display: block; flex: none; }
+.wordmark { font-family: var(--serif); font-size: 17px; font-weight: 600; letter-spacing: .02em; }
+.lockup-sep { color: var(--muted); font-size: 13px; }
+.lockup-product { font-size: 13px; font-weight: 500; }
 .tabs { display: flex; align-items: center; gap: 22px; font-size: 13px; font-weight: 500; }
 .tabs a { color: var(--muted); }
 .tabs a:hover { color: var(--ink); text-decoration: none; }
