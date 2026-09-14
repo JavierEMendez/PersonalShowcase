@@ -199,3 +199,4 @@ td.active-col { font-weight: 600; }
 .htmx-request .kpi .figure { opacity: .5; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .grid-2 > .panel, .grid-12 > div { min-width: 0; }
+.headline { font-size: 14px; font-weight: 500; color: var(--ink); margin-top: -6px; }
