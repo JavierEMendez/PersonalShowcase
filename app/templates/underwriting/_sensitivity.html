@@ -3,14 +3,14 @@
     <div class="eyebrow">Sensitivity · {{ metric_labels[grid.metric] }}</div>
     <div class="note">{{ axis_labels[grid.col_axis] }} in {{ (grid.col_step * 100) | round | int }}% steps × {{ axis_labels[grid.row_axis] | lower }} in {{ (grid.row_step * 100) | round | int }}% steps</div>
   </div>
-  <table>
+  <div class="scroll-x"><table>
     <thead><tr><th>{{ axis_labels[grid.row_axis] }}</th>{% for label in grid.col_labels %}<th class="r">{{ label }}</th>{% endfor %}</tr></thead>
     <tbody>
       {% for row in grid.rows %}
       <tr><td class="num">{{ row.label }}</td>{% for cell in row.cells %}<td class="r num heat-{{ cell.heat }}{% if cell.base %} base-case{% endif %}">{% if cell.value is none %}n/a{% else %}{{ cell.value | pct }}{% endif %}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table></div>
   <details class="axes">
     <summary class="panel-foot"><span>{{ grid.note }}</span><span class="text-link">Change axes</span></summary>
     <form class="axes-form" hx-get="/underwriting/sensitivity" hx-trigger="change" hx-target="#sensitivity" hx-swap="outerHTML" hx-include="this">

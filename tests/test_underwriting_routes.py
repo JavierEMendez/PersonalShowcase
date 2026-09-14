@@ -127,3 +127,15 @@ def test_export_workbook_has_live_formulas() -> None:
     assert "Net cash flow" in header and "Cumulative" in header
     net_col = header.index("Net cash flow") + 1
     assert str(pro_forma.cell(row=5, column=net_col).value).startswith("=")
+
+
+def test_inputs_show_separators_and_accept_them() -> None:
+    client = new_client()
+    page = client.get("/underwriting/costs").text
+    assert 'name="costs.personnel_monthly" value="50,000"' in page
+    assert 'type="number"' not in page
+    response = client.post("/underwriting/inputs/costs", data={"costs.personnel_monthly": "55,000"})
+    assert response.status_code == 200
+    assert 'name="costs.personnel_monthly" value="55,000"' in response.text
+    assert "was not applied" not in response.text
+    client.post("/underwriting/scenarios/reset")

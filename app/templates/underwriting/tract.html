@@ -63,11 +63,11 @@
   <div class="span-4 stack">
     <div class="panel">
       <div class="panel-head"><div class="eyebrow">Collector roads</div><div class="note">right of way = LF × (width + 2 × setbacks)</div></div>
-      <table class="form-grid"><thead><tr><th>Row</th><th>Type</th><th class="r">LF</th><th class="r">Width</th><th class="r">Road setback</th><th class="r">Landscaping setback</th></tr></thead><tbody>
+      <div class="scroll-x"><table class="form-grid"><thead><tr><th>Row</th><th>Type</th><th class="r">LF</th><th class="r">Width</th><th class="r">Road setback</th><th class="r">Landscaping setback</th></tr></thead><tbody>
         {% for i in range(6) %}{% set r = t.roads[i] if i < t.roads | length else none %}
         <tr class="sub"><td class="k">{{ i + 1 }}</td><td>{{ f.select("tract.roads." ~ i ~ ".type", r.type if r else "", ["", "2 Lane", "4 Lane"]) }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".lf", r.lf if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".width", r.width if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".road_setback", r.road_setback if r else none, "any", "sm") }}</td><td class="r">{{ f.number("tract.roads." ~ i ~ ".landscaping_setback", r.landscaping_setback if r else none, "any", "sm") }}</td></tr>
         {% endfor %}
-      </tbody></table>
+      </tbody></table></div>
     </div>
     <div class="panel">
       <div class="panel-head"><div class="eyebrow">Acreage result</div><div class="note">acres</div></div>

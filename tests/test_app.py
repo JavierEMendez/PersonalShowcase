@@ -33,6 +33,15 @@ def test_tool_stubs_render(path: str, title: str, pill: str) -> None:
     assert response.text.count('class="kpi"') == 8
 
 
+def test_about_page_has_bio_and_portrait() -> None:
+    response = client.get("/about")
+    assert response.status_code == 200
+    assert "Javier Mendez Valdez" in response.text
+    assert "/static/headshot.jpg" in response.text
+    assert "Baylor University" in response.text
+    assert "<title>Javier Mendez · About</title>" in response.text
+
+
 def test_health() -> None:
     response = client.get("/health")
     assert response.status_code == 200

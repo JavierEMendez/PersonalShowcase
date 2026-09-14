@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ site.wordmark }} · About{% endblock %}
+{% block body %}
+<div class="nav">
+  <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span></a>
+  <div class="nav-links">
+    <a href="/underwriting">Land Underwriting</a>
+    <a href="/copilot">Multifamily Copilot</a>
+    <a href="/#method">Method</a>
+    <a href="/about">About</a>
+    <a href="{{ site.repo_url }}">GitHub</a>
+    <a class="btn-outline" href="/underwriting">Open the demo</a>
+  </div>
+</div>
+
+<div class="about-page">
+  <img class="portrait" src="/static/headshot.jpg" alt="Javier Mendez Valdez" width="220" height="220">
+  <div class="section-copy tight">
+    <div class="eyebrow">About</div>
+    <h1 class="section-title">Javier Mendez Valdez</h1>
+    <p class="headline">Finance &amp; Analytics Manager at EMBER · MBA candidate, Rice University · Houston, Texas</p>
+    <p class="section-text">As a Finance &amp; Analytics Manager at EMBER, Javier specializes in investor relations and financial analysis for the firm. His primary focus is on developing financial models used to underwrite ongoing and prospective projects across the various asset classes.</p>
+    <p class="section-text">Prior to joining EMBER, Javier earned a degree in Finance from Baylor University. After graduating, he relocated to Chicago to work in real estate private equity, where he was involved in conducting extensive market research, raising capital, and underwriting multifamily and built to rent communities.</p>
+    <p class="section-text">When not at work, Javier enjoys traveling, watching sports, and spending time with his family. The two tools on this site started as internal systems and were rebuilt here on synthetic data.</p>
+    <table class="fact-table narrow">
+      <tbody>
+        <tr class="sub"><td class="k">Role</td><td class="v">Finance &amp; Analytics Manager, EMBER</td></tr>
+        <tr class="sub"><td class="k">Focus</td><td class="v">Financial modeling, transaction analysis, FP&amp;A, investor relations</td></tr>
+        <tr class="sub"><td class="k">Experience</td><td class="v">Six years across real estate investment and private equity, Houston and Chicago</td></tr>
+        <tr class="sub"><td class="k">Education</td><td class="v">MBA candidate, Rice University · BBA Finance, Baylor University</td></tr>
+        <tr class="sub"><td class="k">Location</td><td class="v">Houston, Texas</td></tr>
+        <tr class="sub"><td class="k">LinkedIn</td><td class="v"><a href="{{ site.linkedin_url }}">{{ site.linkedin_label }}</a></td></tr>
+        <tr class="sub"><td class="k">GitHub</td><td class="v"><a href="{{ site.github_url }}">{{ site.github_label }}</a></td></tr>
+        {% if site.contact_email %}<tr class="sub"><td class="k">Email</td><td class="v"><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <div>Demos run on synthetic deals with public market data. No client information.</div>
+  <div>Python · FastAPI · Postgres · Railway · Claude Code</div>
+</div>
+{% endblock %}

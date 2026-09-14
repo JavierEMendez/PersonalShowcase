@@ -1,10 +1,11 @@
 {# Input macros. Percent fields are shown as percentages and stored as fractions (see app/forms.py). #}
+{# Numbers are text inputs so thousands separators show; app/forms.py strips them on the way in. #}
 {% macro number(path, value, step="any", cls="", min=None) -%}
-<input class="input r {{ cls }}" type="number" name="{{ path }}" value="{{ value if value is not none else '' }}" step="{{ step }}"{% if min is not none %} min="{{ min }}"{% endif %}>
+<input class="input r {{ cls }}" type="text" inputmode="decimal" autocomplete="off" name="{{ path }}" value="{{ value | field }}">
 {%- endmacro %}
 
 {% macro percent(path, value, cls="") -%}
-<input class="input r {{ cls }}" type="number" name="{{ path }}" value="{{ (value * 100) | round(4) if value is not none else '' }}" step="any">
+<input class="input r {{ cls }}" type="text" inputmode="decimal" autocomplete="off" name="{{ path }}" value="{{ ((value * 100) | round(4)) | field if value is not none else '' }}">
 {%- endmacro %}
 
 {% macro text(path, value, cls="") -%}
