@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}{{ site.wordmark }} · Multifamily Copilot{% endblock %}
+{% block body %}
+{% set s = out.summary %}
+<div class="topbar">
+  <div class="topbar-left" style="gap: 36px;">
+    <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span><span class="lockup-sep">/</span><span class="lockup-product">Multifamily Copilot</span></a>
+    <div class="stepper">
+      {% for name in steps %}
+      {% set n = loop.index %}
+      {% if not loop.first %}<div class="step-line"></div>{% endif %}
+      <div class="step {% if n < active_step %}done{% elif n == active_step %}active{% else %}pending{% endif %}">
+        <span class="step-num num">{{ n }}</span><span class="step-label">{{ name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/copilot/export.xlsx{{ query }}">Export model to Excel</a>
+    <a class="btn btn-primary" href="#memo">Draft IC memo</a>
+  </div>
+</div>
+
+<div class="deal-head">
+  <div class="deal-head-copy">
+    <div class="eyebrow">Sample deal · Multifamily · Value-add acquisition</div>
+    <div class="deal-title-row">
+      <h1 class="deal-title">{{ meta.name }}</h1>
+      <div class="deal-facts">{{ s.units | num }} units · {{ s.rentable_sf | num }} SF · {{ meta.location }} · {{ s.occupancy | pct }} occupied · {{ (s.hold_months // 12) }}-year hold</div>
+    </div>
+  </div>
+  <div class="pills">
+    <span class="eyebrow">Case</span>
+    {% for name in cases %}{% if name == case %}<span class="pill active">{{ name }}</span>{% else %}<a class="pill" href="/copilot?case={{ name | urlencode }}">{{ name }}</a>{% endif %}{% endfor %}
+  </div>
+</div>
+
+<div class="kpis strip">
+  <div class="kpi"><div class="eyebrow">Purchase price</div><div class="figure num">{{ s.purchase_price | money_m }}</div><div class="note">{{ s.price_per_unit | money }} / unit{% if s.asking_price %} · ask {{ s.asking_price | money_m }}{% endif %}</div></div>
+  <div class="kpi"><div class="eyebrow">Going-in cap</div><div class="figure num">{{ s.going_in_cap | pct(2) }}</div><div class="note">Year 1 NOI {{ s.noi_year1 | money_m(2) }}</div></div>
+  <div class="kpi"><div class="eyebrow">Levered IRR</div><div class="figure num {{ 'pos' if (out.returns.levered_irr or 0) >= threshold else 'neg' }}">{{ out.returns.levered_irr | pct }}</div><div class="note">Unlevered {{ out.returns.unlevered_irr | pct }} · threshold {{ threshold | pct(0) }}</div></div>
+  <div class="kpi"><div class="eyebrow">LP IRR</div><div class="figure num">{{ out.returns.lp_irr | pct }}</div><div class="note">{{ out.returns.lp_multiple | mult }} after the waterfall</div></div>
+  <div class="kpi"><div class="eyebrow">Equity multiple</div><div class="figure num">{{ out.returns.equity_multiple | mult }}</div><div class="note">On {{ out.sources_uses.equity | money_m }} equity</div></div>
+  <div class="kpi"><div class="eyebrow">DSCR, year 1</div><div class="figure num {{ 'pos' if (s.dscr_year1 or 0) >= out.loan.covenant_dscr else 'neg' }}">{{ s.dscr_year1 | mult }}</div><div class="note">Covenant {{ out.loan.covenant_dscr | mult }} · minimum {{ s.min_dscr | mult }}</div></div>
+  <div class="kpi"><div class="eyebrow">LTV</div><div class="figure num">{{ s.ltv | pct }}</div><div class="note">Debt yield {{ s.debt_yield | pct }} · {{ out.loan.binding }} bound</div></div>
+  <div class="kpi"><div class="eyebrow">Exit value</div><div class="figure num">{{ s.exit_value | money_m }}</div><div class="note">Forward NOI / {{ out.exit.cap_rate | pct(2) }}</div></div>
+</div>
+
+<div class="tool-body">
+<div class="grid-12">
+  <div class="span-7 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Net operating income</div><div class="note">$ thousands · {{ out.annual | length }}-year hold · forward NOI {{ (out.exit.forward_noi / 1000) | num }} sets the exit</div></div>
+      <table>
+        <thead><tr><th>Line</th>{% for a in out.annual %}<th class="r">Year {{ a.year }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          <tr class="sub"><td>Gross potential rent at market</td>{% for a in out.annual %}<td class="r num">{{ (a.gpr / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Loss to lease</td>{% for a in out.annual %}<td class="r num">{{ (a.loss_to_lease / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Renovation premium</td>{% for a in out.annual %}<td class="r num">{{ (a.renovation_premium / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Renovation vacancy</td>{% for a in out.annual %}<td class="r num">{{ (a.renovation_vacancy / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Vacancy, concessions, non-revenue, bad debt</td>{% for a in out.annual %}<td class="r num">{{ ((a.vacancy + a.concessions + a.non_revenue + a.bad_debt) / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Other income</td>{% for a in out.annual %}<td class="r num">{{ (a.other_income / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="total"><td>Effective gross income</td>{% for a in out.annual %}<td class="r num">{{ (a.egi / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Controllable expenses</td>{% for a in out.annual %}<td class="r num">{{ (-a.controllable / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Real estate taxes</td>{% for a in out.annual %}<td class="r num">{{ (-a.taxes / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Management fee</td>{% for a in out.annual %}<td class="r num">{{ (-a.management_fee / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="total"><td>Net operating income</td>{% for a in out.annual %}<td class="r num">{{ (a.noi / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Replacement reserves</td>{% for a in out.annual %}<td class="r num">{{ (-a.reserves / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Debt service</td>{% for a in out.annual %}<td class="r num">{{ (-a.debt_service / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td class="indent">Asset management fee</td>{% for a in out.annual %}<td class="r num">{{ (-a.asset_management_fee / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="total"><td>Cash flow after debt service</td>{% for a in out.annual %}<td class="r num">{{ (a.cash_flow / 1000) | num }}</td>{% endfor %}</tr>
+          <tr class="sub"><td>DSCR</td>{% for a in out.annual %}<td class="r num {{ 'neg' if (a.dscr or 0) < out.loan.covenant_dscr else '' }}">{{ a.dscr | mult }}</td>{% endfor %}</tr>
+          <tr class="sub"><td>Cash-on-cash</td>{% for a in out.annual %}<td class="r num">{{ a.cash_on_cash | pct }}</td>{% endfor %}</tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><div class="eyebrow">Rent roll</div><div class="note">$ per unit per month</div></div>
+        <div class="scroll-x"><table>
+          <thead><tr><th>Plan</th><th class="r">Units</th><th class="r">SF</th><th class="r">Occupied</th><th class="r">In place</th><th class="r">Market</th></tr></thead>
+          <tbody>
+            {% for fp in out.floor_plans %}<tr class="sub"><td>{{ fp.unit_type }}</td><td class="r num">{{ fp.units }}</td><td class="r num">{{ fp.sf | num }}</td><td class="r num">{{ fp.occupied }}</td><td class="r num">{{ fp.in_place_rent | money }}</td><td class="r num">{{ fp.market_rent | money }}</td></tr>{% endfor %}
+            <tr class="total"><td>Total</td><td class="r num">{{ s.units }}</td><td class="r num">{{ (s.rentable_sf / s.units) | num }}</td><td class="r num">{{ s.occupied }}</td><td class="r num">{{ s.avg_in_place_rent | money }}</td><td class="r num">{{ s.avg_market_rent | money }}</td></tr>
+          </tbody>
+        </table></div>
+        <div class="panel-foot"><span>Loss to lease {{ s.loss_to_lease_pct | pct }}, burning off over twelve months of rollover.</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="eyebrow">Renovation program</div><div class="note">months {{ out.renovation.start_month }} to {{ out.renovation.end_month }}</div></div>
+        <table>
+          <tbody>
+            <tr class="sub"><td>Units renovated</td><td class="r num">{{ out.renovation.units }} of {{ s.units }}</td></tr>
+            <tr class="sub"><td>Cost per unit</td><td class="r num">{{ out.renovation.cost_per_unit | money }}</td></tr>
+            <tr class="sub"><td>Premium per month</td><td class="r num">{{ out.renovation.premium_per_month | money }}</td></tr>
+            <tr class="sub"><td>Pace</td><td class="r num">{{ out.renovation.pace_per_month | num(1) }} units / mo</td></tr>
+            <tr class="total"><td>Return on cost</td><td class="r num">{{ out.renovation.return_on_cost | pct }}</td></tr>
+          </tbody>
+        </table>
+        <div class="figure-strip cols-3">
+          <div><div class="eyebrow">Program</div><div class="figure num">{{ out.renovation.total_cost | money_m(2) }}</div></div>
+          <div><div class="eyebrow">Capital budget</div><div class="figure num">{{ out.sources_uses.capital_budget | money_m(2) }}</div></div>
+          <div><div class="eyebrow">Opex / unit</div><div class="figure num">{{ s.opex_per_unit | money }}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Extracted assumptions</div><div class="note">From Screen · {{ assumptions | length }} of {{ assumptions | length }} sourced</div></div>
+      <table>
+        <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
+        <tbody>
+          {% for a in assumptions %}
+          <tr{% if loop.index > 9 %} class="more" hidden{% endif %}><td>{{ a.assumption }}</td><td class="r num">{{ a.value }}</td><td class="src">{{ a.source }}</td><td><span class="conf {{ a.confidence | lower }}">{{ a.confidence }}</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="panel-foot">
+        <span>Low-confidence figures are flagged in the memo and tested in the downside case.</span>
+        <a href="#" class="text-link" onclick="for (const r of this.closest('.panel').querySelectorAll('tr.more')) r.hidden = !r.hidden; this.textContent = this.textContent.startsWith('Show') ? 'Show fewer' : 'Show all {{ assumptions | length }}'; return false;">Show all {{ assumptions | length }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="span-5 stack">
+    {% set su = out.sources_uses %}
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Sources and uses</div><div class="note">$ millions</div></div>
+      <table>
+        <tbody>
+          <tr class="sub"><td>Agency loan, {{ out.loan.ltv | pct }} LTV</td><td class="r num">{{ su.loan | millions }}</td><td class="r num src">{{ (su.loan / su.total_uses) | pct }}</td></tr>
+          <tr class="sub"><td>Equity</td><td class="r num">{{ su.equity | millions }}</td><td class="r num src">{{ (su.equity / su.total_uses) | pct }}</td></tr>
+          <tr class="total"><td>Total sources</td><td class="r num">{{ su.total_uses | millions }}</td><td class="r num">100.0%</td></tr>
+          <tr class="sub"><td>Purchase price</td><td class="r num">{{ su.purchase_price | millions }}</td><td class="r num src">{{ (su.purchase_price / su.total_uses) | pct }}</td></tr>
+          <tr class="sub"><td>Capital budget</td><td class="r num">{{ su.capital_budget | millions }}</td><td class="r num src">{{ (su.capital_budget / su.total_uses) | pct }}</td></tr>
+          <tr class="sub"><td>Closing costs</td><td class="r num">{{ su.closing_costs | millions }}</td><td class="r num src">{{ (su.closing_costs / su.total_uses) | pct }}</td></tr>
+          <tr class="sub"><td>Acquisition fee</td><td class="r num">{{ su.acquisition_fee | millions }}</td><td class="r num src">{{ (su.acquisition_fee / su.total_uses) | pct }}</td></tr>
+          <tr class="sub"><td>Loan fees</td><td class="r num">{{ su.loan_fees | millions }}</td><td class="r num src">{{ (su.loan_fees / su.total_uses) | pct }}</td></tr>
+          <tr class="total"><td>Total uses</td><td class="r num">{{ su.total_uses | millions }}</td><td class="r num">100.0%</td></tr>
+        </tbody>
+      </table>
+      <table style="margin-top: 14px;">
+        <thead><tr><th>Senior loan terms</th><th class="r"></th></tr></thead>
+        <tbody>
+          <tr class="sub"><td>Fixed rate</td><td class="r num">{{ out.loan.rate | pct(2) }}</td></tr>
+          <tr class="sub"><td>Interest only</td><td class="r num">{{ out.loan.io_months }} months · to {{ out.loan.io_expiry.strftime("%b %Y") }}</td></tr>
+          <tr class="sub"><td>Amortization</td><td class="r num">{{ out.loan.amortization_years }} years</td></tr>
+          <tr class="sub"><td>Term</td><td class="r num">{{ out.loan.term_months // 12 }} years · matures {{ out.loan.maturity.strftime("%b %Y") }}</td></tr>
+          <tr class="sub"><td>Annual debt service</td><td class="r num">{{ out.loan.annual_debt_service_io | money_m(2) }} I/O · {{ out.loan.annual_debt_service_amortizing | money_m(2) }} amortizing</td></tr>
+          <tr class="sub"><td>Sizing</td><td class="r num">LTV {{ out.loan.by_ltv | money_m }} · DSCR {{ out.loan.by_dscr | money_m }} · DY {{ out.loan.by_debt_yield | money_m }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">What breaks it</div><div class="note">Single-variable stress, loan held at {{ out.loan.amount | money_m }}</div></div>
+      <table>
+        <thead><tr><th>Stress</th><th class="r">Levered IRR</th><th class="r">DSCR, yr 1</th><th class="r">Minimum</th><th class="r">Covenant</th></tr></thead>
+        <tbody>
+          {% for row in stress %}
+          <tr class="sub"><td>{{ row.label }}</td><td class="r num {{ 'neg' if (row.levered_irr or 0) < threshold else '' }}">{{ row.levered_irr | pct }}</td><td class="r num">{{ row.dscr_year1 | mult }}</td><td class="r num">{{ row.min_dscr | mult }}</td><td class="r {{ 'pos' if row.holds else 'neg' }}">{{ 'Holds' if row.holds else 'Breach' }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel memo" id="memo">
+      <div class="panel-head"><div class="eyebrow">IC memo · draft from model</div><div class="note">Step 3 · Recommend</div></div>
+      <div class="memo-lead">{{ memo.recommendation }}</div>
+      <p class="memo-body">{% for sentence in memo.body %}{{ sentence }} {% endfor %}</p>
+      <div class="memo-cannot">
+        <div class="eyebrow" style="margin-bottom: 6px;">What the model cannot tell you</div>
+        <div class="memo-body">{% for item in memo.cannot %}{{ item }} {% endfor %}</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Waterfall</div><div class="note">$ millions · cash to equity through each tier</div></div>
+      <table>
+        <tbody>
+          {% for label, total in zip(out.waterfall.tier_labels, out.waterfall.tier_totals) %}
+          <tr class="sub"><td>{{ label }}</td><td class="r num">{{ total | millions(2) }}</td></tr>
+          {% endfor %}
+          <tr class="total"><td>Total to equity</td><td class="r num">{{ (out.waterfall.tier_totals | sum) | millions(2) }}</td></tr>
+        </tbody>
+      </table>
+      <div class="figure-strip cols-3">
+        <div><div class="eyebrow">LP IRR · multiple</div><div class="figure num">{{ out.returns.lp_irr | pct }} · {{ out.returns.lp_multiple | mult }}</div></div>
+        <div><div class="eyebrow">GP IRR · multiple</div><div class="figure num">{{ out.returns.gp_irr | pct }} · {{ out.returns.gp_multiple | mult }}</div></div>
+        <div><div class="eyebrow">Promote</div><div class="figure num">{{ out.returns.promote | money_m(2) }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="span-12">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Monitor · covenant tests</div><div class="note">Step 4 · Post-close, tested quarterly against underwriting · synthetic quarter two of year one</div></div>
+      <table>
+        <thead><tr><th>Test</th><th class="r">Covenant</th><th class="r">Underwritten</th><th class="r">Actual, Q2</th><th class="r">Cushion</th><th class="r">Status</th></tr></thead>
+        <tbody>
+          {% for row in monitor %}
+          <tr class="sub"><td>{{ row.test }}</td><td class="r num">{{ row.covenant }}</td><td class="r num">{{ row.underwritten }}</td><td class="r num">{{ row.actual }}</td><td class="r num">{{ row.cushion }}</td><td class="r {{ 'pos' if row.ok else 'warn' }}">{{ row.status }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="span-12">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Case comparison</div><div class="note">Downside holds the base loan; Lender caps LTV at 55%</div></div>
+      <table>
+        <thead><tr><th>Metric</th>{% for name in compare_names %}<th class="r">{{ name }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for label, values in compare %}
+          <tr class="sub"><td>{{ label }}</td>{% for name, v in zip(compare_names, values) %}<td class="r num{% if name == case %} active-col{% endif %}">{{ v }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

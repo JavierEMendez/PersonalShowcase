@@ -29,6 +29,86 @@ from core.copilot.inputs import (  # noqa: E402
     WaterfallTier,
 )
 
+# Screen output: the fifteen extracted assumptions with source and confidence (build step 6 makes
+# these live; until then they are the seed).
+ASSUMPTIONS: list[dict[str, str]] = [
+    {"assumption": "Asking price", "value": "$50.5M", "source": "OM p. 2", "confidence": "High"},
+    {"assumption": "Units", "value": "288", "source": "OM p. 3", "confidence": "High"},
+    {
+        "assumption": "In-place rent",
+        "value": "$1,440 / unit",
+        "source": "Rent roll",
+        "confidence": "High",
+    },
+    {"assumption": "Occupancy", "value": "94.1%", "source": "Rent roll", "confidence": "High"},
+    {
+        "assumption": "Market rent",
+        "value": "$1,511 / unit",
+        "source": "Comp survey, 8 properties",
+        "confidence": "Medium",
+    },
+    {
+        "assumption": "Renovation premium",
+        "value": "$145 / mo",
+        "source": "Renovated comps",
+        "confidence": "Medium",
+    },
+    {
+        "assumption": "Renovation cost",
+        "value": "$9,500 / unit",
+        "source": "Contractor bid",
+        "confidence": "Medium",
+    },
+    {
+        "assumption": "Agency loan rate",
+        "value": "5.75%",
+        "source": "Term sheet p. 1",
+        "confidence": "High",
+    },
+    {
+        "assumption": "Real estate taxes",
+        "value": "2.35% of 90% of price",
+        "source": "Appraisal district",
+        "confidence": "Low",
+    },
+    {
+        "assumption": "Other income",
+        "value": "$115 / unit / mo",
+        "source": "T-12",
+        "confidence": "High",
+    },
+    {
+        "assumption": "Controllable expenses",
+        "value": "$4,700 / unit",
+        "source": "T-12, buyer adjustments",
+        "confidence": "Medium",
+    },
+    {
+        "assumption": "Insurance",
+        "value": "$850 / unit",
+        "source": "Broker quote",
+        "confidence": "High",
+    },
+    {
+        "assumption": "Exit cap rate",
+        "value": "5.50%",
+        "source": "Comp set, 5 sales",
+        "confidence": "Medium",
+    },
+    {
+        "assumption": "Loan terms",
+        "value": "65% LTV · 1.25× · 7.5% DY · 36 mo I/O",
+        "source": "Term sheet p. 1",
+        "confidence": "High",
+    },
+    {
+        "assumption": "Replacement reserves",
+        "value": "$300 / unit",
+        "source": "Lender requirement",
+        "confidence": "High",
+    },
+]
+
 
 def base_inputs() -> CopilotInputs:
     return CopilotInputs(
@@ -166,6 +246,8 @@ def build() -> dict[str, object]:
         "name": "Sawyer Bend Apartments",
         "status": "Underwrite",
         "location": "Northwest Houston",
+        "facts": "288 units · Built 2016 · Northwest Houston · 94.1% occupied · 5-year hold",
+        "assumptions": ASSUMPTIONS,
         "cases": [
             {"name": "Base", "inputs": base.model_dump(mode="json")},
             {

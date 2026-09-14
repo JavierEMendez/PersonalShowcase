@@ -71,9 +71,20 @@ def years(months: int | None) -> str:
     return f"{months / 12:.1f} yrs"
 
 
+def field(value: float | int | None) -> str:
+    """Value for an editable input: separators above 999, no trailing zeros. 50000.0 -> 50,000."""
+    if value is None:
+        return ""
+    if float(value).is_integer():
+        return f"{value:,.0f}"
+    return f"{value:,.4f}".rstrip("0").rstrip(".")
+
+
 def register(env: Environment) -> None:
+    env.globals["zip"] = zip
     env.filters.update(
         {
+            "field": field,
             "num": num,
             "millions": millions,
             "money_m": money_m,

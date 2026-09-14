@@ -2,6 +2,99 @@
   "name": "Sawyer Bend Apartments",
   "status": "Underwrite",
   "location": "Northwest Houston",
+  "facts": "288 units \u00b7 Built 2016 \u00b7 Northwest Houston \u00b7 94.1% occupied \u00b7 5-year hold",
+  "assumptions": [
+    {
+      "assumption": "Asking price",
+      "value": "$50.5M",
+      "source": "OM p. 2",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Units",
+      "value": "288",
+      "source": "OM p. 3",
+      "confidence": "High"
+    },
+    {
+      "assumption": "In-place rent",
+      "value": "$1,440 / unit",
+      "source": "Rent roll",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Occupancy",
+      "value": "94.1%",
+      "source": "Rent roll",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Market rent",
+      "value": "$1,511 / unit",
+      "source": "Comp survey, 8 properties",
+      "confidence": "Medium"
+    },
+    {
+      "assumption": "Renovation premium",
+      "value": "$145 / mo",
+      "source": "Renovated comps",
+      "confidence": "Medium"
+    },
+    {
+      "assumption": "Renovation cost",
+      "value": "$9,500 / unit",
+      "source": "Contractor bid",
+      "confidence": "Medium"
+    },
+    {
+      "assumption": "Agency loan rate",
+      "value": "5.75%",
+      "source": "Term sheet p. 1",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Real estate taxes",
+      "value": "2.35% of 90% of price",
+      "source": "Appraisal district",
+      "confidence": "Low"
+    },
+    {
+      "assumption": "Other income",
+      "value": "$115 / unit / mo",
+      "source": "T-12",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Controllable expenses",
+      "value": "$4,700 / unit",
+      "source": "T-12, buyer adjustments",
+      "confidence": "Medium"
+    },
+    {
+      "assumption": "Insurance",
+      "value": "$850 / unit",
+      "source": "Broker quote",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Exit cap rate",
+      "value": "5.50%",
+      "source": "Comp set, 5 sales",
+      "confidence": "Medium"
+    },
+    {
+      "assumption": "Loan terms",
+      "value": "65% LTV \u00b7 1.25\u00d7 \u00b7 7.5% DY \u00b7 36 mo I/O",
+      "source": "Term sheet p. 1",
+      "confidence": "High"
+    },
+    {
+      "assumption": "Replacement reserves",
+      "value": "$300 / unit",
+      "source": "Lender requirement",
+      "confidence": "High"
+    }
+  ],
   "cases": [
     {
       "name": "Base",
