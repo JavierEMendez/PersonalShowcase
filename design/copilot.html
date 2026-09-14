@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1440">
+</head>
+<body>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #FAFAF7; color: #16191D; font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    a { color: #0F2A44; text-decoration: none; } a:hover { color: #1E6B48; text-decoration: underline; }
+    .serif { font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 6px 10px; text-align: left; vertical-align: baseline; }
+    td.r, th.r { text-align: right; }
+    thead th { white-space: nowrap; font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #6C7078; border-bottom: 1px solid #B8B5AC; }
+    tbody td { border-bottom: 1px solid #E6E4DE; }
+    tr.total td { border-top: 1px solid #16191D; border-bottom: 1px solid #16191D; font-weight: 600; }
+    tr.sub td { color: #3A4048; }
+    .pos { color: #1E6B48; } .neg { color: #9E3A2B; }
+    .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #6C7078; }
+
+  </style>
+
+<div style="width: 1440px; min-height: 1760px; background: #FAFAF7;">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 56px; background: #FFFFFF; border-bottom: 1px solid #DCDAD3;">
+  <div style="display: flex; align-items: center; gap: 36px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+  <div class="serif" style="font-size: 17px; font-weight: 600; letter-spacing: .02em; color: #16191D;">Mendez Valdez</div>
+  <span style="color: #6C7078; font-size: 13px;">/</span><span style="font-size: 13px; font-weight: 500; color: #16191D;">Deal-to-Portfolio Copilot</span>
+</div>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="display: flex; align-items: center; gap: 8px; color: #3A4048;"><span class="num" style="width: 20px; height: 20px; border-radius: 10px; background: #16191D; color: #FAFAF7; font-size: 11px; display: flex; align-items: center; justify-content: center;">1</span><span style="font-size: 13px; font-weight: 500;">Screen</span></div><div style="width: 28px; height: 1px; background: #DCDAD3;"></div><div style="display: flex; align-items: center; gap: 8px; color: #16191D;"><span class="num" style="width: 20px; height: 20px; border-radius: 10px; border: 1.5px solid #16191D; font-size: 11px; display: flex; align-items: center; justify-content: center;">2</span><span style="font-size: 13px; font-weight: 600; border-bottom: 2px solid #16191D; padding-bottom: 2px;">Underwrite</span></div><div style="width: 28px; height: 1px; background: #DCDAD3;"></div><div style="display: flex; align-items: center; gap: 8px; color: #6C7078;"><span class="num" style="width: 20px; height: 20px; border-radius: 10px; border: 1px solid #B8B5AC; font-size: 11px; display: flex; align-items: center; justify-content: center;">3</span><span style="font-size: 13px; font-weight: 500;">Recommend</span></div><div style="width: 28px; height: 1px; background: #DCDAD3;"></div><div style="display: flex; align-items: center; gap: 8px; color: #6C7078;"><span class="num" style="width: 20px; height: 20px; border-radius: 10px; border: 1px solid #B8B5AC; font-size: 11px; display: flex; align-items: center; justify-content: center;">4</span><span style="font-size: 13px; font-weight: 500;">Monitor</span></div>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500;">
+    <a href="#" style="padding: 7px 12px; border: 1px solid #DCDAD3; border-radius: 2px; color: #16191D;">Export model to Excel</a>
+    <a href="#" style="padding: 7px 12px; background: #0F2A44; color: #FAFAF7; border-radius: 2px;">Draft IC memo</a>
+  </div>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 26px 32px 0 32px;">
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <div class="eyebrow">Sample deal · Industrial · Acquisition</div>
+    <div style="display: flex; align-items: baseline; gap: 14px;">
+      <h1 class="serif" style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -.01em; line-height: 1.1;">Harbor Point Industrial</h1>
+      <div style="font-size: 14px; color: #6C7078;">312,000 SF · 3 buildings · Northwest Houston · 95.0% leased · 5-year hold</div>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+    <span class="eyebrow" style="margin-right: 6px;">Case</span>
+    <span style="padding: 6px 12px; border: 1px solid #16191D; border-radius: 2px; font-weight: 500;">Base</span>
+    <span style="padding: 6px 12px; border: 1px solid #DCDAD3; border-radius: 2px; color: #3A4048;">Downside</span>
+    <span style="padding: 6px 12px; border: 1px solid #DCDAD3; border-radius: 2px; color: #3A4048;">Lender</span>
+  </div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 0 18px; margin: 22px 32px 0 32px; border-top: 1px solid #16191D; border-bottom: 1px solid #E6E4DE;">
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Purchase price</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">$38.0M</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">$122 / SF · ask $41.6M</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Going-in cap</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">6.90%</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Year 1 NOI $2.62M</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Levered IRR</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">12.8%</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Unlevered 8.9%</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Equity multiple</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">1.73×</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">On $15.2M equity</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">DSCR, year 1</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #1E6B48; letter-spacing: -.01em;">1.53×</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Covenant 1.25×</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">LTV</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">62.0%</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Debt yield 11.1%</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Exit cap</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">6.90%</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Flat to going-in</div>
+</div>
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 14px 0; border-right: 1px solid #E6E4DE;">
+  <div class="eyebrow">Exit value</div>
+  <div class="serif num" style="font-size: 26px; font-weight: 500; line-height: 1.1; color: #16191D; letter-spacing: -.01em;">$44.0M</div>
+  <div style="font-size: 12px; color: #6C7078; margin-top: 2px;">Year 6 NOI / exit cap</div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; padding: 22px 32px 0 32px;">
+  <div style="grid-column: span 7; display: flex; flex-direction: column; gap: 20px;">
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+    <div class="eyebrow">Net operating income</div>
+    <div style="font-size: 12px; color: #6C7078;">$ thousands · 3.0% rent growth · 5.0% vacancy and credit loss</div>
+  </div>
+  <table>
+    <thead><tr><th>Line</th><th class="r">Year 1</th><th class="r">Year 2</th><th class="r">Year 3</th><th class="r">Year 4</th><th class="r">Year 5</th></tr></thead>
+    <tbody>
+      <tr class="sub"><td>Gross potential rent</td><td class="r num">2,839</td><td class="r num">2,924</td><td class="r num">3,012</td><td class="r num">3,102</td><td class="r num">3,195</td></tr>
+      <tr class="sub"><td style="padding-left: 24px;">Vacancy and credit loss</td><td class="r num">(142)</td><td class="r num">(146)</td><td class="r num">(151)</td><td class="r num">(155)</td><td class="r num">(160)</td></tr>
+      <tr class="total"><td>Effective gross revenue</td><td class="r num">2,697</td><td class="r num">2,778</td><td class="r num">2,861</td><td class="r num">2,947</td><td class="r num">3,035</td></tr>
+      <tr class="sub"><td style="padding-left: 24px;">Non-reimbursed expenses</td><td class="r num">(77)</td><td class="r num">(79)</td><td class="r num">(81)</td><td class="r num">(84)</td><td class="r num">(86)</td></tr>
+      <tr class="total"><td>Net operating income</td><td class="r num">2,620</td><td class="r num">2,699</td><td class="r num">2,780</td><td class="r num">2,863</td><td class="r num">2,949</td></tr>
+      <tr class="sub"><td style="padding-left: 24px;">Debt service</td><td class="r num">(1,717)</td><td class="r num">(1,717)</td><td class="r num">(1,717)</td><td class="r num">(1,717)</td><td class="r num">(1,717)</td></tr>
+      <tr class="sub"><td style="padding-left: 24px;">Capital reserves</td><td class="r num">(62)</td><td class="r num">(62)</td><td class="r num">(62)</td><td class="r num">(62)</td><td class="r num">(62)</td></tr>
+      <tr class="total"><td>Cash flow after debt service</td><td class="r num">841</td><td class="r num">920</td><td class="r num">1,001</td><td class="r num">1,084</td><td class="r num">1,170</td></tr>
+      <tr class="sub"><td>DSCR</td><td class="r num">1.53×</td><td class="r num">1.57×</td><td class="r num">1.62×</td><td class="r num">1.67×</td><td class="r num">1.72×</td></tr>
+      <tr class="sub"><td>Cash-on-cash</td><td class="r num">5.5%</td><td class="r num">6.1%</td><td class="r num">6.6%</td><td class="r num">7.1%</td><td class="r num">7.7%</td></tr>
+    </tbody>
+  </table>
+</div>
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+    <div class="eyebrow">Extracted assumptions</div>
+    <div style="font-size: 12px; color: #6C7078;">From Screen · 15 of 15 sourced</div>
+  </div>
+  <table>
+    <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td>Asking price</td><td class="r num">$41.6M</td><td style="color: #6C7078;">OM p. 2</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>Rentable area</td><td class="r num">312,000 SF</td><td style="color: #6C7078;">OM p. 4</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>In-place rent, NNN</td><td class="r num">$9.10 / SF</td><td style="color: #6C7078;">Rent roll</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>Occupancy</td><td class="r num">95.0%</td><td style="color: #6C7078;">Rent roll</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>WALT</td><td class="r num">4.2 yrs</td><td style="color: #6C7078;">Rent roll</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>Market rent growth</td><td class="r num">3.0% / yr</td><td style="color: #6C7078;">Analyst input</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #8A6A1A;"></span>Medium</span></td></tr>
+      <tr><td>Exit cap rate</td><td class="r num">6.90%</td><td style="color: #6C7078;">Comp set, 6 sales</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #8A6A1A;"></span>Medium</span></td></tr>
+      <tr><td>Senior loan rate</td><td class="r num">6.10%</td><td style="color: #6C7078;">Term sheet p. 1</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #1E6B48;"></span>High</span></td></tr>
+      <tr><td>Capital reserves</td><td class="r num">$0.20 / SF</td><td style="color: #6C7078;">OM p. 11</td><td><span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 4px; background: #9E3A2B;"></span>Low</span></td></tr>
+    </tbody>
+  </table>
+  <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #6C7078;">
+    <span>Low-confidence figures are flagged in the memo and tested in the downside case.</span>
+    <a href="#">Show all 15</a>
+  </div>
+</div></div>
+  <div style="grid-column: span 5; display: flex; flex-direction: column; gap: 20px;">
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+    <div class="eyebrow">Sources and uses</div>
+    <div style="font-size: 12px; color: #6C7078;">$ millions</div>
+  </div>
+  <table>
+    <tbody>
+      <tr class="sub"><td>Senior loan, 62.0% LTV</td><td class="r num">23.6</td><td class="r num" style="color: #6C7078;">60.8%</td></tr>
+      <tr class="sub"><td>Equity</td><td class="r num">15.2</td><td class="r num" style="color: #6C7078;">39.2%</td></tr>
+      <tr class="total"><td>Total sources</td><td class="r num">38.8</td><td class="r num">100.0%</td></tr>
+      <tr class="sub"><td>Purchase price</td><td class="r num">38.0</td><td class="r num" style="color: #6C7078;">97.9%</td></tr>
+      <tr class="sub"><td>Closing costs</td><td class="r num">0.5</td><td class="r num" style="color: #6C7078;">1.3%</td></tr>
+      <tr class="sub"><td>Loan fees</td><td class="r num">0.3</td><td class="r num" style="color: #6C7078;">0.8%</td></tr>
+      <tr class="total"><td>Total uses</td><td class="r num">38.8</td><td class="r num">100.0%</td></tr>
+    </tbody>
+  </table>
+  <table style="margin-top: 14px;">
+    <thead><tr><th>Senior loan terms</th><th class="r"></th></tr></thead>
+    <tbody>
+      <tr class="sub"><td>Fixed rate</td><td class="r num">6.10%</td></tr>
+      <tr class="sub"><td>Amortization</td><td class="r num">30 years</td></tr>
+      <tr class="sub"><td>Term</td><td class="r num">5 years · matures Mar 2031</td></tr>
+      <tr class="sub"><td>Annual debt service</td><td class="r num">$1.72M</td></tr>
+    </tbody>
+  </table>
+</div>
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+    <div class="eyebrow">What breaks it</div>
+    <div style="font-size: 12px; color: #6C7078;">Single-variable stress, base case held otherwise</div>
+  </div>
+  <table>
+    <thead><tr><th>Stress</th><th class="r">Levered IRR</th><th class="r">DSCR, yr 1</th><th class="r">Covenant</th></tr></thead>
+    <tbody>
+      <tr class="sub"><td>Exit cap 7.50%</td><td class="r num">9.5%</td><td class="r num">1.53×</td><td class="r pos">Holds</td></tr>
+      <tr class="sub"><td>Occupancy 85%</td><td class="r num">9.0%</td><td class="r num">1.36×</td><td class="r pos">Holds</td></tr>
+      <tr class="sub"><td>Largest tenant vacates, 12-month downtime</td><td class="r num">10.5%</td><td class="r num" style="white-space: nowrap;">0.97× yr 2</td><td class="r neg">Breach</td></tr>
+      <tr class="sub"><td>Loan rate 6.85%</td><td class="r num">11.9%</td><td class="r num">1.41×</td><td class="r pos">Holds</td></tr>
+      <tr class="sub"><td>Rent growth 0%</td><td class="r num">5.5%</td><td class="r num">1.53×</td><td class="r pos">Holds</td></tr>
+    </tbody>
+  </table>
+</div>
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <div class="eyebrow">IC memo · draft from model</div>
+    <div style="font-size: 12px; color: #6C7078;">Step 3 · Recommend</div>
+  </div>
+  <div class="serif" style="font-size: 17px; font-weight: 500; line-height: 1.35;">Recommendation: bid $38.0M, subject to tenant estoppels and a reserve study. Do not pursue at the $41.6M ask.</div>
+  <p style="margin: 0; font-size: 13px; color: #3A4048; line-height: 1.55; text-wrap: pretty;">At $38.0M the asset clears the 12% levered return threshold with 80 bps of cushion and a year 1 DSCR of 1.53× against a 1.25× covenant. At the $41.6M ask the levered IRR falls to 4.9%. Returns are most sensitive to rent growth: at 0% growth the IRR is 5.5%. The largest tenant at 38% of rent is the concentration risk; a 12-month downtime on that space breaches the DSCR covenant in year 2.</p>
+  <div style="border-top: 1px solid #E6E4DE; padding-top: 10px;">
+    <div class="eyebrow" style="margin-bottom: 6px;">What the model cannot tell you</div>
+    <div style="font-size: 13px; color: #3A4048; line-height: 1.55;">Roof and pavement condition (reserve figure is low confidence). Tenant renewal intent. Whether the six-sale comp set reflects the current rate environment. The seller's appetite for a bid 8.7% below ask.</div>
+  </div>
+</div></div>
+</div>
+<div style="padding: 20px 32px 32px 32px;">
+<div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 18px 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+    <div class="eyebrow">Monitor · covenant tests</div>
+    <div style="font-size: 12px; color: #6C7078;">Step 4 · Post-close, tested quarterly against underwriting</div>
+  </div>
+  <table>
+    <thead><tr><th>Test</th><th class="r">Covenant</th><th class="r">Underwritten</th><th class="r">Actual, Q2</th><th class="r">Cushion</th><th class="r">Status</th></tr></thead>
+    <tbody>
+      <tr class="sub"><td>DSCR</td><td class="r num">1.25×</td><td class="r num">1.53×</td><td class="r num">1.56×</td><td class="r num">0.31×</td><td class="r pos">In compliance</td></tr>
+      <tr class="sub"><td>Debt yield</td><td class="r num">9.0%</td><td class="r num">11.1%</td><td class="r num">11.3%</td><td class="r num">230 bps</td><td class="r pos">In compliance</td></tr>
+      <tr class="sub"><td>Occupancy</td><td class="r num">85.0%</td><td class="r num">95.0%</td><td class="r num">95.0%</td><td class="r num">1,000 bps</td><td class="r pos">In compliance</td></tr>
+      <tr class="sub"><td>Loan maturity</td><td class="r num">Mar 2031</td><td class="r num"></td><td class="r num">54 months</td><td class="r num"></td><td class="r" style="color: #3A4048;">Refinance review at 24 months</td></tr>
+    </tbody>
+  </table>
+</div></div></div>
+</body>
+</html>

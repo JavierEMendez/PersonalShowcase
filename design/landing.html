@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1440">
+</head>
+<body>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #FAFAF7; color: #16191D; font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    a { color: #0F2A44; text-decoration: none; } a:hover { color: #1E6B48; text-decoration: underline; }
+    .serif { font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 6px 10px; text-align: left; vertical-align: baseline; }
+    td.r, th.r { text-align: right; }
+    thead th { white-space: nowrap; font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #6C7078; border-bottom: 1px solid #B8B5AC; }
+    tbody td { border-bottom: 1px solid #E6E4DE; }
+    tr.total td { border-top: 1px solid #16191D; border-bottom: 1px solid #16191D; font-weight: 600; }
+    tr.sub td { color: #3A4048; }
+    .pos { color: #1E6B48; } .neg { color: #9E3A2B; }
+    .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #6C7078; }
+
+  </style>
+
+<div style="width: 1440px; min-height: 3000px; background: #FAFAF7;">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 22px 72px; border-bottom: 1px solid #E6E4DE;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+  <div class="serif" style="font-size: 17px; font-weight: 600; letter-spacing: .02em; color: #16191D;">Mendez Valdez</div>
+  
+</div>
+  <div style="display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 500;">
+    <a href="#">Underwriting</a>
+    <a href="#">Copilot</a>
+    <a href="#">Method</a>
+    <a href="#">GitHub</a>
+    <a href="#" style="padding: 9px 16px; border: 1px solid #16191D; color: #16191D; border-radius: 2px;">Open the demo</a>
+  </div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px; padding: 96px 72px 72px 72px;">
+  <div style="grid-column: span 7; display: flex; flex-direction: column; gap: 28px;">
+    <div class="eyebrow">Underwriting and portfolio systems</div>
+    <h1 class="serif" style="margin: 0; font-size: 56px; font-weight: 500; line-height: 1.08; letter-spacing: -.015em; color: #16191D; text-wrap: pretty;">I build transaction tools that improve decision making.</h1>
+    <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #3A4048; max-width: 620px; text-wrap: pretty;">Two working systems for residential land and income-property transactions. Each takes deal inputs, returns a full pro forma, and produces the memo a committee would read. Built in Python, deployed on Railway, developed with Claude Code.</p>
+    <div style="display: flex; align-items: center; gap: 24px; margin-top: 8px;">
+      <a href="#" style="padding: 13px 22px; background: #0F2A44; color: #FAFAF7; border-radius: 2px; font-weight: 500; font-size: 14px;">Open the underwriting demo</a>
+      <a href="#" style="font-size: 14px; font-weight: 500;">Read how it was built</a>
+    </div>
+  </div>
+  <div style="grid-column: span 5; display: flex; flex-direction: column; justify-content: flex-end;">
+    <div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div class="eyebrow">Sample deal · Cypress Ridge</div>
+        <div style="font-size: 12px; color: #6C7078;">640 ac · Waller County, TX</div>
+      </div>
+      <table>
+        <tbody>
+          <tr class="sub"><td>Total revenue</td><td class="r num">$412.6M</td></tr>
+          <tr class="sub"><td>Gross costs</td><td class="r num">318.4</td></tr>
+          <tr class="total"><td>Gross margin</td><td class="r num">$94.2M</td></tr>
+          <tr class="sub"><td>Net margin</td><td class="r num">71.5</td></tr>
+          <tr class="sub"><td>Unlevered IRR</td><td class="r num">18.4%</td></tr>
+          <tr class="sub"><td>Total lots</td><td class="r num">2,412</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size: 12px; color: #6C7078;">Synthetic tract. Figures in $ millions unless noted.</div>
+    </div>
+  </div>
+</div>
+<div style="padding: 0 72px 88px 72px;">
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 1px solid #16191D;">
+    <div style="padding: 20px 20px 0 0; border-right: 1px solid #E6E4DE;"><div class="serif num" style="font-size: 30px; font-weight: 500;">10 sheets</div><div style="font-size: 13px; color: #3A4048; margin-top: 4px;">Excel land model ported to Python and reconciled to the workbook by test.</div></div>
+    <div style="padding: 20px 20px 0 20px; border-right: 1px solid #E6E4DE;"><div class="serif num" style="font-size: 30px; font-weight: 500;">360 months</div><div style="font-size: 13px; color: #3A4048; margin-top: 4px;">Monthly pro forma with revenue, cost, and cash flow by line item.</div></div>
+    <div style="padding: 20px 20px 0 20px; border-right: 1px solid #E6E4DE;"><div class="serif num" style="font-size: 30px; font-weight: 500;">49 cells</div><div style="font-size: 13px; color: #3A4048; margin-top: 4px;">Two-axis sensitivity grid, up to 7 × 7, recalculated on the server in one request.</div></div>
+    <div style="padding: 20px 0 0 20px;"><div class="serif num" style="font-size: 30px; font-weight: 500;">Live formulas</div><div style="font-size: 13px; color: #3A4048; margin-top: 4px;">Excel export keeps every formula live so reviewers can audit in their own tool.</div></div>
+  </div>
+</div><div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px; padding: 72px 72px; border-top: 1px solid #E6E4DE;">
+  <div style="grid-column: span 5; display: flex; flex-direction: column; gap: 20px;">
+    <div class="eyebrow">01 · Residential land</div>
+    <h2 class="serif" style="margin: 0; font-size: 34px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em;">MPC Underwriting</h2>
+    <p style="margin: 0; font-size: 16px; color: #3A4048; line-height: 1.55; text-wrap: pretty;">A master planned community land model that runs in the browser. Enter tract, cost, and revenue inputs and the engine returns developable acreage after net-outs, lot allocation by front footage, section pacing, takedown revenue with builder earnest money, MUD and WCID reimbursements, and an unlevered IRR on the closing-date convention. Scenarios can be saved, compared, and promoted.</p>
+    <table style="margin-top: 4px;"><tbody><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Inputs</td><td style="padding-right: 0;">Tract, cost, revenue, and lookup tables</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Returns</td><td style="padding-right: 0;">Monthly pro forma, margins, IRR, per-acre and per-lot metrics</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Analysis</td><td style="padding-right: 0;">Named scenarios, two-axis sensitivity grid, change history</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Export</td><td style="padding-right: 0;">Excel with live formulas, PDF summary</td></tr></tbody></table>
+    <a href="#" style="font-size: 14px; font-weight: 500; margin-top: 4px;">Open MPC Underwriting →</a>
+  </div>
+  <div style="grid-column: span 7;">
+    <div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 22px 24px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
+  <div class="eyebrow">Sensitivity · Unlevered IRR</div>
+  <div style="font-size: 12px; color: #6C7078;">Lot price per front foot × sales pace</div>
+</div>
+<table>
+  <thead><tr><th>Pace (lots / mo)</th><th class="r">$1,620</th><th class="r">$1,710</th><th class="r">$1,800</th><th class="r">$1,890</th><th class="r">$1,980</th></tr></thead>
+  <tbody>
+    <tr><td class="num">8.4</td><td class="r num" style="background: #DCE4EC;">17.9%</td><td class="r num" style="background: #C9D5E1;">20.1%</td><td class="r num" style="background: #B3C4D5;">22.3%</td><td class="r num" style="background: #9DB2C8; color: #FAFAF7;">24.4%</td><td class="r num" style="background: #7F9AB6; color: #FAFAF7;">26.5%</td></tr>
+    <tr><td class="num">7.7</td><td class="r num" style="background: #E9EEF3;">16.6%</td><td class="r num" style="background: #DCE4EC;">18.7%</td><td class="r num" style="background: #C9D5E1;">20.6%</td><td class="r num" style="background: #B3C4D5;">22.6%</td><td class="r num" style="background: #9DB2C8; color: #FAFAF7;">24.5%</td></tr>
+    <tr><td class="num">7.0</td><td class="r num" style="background: #F2F5F8;">14.9%</td><td class="r num" style="background: #E9EEF3;">16.7%</td><td class="r num" style="background: #DCE4EC; outline: 1.5px solid #16191D; outline-offset: -1.5px; font-weight: 600;">18.4%</td><td class="r num" style="background: #C9D5E1;">20.2%</td><td class="r num" style="background: #B3C4D5;">21.9%</td></tr>
+    <tr><td class="num">6.3</td><td class="r num" style="background: #F7F9FA;">13.1%</td><td class="r num" style="background: #F2F5F8;">14.6%</td><td class="r num" style="background: #E9EEF3;">16.1%</td><td class="r num" style="background: #DCE4EC;">17.6%</td><td class="r num" style="background: #C9D5E1;">19.1%</td></tr>
+    <tr><td class="num">5.6</td><td class="r num" style="background: #FBFCFC;">11.0%</td><td class="r num" style="background: #F7F9FA;">12.4%</td><td class="r num" style="background: #F2F5F8;">13.7%</td><td class="r num" style="background: #E9EEF3;">15.0%</td><td class="r num" style="background: #DCE4EC;">16.3%</td></tr>
+  </tbody>
+</table>
+<div style="font-size: 12px; color: #6C7078; margin-top: 10px;">Base case outlined. Price in 5% steps, pace in 10% steps.</div></div>
+  </div></div><div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px; padding: 72px 72px; border-top: 1px solid #E6E4DE;">
+  <div style="grid-column: span 7;">
+    <div style="border: 1px solid #DCDAD3; background: #FFFFFF; padding: 22px 24px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
+  <div class="eyebrow">Extracted assumptions · Harbor Point Industrial</div>
+  <div style="font-size: 12px; color: #6C7078;">Source cited for every figure</div>
+</div>
+<table>
+  <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
+  <tbody>
+    <tr><td>Rentable area</td><td class="r num">312,000 SF</td><td style="color: #6C7078;">OM p. 4</td><td>High</td></tr>
+    <tr><td>In-place rent, NNN</td><td class="r num">$9.10 / SF</td><td style="color: #6C7078;">Rent roll</td><td>High</td></tr>
+    <tr><td>Occupancy</td><td class="r num">95.0%</td><td style="color: #6C7078;">Rent roll</td><td>High</td></tr>
+    <tr><td>Market rent growth</td><td class="r num">3.0% / yr</td><td style="color: #6C7078;">Analyst input</td><td>Medium</td></tr>
+    <tr><td>Exit cap rate</td><td class="r num">6.90%</td><td style="color: #6C7078;">Comp set, 6 sales</td><td>Medium</td></tr>
+    <tr><td>Senior loan rate</td><td class="r num">6.10%</td><td style="color: #6C7078;">Term sheet p. 1</td><td>High</td></tr>
+  </tbody>
+</table>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 18px; border-top: 1px solid #16191D;">
+  <div style="padding: 12px 12px 0 0; border-right: 1px solid #E6E4DE;"><div class="eyebrow">Levered IRR</div><div class="serif num" style="font-size: 24px; font-weight: 500;">12.8%</div></div>
+  <div style="padding: 12px 12px 0 12px; border-right: 1px solid #E6E4DE;"><div class="eyebrow">Equity multiple</div><div class="serif num" style="font-size: 24px; font-weight: 500;">1.73×</div></div>
+  <div style="padding: 12px 12px 0 12px; border-right: 1px solid #E6E4DE;"><div class="eyebrow">DSCR, year 1</div><div class="serif num" style="font-size: 24px; font-weight: 500;">1.53×</div></div>
+  <div style="padding: 12px 0 0 12px;"><div class="eyebrow">Bid · ask $41.6M</div><div class="serif num" style="font-size: 24px; font-weight: 500;">$38.0M</div></div>
+</div></div>
+  </div>
+  <div style="grid-column: span 5; display: flex; flex-direction: column; gap: 20px;">
+    <div class="eyebrow">02 · Income property</div>
+    <h2 class="serif" style="margin: 0; font-size: 34px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em;">Deal-to-Portfolio Copilot</h2>
+    <p style="margin: 0; font-size: 16px; color: #3A4048; line-height: 1.55; text-wrap: pretty;">One workflow from offering memo to asset management. Screen extracts assumptions from the OM and rent roll with a source citation for each figure. Underwrite builds the NOI, capital stack, and stress table and exports the model to Excel. Recommend drafts the investment committee memo from the model. Monitor tracks covenants, DSCR, and maturities after close.</p>
+    <table style="margin-top: 4px;"><tbody><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Screen</td><td style="padding-right: 0;">Assumptions extracted with citations and confidence, checked against an eval set</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Underwrite</td><td style="padding-right: 0;">NOI build, sources and uses, debt sizing, sensitivities, downside case</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Recommend</td><td style="padding-right: 0;">IC memo that cites the model and states what the model cannot tell you</td></tr><tr class="sub"><td style="padding-left: 0; width: 42%; color: #6C7078;">Monitor</td><td style="padding-right: 0;">Covenant tests, DSCR and debt yield, maturity ladder, variance flags</td></tr></tbody></table>
+    <a href="#" style="font-size: 14px; font-weight: 500; margin-top: 4px;">Open the Copilot →</a>
+  </div></div>
+<div style="padding: 72px 72px 80px 72px; border-top: 1px solid #E6E4DE; background: #FFFFFF;">
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px;">
+    <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 16px;">
+      <div class="eyebrow">Method</div>
+      <h2 class="serif" style="margin: 0; font-size: 34px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em;">How it was built</h2>
+      <p style="margin: 0; font-size: 16px; color: #3A4048; line-height: 1.55; text-wrap: pretty;">The code was written with Claude Code against a written standard. The standard, the decision log, and the tests are in the repository.</p>
+    </div>
+    <div style="grid-column: span 8;">
+      <table>
+        <tbody>
+          <tr><td style="width: 26%; padding: 14px 10px 14px 0; font-weight: 500;">Reconciled to Excel</td><td style="padding: 14px 0; color: #3A4048;">Every model function has a test that reproduces a hand-checked case from the original workbook. A change that breaks reconciliation fails the build.</td></tr>
+          <tr><td style="padding: 14px 10px 14px 0; font-weight: 500;">Decisions on record</td><td style="padding: 14px 0; color: #3A4048;">Product and architecture decisions are dated entries in docs/decisions.md: what was chosen, why, and what was rejected.</td></tr>
+          <tr><td style="padding: 14px 10px 14px 0; font-weight: 500;">Evaluated, then trusted</td><td style="padding: 14px 0; color: #3A4048;">The two steps that use a language model, extraction and memo drafting, ship with eval sets and a written list of failure modes. Model math never runs through a language model.</td></tr>
+          <tr><td style="padding: 14px 10px 14px 0; font-weight: 500;">Synthetic by design</td><td style="padding: 14px 0; color: #3A4048;">Demo deals are invented. Market inputs come from public sources: FRED, Census, appraisal district records, and SEC filings. No client data is used.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div style="padding: 72px 72px 64px 72px; border-top: 1px solid #E6E4DE;">
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px;">
+    <div style="grid-column: span 7; display: flex; flex-direction: column; gap: 16px;">
+      <div class="eyebrow">About</div>
+      <h2 class="serif" style="margin: 0; font-size: 34px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em;">Javier Mendez Valdez</h2>
+      <p style="margin: 0; font-size: 16px; color: #3A4048; line-height: 1.55; max-width: 640px; text-wrap: pretty;">Real estate investment and development in Houston. Land acquisition and underwriting, capital raises, investor relations, and deal structuring for master planned communities and commercial projects. Part-time MBA, Rice University. These tools started as internal systems and were rebuilt here on synthetic data.</p>
+    </div>
+    <div style="grid-column: span 5; display: flex; flex-direction: column; justify-content: flex-end;">
+      <table>
+        <tbody>
+          <tr class="sub"><td style="padding-left: 0; color: #6C7078; width: 30%;">LinkedIn</td><td style="padding-right: 0;"><a href="#">linkedin.com/in/javieremendez</a></td></tr>
+          <tr class="sub"><td style="padding-left: 0; color: #6C7078;">GitHub</td><td style="padding-right: 0;"><a href="#">github.com/JavierEMendez</a></td></tr>
+          <tr class="sub"><td style="padding-left: 0; color: #6C7078;">Email</td><td style="padding-right: 0;"><a href="#">[EMAIL]</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 72px 28px 72px; border-top: 1px solid #E6E4DE; font-size: 12px; color: #6C7078;">
+  <div>Demos run on synthetic deals with public market data. No client information.</div>
+  <div>Python · FastAPI · Postgres · Railway · Claude Code</div>
+</div></div>
+</body>
+</html>
