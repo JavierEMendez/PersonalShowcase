@@ -113,7 +113,7 @@ No other secrets. Nothing is written to disk at runtime.
   `evals/screen/expected.json`; a test checks the two agree.
 - **Questions**: `QUESTIONS` in `core/copilot/screen.py`.
 - **Memo sentences**: `TemplateWriter` in `core/copilot/memo.py`; placeholders in `build_facts`.
-- **Deck layout**: `core/copilot/deck.py`. Drop the four TTF files named in `FONT_FILES` into `app/static/fonts/` and the PDF switches from the core fonts to the site's typefaces.
+- **Deck layout**: `core/copilot/deck.py`. The site typefaces are bundled in `app/static/fonts/` (OFL) and embedded in the PDF.
 - **Copy rules**: `core/copy_rules.py`, used by the linter and the memo checks.
 
 ## Where things live
