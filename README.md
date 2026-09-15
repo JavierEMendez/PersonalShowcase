@@ -8,7 +8,7 @@ Live site: https://javiermendez.up.railway.app
 
 ## What is here
 
-**Land Underwriting.** A Python port of the master-planned-community land model I use at work: 640 acres, 21 cost lines, a 360-month ledger, unlevered XIRR. On the sample deal it matches the source engine to the dollar on every line and every month, and the XIRR to ten decimals, across three scenarios. You can edit every input in the browser, save scenarios, move the sensitivity grid across six drivers, and export the model to Excel with live formulas.
+**Land Underwriting.** A Python port of the master-planned-community land model I use at work: 640 acres, 21 cost lines, a 360-month ledger, unlevered XIRR. On the sample deal it matches the source engine to the dollar on every line and every month, and the XIRR to ten decimals, across three scenarios. You can edit every input in the browser, save scenarios, move the sensitivity grid across six drivers, and download the IC memo as a two-page PDF with the recommended land price solved from a 15% unlevered IRR floor.
 
 **Multifamily Copilot.** Upload a broker package (OM, rent roll, T-12). The tool pulls out the model inputs it can find, each with a page, a quote and a confidence grade, then asks about what the documents leave open: the bid, the renovation scope, the loan terms, the tax reassessment. Answers flow into a monthly acquisition model with loan sizing, a stress table and an LP/GP waterfall. Then it drafts the IC memo.
 
@@ -16,7 +16,7 @@ Live site: https://javiermendez.up.railway.app
 
 ## Check it in five minutes
 
-1. Open [Land Underwriting](https://javiermendez.up.railway.app/underwriting). Change the lot price on the Revenue tab and watch the strip, the cash flow and the grid update. Export and open the Summary sheet: the XIRR is a formula over the months, rather than a pasted value.
+1. Open [Land Underwriting](https://javiermendez.up.railway.app/underwriting). Change the lot price on the Revenue tab and watch the strip, the cash flow and the grid update. Download the IC memo: the recommended price per acre moves with your edits.
 2. Open [Screen](https://javiermendez.up.railway.app/copilot/screen) and click "Use the sample documents". Fifteen figures come back with sources. Set insurance to the broker quote, click "Run the underwriting", and a Screened case shows up next to Base, Downside and Lender.
 3. On the underwrite screen, read the stress table and the memo. Click "Draft IC memo" to have it rewritten. Download it as markdown.
 4. Skim [docs/decisions.md](docs/decisions.md). Every trade-off is in there with the date and what I turned down, including a full port of the multifamily workbook that I decided was not worth it.
@@ -34,9 +34,9 @@ python -m evals.memo.run
 ```
 app/              FastAPI routes, Jinja templates, one stylesheet; sessions in memory per browser
 core/underwriting Land model: netouts, land, infrastructure, allocation, sections, revenue,
-                  assessed value and bonds, opex, summary, XIRR, sensitivity, Excel export
+                  assessed value and bonds, opex, summary, XIRR, sensitivity, memo, deck
 core/copilot      Multifamily model: rent roll, renovation, operations, debt, capital stack,
-                  waterfall, sensitivity, Excel export; document readers, extraction, memo
+                  waterfall, sensitivity; document readers, extraction, memo, deck
 evals/            Extraction eval (15 cited figures) and memo eval (fidelity, structure, copy rules)
 data/             Synthetic seeds: Cypress Ridge (land), Sawyer Bend (multifamily) and its broker package
 scripts/          Seed generators, the synthetic document generator, the copy linter

@@ -35,7 +35,7 @@ Executive, bank style. An institutional IC memo and a lender term sheet, rendere
 - Server-rendered Jinja2 templates with HTMX for recalculation and scenario switching. Add JavaScript only for the sensitivity grid and small inline bar cells. No SPA framework.
 - Model logic in `core/` as pure Python with typed inputs (pydantic) and outputs, fully unit tested, no framework imports. The web layer calls into it.
 - `core/underwriting/` is a clean port of EmberApps `calc.py`. Keep the calculation order and formula comments; drop the Excel cell references; rename to clear snake_case; keep the numerical results identical to a reference run (see `tests/fixtures/`).
-- Excel export via openpyxl with live formulas built from scratch (do not ship Ember_Template.xlsx). One workbook: Inputs, Pro Forma (monthly), Summary, Sensitivity.
+- No Excel exports; each tool ships an IC memo PDF instead (do not ship Ember_Template.xlsx). One workbook: Inputs, Pro Forma (monthly), Summary, Sensitivity.
 - Claude API used only in `core/copilot/screen.py` (assumption extraction with citations and confidence) and `core/copilot/memo.py` (IC memo generation). Both have eval sets in `evals/` and a documented failure-mode section. Model math never runs through a language model.
 - GitHub Actions: ruff, mypy, pytest, eval smoke test on every PR. Railway deploys from `main`. Secrets only in Railway environment variables; a missing secret fails startup with a clear message, never a fallback value.
 

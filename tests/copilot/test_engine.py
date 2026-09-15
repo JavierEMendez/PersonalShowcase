@@ -1,15 +1,12 @@
 """The multifamily engine on Sawyer Bend: headline ranges, footing, cases, stresses, fixture."""
 
-import io
 import json
 from pathlib import Path
 from typing import Any
 
 import pytest
-from openpyxl import load_workbook
 
 from core.copilot.engine import run
-from core.copilot.excel import export_workbook
 from core.copilot.inputs import CopilotInputs
 from core.copilot.sensitivity import at_price, stress_table
 from core.copilot.summary import CopilotOutputs
@@ -170,21 +167,3 @@ def assert_matches(actual: Any, expected: Any, path: str) -> None:
 def test_base_matches_fixture(base: CopilotOutputs) -> None:
     expected = json.loads(FIXTURE.read_text(encoding="utf-8"))
     assert_matches(base.model_dump(mode="json"), expected, "outputs")
-
-
-def test_export_workbook_has_live_formulas(
-    sawyer_base: CopilotInputs, base: CopilotOutputs
-) -> None:
-    wb = load_workbook(io.BytesIO(export_workbook(sawyer_base, base, "Base")))
-    assert wb.sheetnames == ["Inputs", "Summary", "Pro forma", "Annual", "Waterfall"]
-    summary = wb["Summary"]
-    assert str(summary["B6"].value).startswith("=Annual!")  # year 1 NOI
-    assert str(summary["B7"].value).startswith("=")  # going-in cap
-    annual = wb["Annual"]
-    assert any(
-        "SUMIF(" in str(c.value) for row in annual.iter_rows(min_row=5, max_row=8) for c in row
-    )
-    pro_forma = wb["Pro forma"]
-    header = [c.value for c in pro_forma[4]]
-    noi_col = header.index("NOI") + 1
-    assert str(pro_forma.cell(row=5, column=noi_col).value).startswith("=")

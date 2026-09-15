@@ -1,9 +1,6 @@
-"""The Multifamily Copilot underwrite screen renders every case and exports."""
-
-import io
+"""The Multifamily Copilot underwrite screen renders every case, screens, and drafts memos."""
 
 from fastapi.testclient import TestClient
-from openpyxl import load_workbook
 
 from app.main import app
 
@@ -44,14 +41,6 @@ def test_cases_switch() -> None:
     assert '<span class="pill active">Base</span>' in client.get("/copilot?case=Nope").text
 
 
-def test_export_per_case() -> None:
-    response = client.get("/copilot/export.xlsx?case=Lender")
-    assert response.status_code == 200
-    assert 'filename="sawyer-bend-lender.xlsx"' in response.headers["content-disposition"]
-    wb = load_workbook(io.BytesIO(response.content))
-    assert "Summary" in wb.sheetnames and "Waterfall" in wb.sheetnames
-
-
 def test_screen_flow_from_sample_documents_to_screened_case() -> None:
     session = TestClient(app)
     page = session.get("/copilot/screen").text
@@ -75,8 +64,8 @@ def test_screen_flow_from_sample_documents_to_screened_case() -> None:
     assert '<span class="pill active">Screened</span>' in underwrite
     assert "From Screen · 15 of 15 sourced" in underwrite
     assert "60.0%" in underwrite  # the LTV answer flowed into the loan
-    export = session.get("/copilot/export.xlsx?case=Screened")
-    assert export.status_code == 200 and "screened" in export.headers["content-disposition"]
+    deck = session.get("/copilot/memo.pdf?case=Screened")
+    assert deck.status_code == 200 and "screened" in deck.headers["content-disposition"]
     # A fresh browser does not see the screened case.
     assert "Screened" not in client.get("/copilot").text
 

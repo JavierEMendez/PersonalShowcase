@@ -586,7 +586,7 @@ def check_memo(memo: Memo, facts: MemoFacts) -> list[str]:
     problems: list[str] = []
     allowed = set(facts.figures.values())
     texts = [memo.recommendation, *memo.body, *memo.cannot]
-    number = re.compile(r"\$?\d[\d,]*(?:\.\d+)?(?:%|×|M|k| bps)?")
+    number = re.compile(r"\$?\d(?:[\d,]*\d)?(?:\.\d+)?(?:%|×|M|k| bps)?")
     for text in texts:
         for m in number.finditer(text):
             token = m.group(0)

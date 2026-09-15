@@ -1,11 +1,9 @@
 """The Land Underwriting screens render, recalculate on edits, switch scenarios, and export."""
 
-import io
 import re
 from urllib.parse import unquote
 
 from fastapi.testclient import TestClient
-from openpyxl import load_workbook
 
 from app.main import app
 
@@ -107,28 +105,6 @@ def test_scenarios_add_rename_delete_reset() -> None:
     assert "640.0 ac" in client.get("/underwriting").text
 
 
-def test_export_workbook_has_live_formulas() -> None:
-    client = new_client()
-    response = client.get("/underwriting/export.xlsx?scenario=Main")
-    assert response.status_code == 200
-    assert response.headers["content-type"].startswith("application/vnd.openxmlformats")
-    wb = load_workbook(io.BytesIO(response.content))
-    assert wb.sheetnames == ["Inputs", "Summary", "Pro forma", "Sensitivity"]
-    summary = wb["Summary"]
-    formulas = [
-        c.value
-        for row in summary.iter_rows(min_row=5, max_row=11, min_col=2, max_col=2)
-        for c in row
-    ]
-    assert all(isinstance(f, str) and f.startswith("=") for f in formulas)
-    assert any("XIRR(" in str(f) for f in formulas)
-    pro_forma = wb["Pro forma"]
-    header = [c.value for c in pro_forma[4]]
-    assert "Net cash flow" in header and "Cumulative" in header
-    net_col = header.index("Net cash flow") + 1
-    assert str(pro_forma.cell(row=5, column=net_col).value).startswith("=")
-
-
 def test_inputs_show_separators_and_accept_them() -> None:
     client = new_client()
     page = client.get("/underwriting/costs").text
@@ -139,3 +115,15 @@ def test_inputs_show_separators_and_accept_them() -> None:
     assert 'name="costs.personnel_monthly" value="55,000"' in response.text
     assert "was not applied" not in response.text
     client.post("/underwriting/scenarios/reset")
+
+
+def test_memo_deck_downloads_for_a_scenario() -> None:
+    client = new_client()
+    response = client.get("/underwriting/memo.pdf?scenario=Faster%20pace")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert (
+        'filename="cypress-ridge-ic-memo-faster-pace.pdf"'
+        in response.headers["content-disposition"]
+    )
+    assert response.content.startswith(b"%PDF")

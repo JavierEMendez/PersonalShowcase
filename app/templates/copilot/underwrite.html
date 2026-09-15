@@ -4,8 +4,7 @@
 {% set s = out.summary %}
 {% import "copilot/_topbar.html" as bar with context %}
 {% call bar.topbar(steps, active_step) %}
-  <a class="btn" href="/copilot/export.xlsx{{ query }}">Export model to Excel</a>
-  <a class="btn" href="/copilot/memo.pdf{{ query }}">Download deck</a>
+  <a class="btn" href="/copilot/memo.pdf{{ query }}">Download IC memo</a>
   <form method="post" action="/copilot/memo{{ query }}" style="display: inline;"><button class="btn btn-primary" type="submit">Draft IC memo</button></form>
 {% endcall %}
 

@@ -1,4 +1,4 @@
-"""Multifamily Copilot routes: the Screen intake, the underwrite screen, cases and export."""
+"""Multifamily Copilot routes: the Screen intake, the underwrite screen, cases and the memo."""
 
 from __future__ import annotations
 
@@ -15,7 +15,6 @@ from fastapi.responses import (
     HTMLResponse,
     RedirectResponse,
     Response,
-    StreamingResponse,
 )
 from pydantic import BaseModel, ValidationError
 
@@ -33,7 +32,6 @@ from core.copilot.documents import (
     read_document,
 )
 from core.copilot.engine import run
-from core.copilot.excel import export_workbook
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import ClaudeWriter, Memo, TemplateWriter, build_facts, write_memo
 from core.copilot.screen import ClaudeReader, Question, RuleReader, ScreenResult
@@ -424,21 +422,6 @@ def _facts(session: CopilotSession, current: Case) -> Any:
         max_bid,
         at_max,
     )
-
-
-@router.get("/export.xlsx")
-async def export(request: Request, case: str | None = None) -> Response:
-    session, sid = store.load(request)
-    current = session.case_named(case)
-    workbook = export_workbook(current.inputs, run(current.inputs), current.name)
-    filename = f"sawyer-bend-{current.name.lower()}.xlsx"
-    response = StreamingResponse(
-        iter([workbook]),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
-    set_session_cookie(response, sid)
-    return response
 
 
 # --------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ version to keep open during a demo or a change.
 
 One FastAPI app on Railway serves a landing page, an About page and two tools. **Land
 Underwriting** (`/underwriting`) is a Python port of the MPC land model with editable inputs,
-scenarios, a sensitivity grid and an Excel export. **Multifamily Copilot** (`/copilot`) reads a
+scenarios, a sensitivity grid and an IC memo PDF. **Multifamily Copilot** (`/copilot`) reads a
 broker package, asks about what the documents leave open, runs a monthly acquisition model and
 drafts the IC memo. All deals are synthetic. State lives in the browser session for a day; a
 redeploy resets everyone.
@@ -21,10 +21,9 @@ redeploy resets everyone.
 | Land Underwriting | `/underwriting` | Performance tab: summary strip, financial summary, acreage, sensitivity, cash flow by year, scenario comparison |
 | Input tabs | `/underwriting/tract`, `/costs`, `/revenue`, `/lookups` | Editable inputs; a blank field resets to the model default |
 | Cashflows | `/underwriting/cashflows` | Yearly and monthly schedule |
-| Land export | `/underwriting/export.xlsx?scenario=Main` | Inputs, Summary (live formulas), Pro forma, Sensitivity |
+| Land memo | `/underwriting/memo.pdf?scenario=Main` | Two-page IC memo: recommendation with the price per acre solved from a 15% unlevered IRR floor, then the evidence |
 | Copilot Screen | `/copilot/screen` | Uploads, extracted figures with citations, unit mix, questions |
 | Copilot Underwrite | `/copilot?case=Base` | Cases Base, Downside, Lender, and Screened once Screen has run |
-| Copilot export | `/copilot/export.xlsx?case=Base` | Inputs, Summary, Pro forma, Annual, Waterfall |
 | Memo | `POST /copilot/memo?case=Base`, `GET /copilot/memo.md?case=Base` | Draft with the configured writer; download as markdown |
 | Deck | `GET /copilot/memo.pdf?case=Base` | Two-page PDF (recommendation, evidence); a third audit-trail page for the Screened case |
 | Health | `/health` | Railway health check |
@@ -32,7 +31,8 @@ redeploy resets everyone.
 ## Demo in five minutes
 
 1. Land Underwriting: change lot price on the Revenue tab, watch the strip and grid move. Add a
-   scenario with the "+ Add" pill, rename it, compare in the table at the bottom. Export.
+   scenario with the "+ Add" pill, rename it, compare in the table at the bottom. Download the
+   IC memo and point at the recommended price per acre.
 2. Copilot Screen: "Use the sample documents". Point at a quote and its confidence. Change
    insurance to 850 and controllables to 3,850 (the buyer's numbers); "Run the underwriting".
 3. Copilot Underwrite: the Screened pill is active. Read the stress table, then "Draft IC memo".

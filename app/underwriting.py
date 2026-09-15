@@ -1,26 +1,28 @@
-"""Land Underwriting routes: the Cypress Ridge deal, its scenarios, tabs, sensitivity, export."""
+"""Land Underwriting routes: the Cypress Ridge deal, its scenarios, tabs, sensitivity, memo."""
 
 from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Form, Query, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from pydantic import ValidationError
 
 from app import forms
 from app.deals import load_cypress_ridge
 from app.sessions import DealSession, Scenario, scenario_store, set_session_cookie
 from app.templating import render
+from core.underwriting.deck import build_land_deck
 from core.underwriting.engine import run
-from core.underwriting.excel import export_workbook
 from core.underwriting.inputs import DealInputs
+from core.underwriting.memo import IRR_FLOOR, build_land_facts, write_land_memo
 from core.underwriting.sensitivity import (
     AXIS_LABELS,
     METRIC_LABELS,
     Axis,
     Metric,
     build_grid,
+    max_land_price_for_irr,
 )
 from core.underwriting.summary import Outputs
 
@@ -229,6 +231,42 @@ async def performance(
     return _finish(render(request, "underwriting/performance.html", **ctx), sid)
 
 
+@router.get("/memo.pdf")
+async def memo_deck(request: Request, scenario: str | None = None) -> Response:
+    """The land deal's IC memo as a two-page PDF, for the scenario."""
+    session, sid = store.load(request)
+    current = session.get(scenario)
+    out = run(current.inputs)
+    grid = build_grid(current.inputs)
+    max_price = max_land_price_for_irr(current.inputs, IRR_FLOOR)
+    at_max = None
+    if max_price is not None:
+        priced = current.inputs.model_copy(deep=True)
+        priced.tract.purchase_price_per_acre = max_price
+        at_max = run(priced)
+    facts = build_land_facts(current.inputs, out, grid, current.name, IRR_FLOOR, max_price, at_max)
+    memo = write_land_memo(facts)
+    pdf = build_land_deck(
+        META["name"],
+        header_facts(current.inputs),
+        current.name,
+        current.inputs,
+        out,
+        memo,
+        grid,
+        IRR_FLOOR,
+        max_price,
+    )
+    filename = f"cypress-ridge-ic-memo-{current.name.lower().replace(' ', '-')}.pdf"
+    response = Response(
+        pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+    set_session_cookie(response, sid)
+    return response
+
+
 @router.get("/sensitivity", response_class=HTMLResponse)
 async def sensitivity(
     request: Request,
@@ -258,20 +296,6 @@ async def sensitivity(
         ),
         sid,
     )
-
-
-@router.get("/export.xlsx")
-async def export(request: Request, scenario: str | None = None) -> Response:
-    session, sid = store.load(request)
-    current = session.get(scenario)
-    workbook = export_workbook(current.inputs, run(current.inputs), META["name"], current.name)
-    filename = f"cypress-ridge-{current.name.lower().replace(' ', '-')}.xlsx"
-    response = StreamingResponse(
-        iter([workbook]),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
-    return _finish(response, sid)
 
 
 @router.get("/{tab}", response_class=HTMLResponse)

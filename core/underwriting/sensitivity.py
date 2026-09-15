@@ -153,3 +153,31 @@ def build_grid(
         rows=rows,
         note=note,
     )
+
+
+def max_land_price_for_irr(
+    inputs: DealInputs, floor: float, low_share: float = 0.25, high_share: float = 1.75
+) -> float | None:
+    """The highest land price per acre at which the unlevered IRR still reaches `floor`, by
+    bisection between `low_share` and `high_share` of the underwritten price. None when even the
+    low end misses the floor."""
+    base = inputs.tract.purchase_price_per_acre
+    lo, hi = base * low_share, base * high_share
+
+    def irr_at(price: float) -> float:
+        priced = inputs.model_copy(deep=True)
+        priced.tract.purchase_price_per_acre = price
+        value = run(priced).summary.unlevered_irr
+        return value if value is not None else -1.0
+
+    if irr_at(lo) < floor:
+        return None
+    if irr_at(hi) >= floor:
+        return hi
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if irr_at(mid) >= floor:
+            lo = mid
+        else:
+            hi = mid
+    return round(lo, -2)  # to the nearest $100 per acre

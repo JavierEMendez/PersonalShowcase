@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="actions">
-    <a class="btn" href="/underwriting/export.xlsx{{ query }}">Export Excel</a>
+    <a class="btn" href="/underwriting/memo.pdf{{ query }}">Download IC memo</a>
     {% if active_tab in ("tract", "costs", "revenue", "lookups") %}
     <button class="btn btn-primary" type="submit" form="inputs-form">Recalculate</button>
     {% else %}

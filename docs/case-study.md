@@ -33,9 +33,9 @@ type, a default and a place in a hierarchy: tract, costs, revenue, lookups. That
 than the port itself. The web forms could be generated from the same structure, so a blank field
 means "use the default" and a percentage typed as 8 is stored as 0.08 by a rule keyed on the
 field's path rather than by hand. Scenarios became copies of one typed object rather than copies
-of a workbook. The Excel export writes the same object back out, with the schedule as values and
-every total, ratio and the XIRR as live formulas, so a reviewer can trace a headline to the months
-behind it without trusting the code.
+of a workbook. An Excel export with live formulas was built and later removed: a spreadsheet
+that is not the working pro forma invites a reader to trust the wrong artifact, and the memo PDF
+with the recommended price solved from a return floor is what a committee actually reads.
 
 Speed changed what the screen could do. The land engine runs in about three milliseconds, so the
 sensitivity grid recalculates on the server for every cell, on any two of six drivers, in one
