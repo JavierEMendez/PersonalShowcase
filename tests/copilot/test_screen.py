@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -290,7 +291,6 @@ def test_claude_reader_tolerates_stringified_payloads(documents: dict[str, Docum
     res = screen({"om": documents["om"]}, reader)
     assert res.get("asking_price") is not None and res.get("units") is not None
     assert res.plans and res.plans[0].code == "A1"
-    assert sum("was skipped" in n for n in res.notes) == 4
     # A whole list as a JSON string is also accepted.
     fake_str = FakeMessages({"extractions": json.dumps(items)})
     res2 = screen(
@@ -363,7 +363,9 @@ def test_claude_reader_tolerates_labels_and_string_values(documents: dict[str, D
         {"om": documents["om"]},
         ClaudeReader(client=SimpleNamespace(messages=FakeMessages({"figures": []})), model="m"),
     )
-    assert any("returned no figures (payload keys: figures)" in n for n in empty.notes)
+    assert any(
+        "no usable figures; payload shape {figures: list[0] of nothing}" in n for n in empty.notes
+    )
 
 
 def test_claude_reader_accepts_an_object_keyed_by_figure(documents: dict[str, Document]) -> None:
@@ -405,3 +407,49 @@ def test_claude_reader_accepts_an_object_keyed_by_figure(documents: dict[str, Do
     )  # no quote: unverified
     assert res.plans and res.plans[0].code == "A1" and res.plans[0].units == 144
     assert not any("did not match" in n for n in res.notes)
+
+
+def test_claude_reader_finds_records_in_nested_payloads(documents: dict[str, Document]) -> None:
+    from core.copilot.screen import describe_shape, find_records
+
+    record = {
+        "key": "asking_price",
+        "value": 50500000,
+        "page": 2,
+        "quote": "Asking price $50,500,000",
+        "confidence": "High",
+    }
+    plan = {
+        "code": "A1",
+        "units": 144,
+        "sf": 720,
+        "occupied": 136,
+        "in_place_rent": 1245,
+        "market_rent": 1310,
+    }
+    shapes: list[dict[str, Any]] = [
+        {"extractions": {"extractions": [record], "floor_plans": [plan]}},  # wrapped one level
+        {"record_extractions": {"extractions": [record], "floor_plans": {"A1": plan}}},
+        {"extractions": json.dumps([record]), "floor_plans": json.dumps([plan])},
+        {
+            "data": {
+                "figures": {"asking_price": {k: v for k, v in record.items() if k != "key"}},
+                "unit_mix": [plan],
+            }
+        },
+    ]
+    for payload in shapes:
+        fake = FakeMessages(payload)
+        res = screen(
+            {"om": documents["om"]}, ClaudeReader(client=SimpleNamespace(messages=fake), model="m")
+        )
+        ask = res.get("asking_price")
+        assert ask is not None and ask.value == 50_500_000 and ask.confidence == "High", payload
+        assert res.plans and res.plans[0].code == "A1" and res.plans[0].units == 144, payload
+    assert find_records({"x": [{"a": 1}]}, ("key", "value")) == []
+    empty = screen(
+        {"om": documents["om"]},
+        ClaudeReader(client=SimpleNamespace(messages=FakeMessages({"figures": "none"})), model="m"),
+    )
+    assert any("payload shape {figures: text(4)}" in n for n in empty.notes)
+    assert describe_shape({"a": [{"b": 1}]}) == "{a: list[1] of {b: int}}"

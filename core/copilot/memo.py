@@ -348,21 +348,39 @@ def draft_from_payload(raw: Any) -> Draft:
         raw = json.loads(raw)
     data = dict(raw)
     for key in ("body", "cannot"):
-        value = data.get(key)
-        if isinstance(value, str):
-            try:
-                decoded = json.loads(value)
-            except ValueError:
-                decoded = value
-            value = decoded if isinstance(decoded, (list, dict)) else split_items(str(decoded))
-        if isinstance(value, dict):
-            value = list(value.values())
-        if isinstance(value, list):
-            items: list[str] = []
-            for v in value:
-                items.extend(split_items(str(v)) if len(value) == 1 else [str(v).strip()])
-            data[key] = [i for i in items if i]
+        items = flatten_text(data.get(key))
+        if len(items) == 1:
+            items = split_items(items[0])
+        data[key] = [i for i in items if i]
+    rec = data.get("recommendation")
+    if not isinstance(rec, str):
+        data["recommendation"] = " ".join(flatten_text(rec))
     return Draft.model_validate(data)
+
+
+def flatten_text(value: Any) -> list[str]:
+    """Strings from any nesting of lists and objects; JSON text is decoded first."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        text = value.strip()
+        if text[:1] in "[{":
+            try:
+                return flatten_text(json.loads(text))
+            except ValueError:
+                pass
+        return [text] if text else []
+    if isinstance(value, Mapping):
+        out: list[str] = []
+        for v in value.values():
+            out.extend(flatten_text(v))
+        return out
+    if isinstance(value, (list, tuple)):
+        out = []
+        for v in value:
+            out.extend(flatten_text(v))
+        return out
+    return [str(value)]
 
 
 _LIST_BREAK = re.compile(r"\n+|\s+(?=(?:[-*\u2022]|\(?\d+[.)])\s)")
@@ -482,6 +500,9 @@ def write_memo(
     try:
         draft = writer.draft(facts)
         problems = check_draft(draft, facts)
+        if problems:
+            excerpt = " | ".join([draft.recommendation, *draft.body, *draft.cannot])[:400]
+            problems.append(f"draft as received: {excerpt}")
     except Exception as exc:  # network or schema failure from the model
         problems = [f"writer failed: {exc}"]
     if problems and writer.name != TemplateWriter.name:

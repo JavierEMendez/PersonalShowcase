@@ -216,3 +216,24 @@ def test_paragraph_body_is_split_into_sentences(base_facts: MemoFacts) -> None:
     as_dict: dict[str, Any] = dict(GOOD_DRAFT)
     as_dict["body"] = {str(i): s for i, s in enumerate(GOOD_DRAFT["body"])}
     assert draft_from_payload(as_dict).body == GOOD_DRAFT["body"]
+
+
+def test_sections_in_any_shape_are_flattened(base_facts: MemoFacts) -> None:
+    from core.copilot.memo import draft_from_payload, flatten_text
+
+    nested: dict[str, Any] = dict(GOOD_DRAFT)
+    nested["body"] = [{"sentences": GOOD_DRAFT["body"]}]
+    nested["cannot"] = {"items": [{"text": c} for c in GOOD_DRAFT["cannot"]]}
+    draft = draft_from_payload(nested)
+    assert draft.body == GOOD_DRAFT["body"] and draft.cannot == GOOD_DRAFT["cannot"]
+    assert flatten_text(json.dumps(["a", {"b": "c"}])) == ["a", "c"]
+    one_paragraph: dict[str, Any] = dict(GOOD_DRAFT)
+    one_paragraph["body"] = [" ".join(GOOD_DRAFT["body"])]
+    assert draft_from_payload(one_paragraph).body == GOOD_DRAFT["body"]
+    bad: dict[str, Any] = dict(GOOD_DRAFT)
+    bad["cannot"] = "Whether taxes reassess to 100% of price."
+    memo = write_memo(
+        base_facts, ClaudeWriter(client=SimpleNamespace(messages=FakeMessages(bad)), model="m")
+    )
+    assert memo.fallback
+    assert any(p.startswith("draft as received: Recommendation: bid {bid}") for p in memo.problems)

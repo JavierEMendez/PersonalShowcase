@@ -820,13 +820,84 @@ def coerce_page(raw: Any) -> int:
     return int(m.group(0)) if m else 0
 
 
+EXTRACTION_MARKERS = ("key", "name", "field", "value", "quote")
+PLAN_MARKERS = ("code", "plan", "units", "in_place_rent", "market_rent")
+
+
+def _looks_like(record: Mapping[str, Any], markers: tuple[str, ...]) -> bool:
+    return sum(1 for m in markers if m in record) >= 2
+
+
+def find_records(payload: Any, markers: tuple[str, ...], depth: int = 0) -> list[Mapping[str, Any]]:
+    """Every record carrying at least two of the marker fields, wherever it sits in the payload:
+    in a list, in an object keyed by figure name, or nested a level or two down."""
+    if depth > 4 or payload is None:
+        return []
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except ValueError:
+            return []
+        return find_records(payload, markers, depth + 1)
+    if isinstance(payload, Mapping):
+        if _looks_like(payload, markers):
+            return [payload]
+        found: list[Mapping[str, Any]] = []
+        keyed: list[Mapping[str, Any]] = []
+        for k, v in payload.items():
+            inner = v
+            if isinstance(inner, str):
+                try:
+                    inner = json.loads(inner)
+                except ValueError:
+                    inner = v
+            plan_like = _looks_like(payload, PLAN_MARKERS)
+            if isinstance(inner, Mapping) and _looks_like(inner, markers) and "key" not in inner:
+                keyed.append({**inner, "key": k})
+            elif (
+                isinstance(inner, (int, float))
+                and not isinstance(inner, bool)
+                and not plan_like
+                and match_key(k)
+            ):
+                keyed.append({"key": k, "value": inner})
+            else:
+                found.extend(find_records(inner, markers, depth + 1))
+        return keyed + found
+    if isinstance(payload, list):
+        found = []
+        for item in payload:
+            found.extend(find_records(item, markers, depth + 1))
+        return found
+    return []
+
+
+def describe_shape(payload: Any, depth: int = 0) -> str:
+    """A compact picture of a payload for the notes: types and keys, no values."""
+    if depth > 3:
+        return "..."
+    if isinstance(payload, Mapping):
+        inner = ", ".join(
+            f"{k}: {describe_shape(v, depth + 1)}" for k, v in list(payload.items())[:6]
+        )
+        return "{" + inner + "}"
+    if isinstance(payload, list):
+        first = describe_shape(payload[0], depth + 1) if payload else "nothing"
+        return f"list[{len(payload)}] of {first}"
+    if isinstance(payload, str):
+        return f"text({len(payload)})"
+    return type(payload).__name__
+
+
 def parse_tool_payload(
     payload: Mapping[str, Any],
 ) -> tuple[list[Extraction], list[PlanFacts], list[str]]:
     extractions: list[Extraction] = []
     notes: list[str] = []
     seen: set[str] = set()
-    records = _records(payload.get("extractions"), notes, "extraction")
+    records = find_records(payload, EXTRACTION_MARKERS)
+    if not records:
+        records = _records(payload.get("extractions"), notes, "extraction")
     unknown: list[str] = []
     for item in records:
         key = match_key(item.get("key", item.get("name", item.get("field", ""))))
@@ -859,9 +930,10 @@ def parse_tool_payload(
         notes.append(
             f"OM: {len(unknown)} record(s) did not match the catalogue: {', '.join(unknown[:5])}."
         )
-    if not records:
-        keys = ", ".join(map(str, payload)) or "none"
-        notes.append(f"OM: the model returned no figures (payload keys: {keys}).")
+    if not records or not extractions:
+        notes.append(
+            f"OM: the model returned no usable figures; payload shape {describe_shape(payload)}."
+        )
     log.warning(
         "OM reader payload: keys=%s records=%d matched=%d unknown=%d",
         list(payload),
@@ -870,7 +942,12 @@ def parse_tool_payload(
         len(unknown),
     )
     plans: list[PlanFacts] = []
-    for fp in _records(payload.get("floor_plans"), notes, "floor plan"):
+    plan_records = [
+        r
+        for r in find_records(payload.get("floor_plans", payload), PLAN_MARKERS)
+        if not _looks_like(r, ("quote", "confidence", "page"))
+    ]
+    for fp in plan_records:
         try:
             plans.append(
                 PlanFacts(
