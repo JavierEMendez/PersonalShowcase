@@ -98,6 +98,7 @@ CI runs the same on every push. Railway builds the Dockerfile from `main` and ch
 | `ANTHROPIC_API_KEY` | Turns on the Claude reader for the OM and the Claude writer for the memo. Without it the rule reader and the template are used and the pages say so. |
 | `COPILOT_MODEL` | Model id for both; default `claude-sonnet-5`. |
 | `CONTACT_EMAIL` | Adds an Email row to the About tables. Optional. |
+| `FRED_API_KEY` | FRED official API for the Market context panels. Without it the public CSV endpoint is used, and if that fails the recorded snapshot. |
 
 No other secrets. Nothing is written to disk at runtime.
 
@@ -117,6 +118,7 @@ No other secrets. Nothing is written to disk at runtime.
 - **Memo sentences**: `TemplateWriter` in `core/copilot/memo.py`; placeholders in `build_facts`.
 - **Deck layout**: `core/copilot/deck.py`. The site typefaces are bundled in `app/static/fonts/` (OFL) and embedded in the PDF.
 - **Copy rules**: `core/copy_rules.py`, used by the linter and the memo checks.
+- **Market context**: rules and rows in `core/benchmarks/context.py`, sources in `core/benchmarks/sources.py`; refresh the fallback snapshot with `python scripts/record_benchmarks.py`. See `docs/benchmarks.md`.
 
 ## Where things live
 

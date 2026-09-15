@@ -7,3 +7,4 @@ openpyxl==3.1.5
 pypdf==6.18.1
 fpdf2==2.8.8
 anthropic==1.5.0
+httpx==0.28.1

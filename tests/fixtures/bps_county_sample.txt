@@ -1,0 +1,5 @@
+Survey,FIPS,FIPS,Region,Division,County,,1-unit,,,2-units,,,3-4 units,,,5+ units,,,1-unit rep,,,2-units rep,,,3-4 units rep,,, 5+units rep
+Date,State,County,Code,Code,Name,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value
+
+202607,48,201,3,7,Harris County                ,10469,10469,3324829367,615,1230,251778123,0,0,0,125,4733,758978946,10329,10329,3268868893,614,1228,251389283,0,0,0,125,4733,758978946
+202607,48,473,3,7,Waller County                ,178,178,61693030,0,0,0,0,0,0,0,0,0,143,143,52361171,0,0,0,0,0,0,0,0,0

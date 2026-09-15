@@ -71,6 +71,9 @@
   </div>
 
   <div class="span-12">
+    {% with context = market %}{% include "_market_context.html" %}{% endwith %}
+  </div>
+  <div class="span-12">
     {% include "underwriting/_compare.html" %}
   </div>
 </div>

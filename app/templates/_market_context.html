@@ -1,0 +1,23 @@
+{# Public figures beside the assumptions they test. `context` is a MarketContext. #}
+<div class="panel">
+  <div class="panel-head">
+    <div class="eyebrow">Market context</div>
+    <div class="note">Public data beside the assumptions it tests · {% if context.live %}live, cached for a day{% else %}recorded {{ context.recorded.strftime("%b %d, %Y") if context.recorded else "" }}; a live source was unavailable{% endif %}</div>
+  </div>
+  <table>
+    <thead><tr><th>Topic</th><th>Public figure</th><th>As of</th><th class="r">Underwritten</th><th>Read</th></tr></thead>
+    <tbody>
+      {% for row in context.rows %}
+      <tr class="sub">
+        <td>{{ row.topic }}<div class="quote">{{ row.note }}</div></td>
+        <td class="num">{{ row.public }}<div class="quote"><a class="text-link small" href="{{ row.source_url }}">{{ row.source }}</a></div></td>
+        <td class="src nowrap">{{ row.as_of }}</td>
+        <td class="r num">{{ row.underwritten }}</td>
+        <td><span class="flag {{ row.flag }}">{{ {'ok': 'In range', 'watch': 'Watch', 'info': 'Context'}[row.flag] }}</span></td>
+      </tr>
+      {% endfor %}
+      {% if not context.rows %}<tr class="sub"><td colspan="5">No public figures could be loaded.</td></tr>{% endif %}
+    </tbody>
+  </table>
+  {% if context.problems %}<div class="panel-foot"><span>{% for p in context.problems[:3] %}{{ p }} {% endfor %}</span></div>{% endif %}
+</div>

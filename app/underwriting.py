@@ -12,6 +12,7 @@ from app import forms
 from app.deals import load_cypress_ridge
 from app.sessions import DealSession, Scenario, scenario_store, set_session_cookie
 from app.templating import render
+from core.benchmarks.context import land_context
 from core.underwriting.deck import build_land_deck
 from core.underwriting.engine import run
 from core.underwriting.inputs import DealInputs
@@ -224,6 +225,7 @@ async def performance(
     session, sid = store.load(request)
     current = session.get(scenario)
     ctx = deal_context(request, session, current, "performance")
+    ctx["market"] = land_context(current.inputs, ctx["out"])
     params = _grid_params(row_axis, col_axis, metric, row_steps, col_steps, row_step, col_step)
     grid = build_grid(current.inputs, **params)
     ctx.update(financial_lines(ctx["out"]))

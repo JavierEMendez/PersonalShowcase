@@ -37,6 +37,7 @@ core/underwriting Land model: netouts, land, infrastructure, allocation, section
                   assessed value and bonds, opex, summary, XIRR, sensitivity, memo, deck
 core/copilot      Multifamily model: rent roll, renovation, operations, debt, capital stack,
                   waterfall, sensitivity; document readers, extraction, memo, deck
+core/benchmarks   Public data (FRED, Census permits, Zillow rents) beside the assumptions, with flags
 evals/            Extraction eval (15 cited figures) and memo eval (fidelity, structure, copy rules)
 data/             Synthetic seeds: Cypress Ridge (land), Sawyer Bend (multifamily) and its broker package
 scripts/          Seed generators, the synthetic document generator, the copy linter
@@ -60,6 +61,7 @@ The AI paths (reading the OM, drafting the memo) run when `ANTHROPIC_API_KEY` is
 - [Case study](docs/case-study.md): what changed when the models left Excel, and what the tests caught.
 - [Cheat sheet](docs/cheat-sheet.md): how the site works, how to run it, how to change the deals.
 - [Screen failure modes](docs/screen-failure-modes.md) and [memo failure modes](docs/memo-failure-modes.md).
+- [Market context](docs/benchmarks.md): which public series sit beside which assumptions, and the rules behind the flags.
 - [Synthetic deals](docs/synthetic-deals.md), [design standard](docs/design-standard.md), [brand mark](docs/brand-mark.md).
 
 ## About me

@@ -13,6 +13,7 @@ dependencies = [
   "pypdf>=6",
   "fpdf2>=2.8",
   "anthropic>=1.5",
+  "httpx>=0.27",
 ]
 
 [project.optional-dependencies]

@@ -21,6 +21,7 @@ from pydantic import BaseModel, ValidationError
 from app.deals import DATA_DIR
 from app.sessions import SessionStore, set_session_cookie
 from app.templating import render
+from core.benchmarks.context import multifamily_context
 from core.copilot import screen as screening
 from core.copilot.deck import build_deck
 from core.copilot.documents import (
@@ -313,6 +314,7 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
         lp_floor=LP_FLOOR,
         max_bid=max_bid,
         at_max=at_max,
+        market=multifamily_context(current.inputs, out),
         query=f"?case={quote(current.name)}",
     )
     set_session_cookie(response, sid)

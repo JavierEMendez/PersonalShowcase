@@ -197,6 +197,10 @@
   </div>
 
   <div class="span-12">
+    {% with context = market %}{% include "_market_context.html" %}{% endwith %}
+  </div>
+
+  <div class="span-12">
     <div class="panel">
       <div class="panel-head"><div class="eyebrow">Case comparison</div><div class="note">Downside holds the base loan; Lender caps LTV at 55%</div></div>
       <table>
