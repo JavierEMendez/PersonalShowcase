@@ -45,7 +45,7 @@ Run one per session. Each starts with Claude Code reading `CLAUDE.md` automatica
 **Session 5, copilot screen.**
 "Read design/copilot.html for the panel layout and docs/synthetic-deals.md for the content. Build the /copilot underwrite screen from the Sawyer Bend seed: summary strip, NOI by year, rent roll and renovation panel, sources and uses with loan terms and sizing constraints, what breaks it, IC memo panel, waterfall returns, and the Monitor panel fed from the same model with a synthetic quarter of actuals. Case pills switch between Base, Downside, and Lender."
 
-**Session 6, screen module.**
+**Session 6, screen module.** (Done on 2026-09-14; see `docs/screen-failure-modes.md` and `evals/screen/`. Uploads are xlsx or csv for the structured files rather than PDF, since that is what brokers send and it keeps the parsing deterministic.)
 "Build core/copilot/screen.py: extract the 15 assumptions in docs/synthetic-deals.md from a synthetic OM, rent roll, and T-12 PDF (generate all three in data/ with realistic layout), returning value, source page or line, and confidence. Use the Claude API with structured output. Then build the question loop: compare extracted inputs against the typed model inputs, list what is missing or low confidence, and render one question per gap with the extracted figure and its source beside it; accepted or overridden answers flow into the scenario inputs. Add upload routes for the OM, rent roll, and T-12 with size and type limits. Build evals/screen/ with the 15 expected values and a scorer. Document failure modes in docs/screen-failure-modes.md. Wire the results into the Extracted assumptions panel."
 
 **Session 7, recommend module.**

@@ -2,24 +2,11 @@
 {% block title %}{{ site.wordmark }} · Multifamily Copilot{% endblock %}
 {% block body %}
 {% set s = out.summary %}
-<div class="topbar">
-  <div class="topbar-left" style="gap: 36px;">
-    <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span><span class="lockup-sep">/</span><span class="lockup-product">Multifamily Copilot</span></a>
-    <div class="stepper">
-      {% for name in steps %}
-      {% set n = loop.index %}
-      {% if not loop.first %}<div class="step-line"></div>{% endif %}
-      <div class="step {% if n < active_step %}done{% elif n == active_step %}active{% else %}pending{% endif %}">
-        <span class="step-num num">{{ n }}</span><span class="step-label">{{ name }}</span>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  <div class="actions">
-    <a class="btn" href="/copilot/export.xlsx{{ query }}">Export model to Excel</a>
-    <a class="btn btn-primary" href="#memo">Draft IC memo</a>
-  </div>
-</div>
+{% import "copilot/_topbar.html" as bar with context %}
+{% call bar.topbar(steps, active_step) %}
+  <a class="btn" href="/copilot/export.xlsx{{ query }}">Export model to Excel</a>
+  <a class="btn btn-primary" href="#memo">Draft IC memo</a>
+{% endcall %}
 
 <div class="deal-head">
   <div class="deal-head-copy">
@@ -107,7 +94,7 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head"><div class="eyebrow">Extracted assumptions</div><div class="note">From Screen · {{ assumptions | length }} of {{ assumptions | length }} sourced</div></div>
+      <div class="panel-head"><div class="eyebrow">Extracted assumptions</div><div class="note">{{ assumptions_note }}</div></div>
       <table>
         <thead><tr><th>Assumption</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
         <tbody>
@@ -117,7 +104,7 @@
         </tbody>
       </table>
       <div class="panel-foot">
-        <span>Low-confidence figures are flagged in the memo and tested in the downside case.</span>
+        <span>Low-confidence figures are flagged in the memo and tested in the downside case. <a class="text-link" href="/copilot/screen">Open Screen</a> to read your own documents.</span>
         <a href="#" class="text-link" onclick="for (const r of this.closest('.panel').querySelectorAll('tr.more')) r.hidden = !r.hidden; this.textContent = this.textContent.startsWith('Show') ? 'Show fewer' : 'Show all {{ assumptions | length }}'; return false;">Show all {{ assumptions | length }}</a>
       </div>
     </div>
@@ -195,7 +182,7 @@
 
   <div class="span-12">
     <div class="panel">
-      <div class="panel-head"><div class="eyebrow">Monitor · covenant tests</div><div class="note">Step 4 · Post-close, tested quarterly against underwriting · synthetic quarter two of year one</div></div>
+      <div class="panel-head" id="monitor"><div class="eyebrow">Monitor · covenant tests</div><div class="note">Step 4 · Post-close, tested quarterly against underwriting · synthetic quarter two of year one</div></div>
       <table>
         <thead><tr><th>Test</th><th class="r">Covenant</th><th class="r">Underwritten</th><th class="r">Actual, Q2</th><th class="r">Cushion</th><th class="r">Status</th></tr></thead>
         <tbody>

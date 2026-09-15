@@ -37,7 +37,7 @@ def test_about_page_has_bio_and_portrait() -> None:
     response = client.get("/about")
     assert response.status_code == 200
     assert "Javier Mendez Valdez" in response.text
-    assert "/static/headshot.jpg" in response.text
+    assert "/static/headshot.png" in response.text
     assert "Baylor University" in response.text
     assert "<title>Javier Mendez · About</title>" in response.text
 

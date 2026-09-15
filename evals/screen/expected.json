@@ -1,0 +1,25 @@
+{
+  "description": "Expected Screen output for the synthetic Sawyer Bend package in data/sawyer_bend/. Values are what the documents state; tolerance is absolute unless noted.",
+  "figures": {
+    "asking_price": {"value": 50500000, "tolerance": 0, "document": "OM", "page": "p. 2", "min_confidence": "High"},
+    "units": {"value": 288, "tolerance": 0, "document": "OM", "page": "p. 3", "min_confidence": "High"},
+    "year_built": {"value": 2016, "tolerance": 0, "document": "OM", "page": "p. 3", "min_confidence": "High"},
+    "rentable_sf": {"value": 261360, "tolerance": 0, "document": "OM", "page": "p. 3", "min_confidence": "High"},
+    "in_place_rent": {"value": 1439.13, "tolerance": 1, "document": "Rent roll", "page": null, "min_confidence": "High"},
+    "occupancy": {"value": 0.9410, "tolerance": 0.001, "document": "Rent roll", "page": null, "min_confidence": "High"},
+    "market_rent": {"value": 1511, "tolerance": 0, "document": "OM", "page": "p. 5", "min_confidence": "Medium"},
+    "renovated_units": {"value": 36, "tolerance": 0, "document": "OM", "page": null, "min_confidence": "Medium"},
+    "renovation_premium": {"value": 145, "tolerance": 0, "document": "OM", "page": null, "min_confidence": "Medium"},
+    "exit_cap": {"value": 0.055, "tolerance": 0.0001, "document": "OM", "page": "p. 6", "min_confidence": "Medium"},
+    "tax_rate": {"value": 0.0235, "tolerance": 0.00005, "document": "OM", "page": "p. 7", "min_confidence": "High"},
+    "other_income": {"value": 115, "tolerance": 0.5, "document": "T-12", "page": null, "min_confidence": "High"},
+    "controllable_expenses": {"value": 3680, "tolerance": 1, "document": "T-12", "page": null, "min_confidence": "Medium"},
+    "insurance": {"value": 720, "tolerance": 0.5, "document": "T-12", "page": null, "min_confidence": "Medium"},
+    "taxes_t12": {"value": 611940, "tolerance": 1, "document": "T-12", "page": null, "min_confidence": "Low"}
+  },
+  "floor_plans": {
+    "A1": {"units": 144, "sf": 720, "occupied": 136, "in_place_rent": 1245, "market_rent": 1310},
+    "B2": {"units": 120, "sf": 1050, "occupied": 113, "in_place_rent": 1585, "market_rent": 1660},
+    "C2": {"units": 24, "sf": 1320, "occupied": 22, "in_place_rent": 1890, "market_rent": 1975}
+  }
+}

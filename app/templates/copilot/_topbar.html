@@ -1,0 +1,18 @@
+{# Shared top bar: lockup, stepper with links, and the caller's action buttons. #}
+{% macro topbar(steps, active_step) %}
+<div class="topbar">
+  <div class="topbar-left" style="gap: 36px;">
+    <a class="lockup" href="/"><img src="/static/brand/mark.svg" alt="" width="24" height="24"><span class="wordmark">{{ site.wordmark }}</span><span class="lockup-sep">/</span><span class="lockup-product">Multifamily Copilot</span></a>
+    <div class="stepper">
+      {% for name, href in steps %}
+      {% set n = loop.index %}
+      {% if not loop.first %}<div class="step-line"></div>{% endif %}
+      <a class="step {% if n < active_step %}done{% elif n == active_step %}active{% else %}pending{% endif %}" href="{{ href }}">
+        <span class="step-num num">{{ n }}</span><span class="step-label">{{ name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="actions">{{ caller() }}</div>
+</div>
+{% endmacro %}

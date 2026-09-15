@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from app import forms
 from app.deals import load_cypress_ridge
-from app.sessions import DealSession, Scenario, SessionStore, set_session_cookie
+from app.sessions import DealSession, Scenario, scenario_store, set_session_cookie
 from app.templating import render
 from core.underwriting.engine import run
 from core.underwriting.excel import export_workbook
@@ -27,7 +27,7 @@ from core.underwriting.summary import Outputs
 router = APIRouter(prefix="/underwriting")
 
 META, SEED = load_cypress_ridge()
-store = SessionStore(SEED)
+store = scenario_store(SEED)
 
 TABS: list[tuple[str, str, str]] = [
     ("performance", "Performance", "/underwriting"),

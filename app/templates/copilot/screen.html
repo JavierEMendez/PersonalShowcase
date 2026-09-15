@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% import "copilot/_topbar.html" as bar with context %}
+{% block title %}{{ site.wordmark }} · Multifamily Copilot · Screen{% endblock %}
+{% block body %}
+{% call bar.topbar(steps, active_step) %}
+  {% if screened %}<a class="btn" href="/copilot?case=Screened">Open the screened case</a>{% endif %}
+  <form method="post" action="/copilot/screen/reset" style="display: inline;"><button class="btn" type="submit">Start over</button></form>
+{% endcall %}
+
+<div class="deal-head">
+  <div class="deal-head-copy">
+    <div class="eyebrow">Step 1 · Screen · Read the broker package, then answer what it leaves open</div>
+    <div class="deal-title-row">
+      <h1 class="deal-title">{{ meta.name }}</h1>
+      <div class="deal-facts">{{ meta.facts }}</div>
+    </div>
+  </div>
+  <div class="deal-facts">{% if reader_live %}OM read by the Claude API; structured files parsed directly{% else %}OM read by the rule reader; set ANTHROPIC_API_KEY to read arbitrary offering memoranda{% endif %}</div>
+</div>
+
+<div class="tool-body" style="margin-top: 22px;">
+{% if errors %}<div class="errors">{% for e in errors %}{{ e }} {% endfor %}</div>{% endif %}
+<div class="grid-12">
+  <div class="span-7 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Documents</div><div class="note">PDF for the OM; xlsx or csv for the rent roll and T-12 · {{ max_mb }} MB each · read in memory, never stored</div></div>
+      <form method="post" action="/copilot/screen/upload" enctype="multipart/form-data">
+        <div class="doc-slots">
+          {% for kind, label, sample in kinds %}
+          {% set doc = documents.get(kind) %}
+          <div class="doc-slot{% if doc %} loaded{% endif %}">
+            <div class="eyebrow">{{ label }}</div>
+            {% if doc %}
+            <div class="doc-name">{{ doc.filename }}</div>
+            <div class="note">{{ doc.pages | length }} {{ 'page' if kind == 'om' else 'sheet' }}{% if doc.pages | length != 1 %}s{% endif %}{% if doc.rows %} · {{ doc.rows | length | num }} rows{% endif %}</div>
+            {% else %}
+            <div class="doc-name muted">Not loaded</div>
+            <div class="note">&nbsp;</div>
+            {% endif %}
+            <input class="file" type="file" name="{{ kind }}" accept="{{ '.pdf' if kind == 'om' else '.xlsx,.csv,.pdf' }}">
+            <a class="text-link small" href="/copilot/screen/sample/{{ sample }}">Sample {{ sample.split('.')[-1] }}</a>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="panel-foot" style="align-items: center;">
+          <span>Or load the synthetic Sawyer Bend package: an invented OM, rent roll and T-12 that reconcile to the sample deal.</span>
+          <span class="actions">
+            <button class="btn" type="submit" formaction="/copilot/screen/sample" formnovalidate>Use the sample documents</button>
+            <button class="btn btn-primary" type="submit">Read the documents</button>
+          </span>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Extracted figures</div><div class="note">{% if result %}{{ figures | selectattr('value') | list | length }} of {{ catalogue }} found · every quote checked against the cited page{% else %}{{ catalogue }} figures in the catalogue{% endif %}</div></div>
+      {% if result %}
+      <table>
+        <thead><tr><th>Figure</th><th class="r">Value</th><th>Source</th><th>Confidence</th></tr></thead>
+        <tbody>
+          {% for e in figures %}
+          <tr class="sub">
+            <td>{{ e.label }}<div class="quote">{% if e.quote %}"{{ e.quote }}"{% endif %}{% if e.note %} <span class="muted">{{ e.note }}</span>{% endif %}</div></td>
+            <td class="r num">{{ e.display() }}</td>
+            <td class="src nowrap">{{ e.document }} {{ e.page }}</td>
+            <td><span class="conf {{ e.confidence | lower }}">{{ e.confidence }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if result.notes %}<div class="panel-foot"><span>{% for n in result.notes %}{{ n }} {% endfor %}</span></div>{% endif %}
+      {% else %}
+      <p class="memo-body">Load the documents to fill this table. Each figure arrives with the document, the page or rows it came from, a verbatim quote and a confidence grade. Figures that are absent or weak become questions on the right.</p>
+      {% endif %}
+    </div>
+
+    {% if plans %}
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Unit mix from the documents</div><div class="note">rent roll rows, market rents from the OM survey</div></div>
+      <table>
+        <thead><tr><th>Plan</th><th class="r">Units</th><th class="r">Avg SF</th><th class="r">Occupied</th><th class="r">In-place rent</th><th class="r">Market rent</th></tr></thead>
+        <tbody>
+          {% for p in plans %}
+          <tr class="sub"><td>{{ p.code }} · {{ p.unit_type }}</td><td class="r num">{{ p.units }}</td><td class="r num">{{ p.sf | num }}</td><td class="r num">{{ p.occupied }}</td><td class="r num">{{ p.in_place_rent | money }}</td><td class="r num">{{ p.market_rent | money }}</td></tr>
+          {% endfor %}
+          {% set total_units = plans | sum(attribute='units') %}
+          <tr class="total"><td>Total</td><td class="r num">{{ total_units }}</td><td class="r num"></td><td class="r num">{{ plans | sum(attribute='occupied') }}</td><td class="r num"></td><td class="r num"></td></tr>
+        </tbody>
+      </table>
+      {% if result.non_revenue_units %}<div class="panel-foot"><span>{{ result.non_revenue_units }} non-revenue units (model, office) carried in the model.</span></div>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="span-5 stack">
+    <form method="post" action="/copilot/screen/answers" class="panel">
+      <div class="panel-head"><div class="eyebrow">What the documents leave open</div><div class="note">{{ groups | map(attribute=1) | map('length') | sum }} questions · answers default to the extracted figure, else the current model input</div></div>
+      {% for group, qs in groups %}
+      <div class="q-group">
+        <div class="q-group-title">{{ group }}</div>
+        {% for q in qs %}
+        <div class="q-row">
+          <div class="q-copy">
+            <label class="q-prompt" for="q-{{ loop.index0 }}-{{ group }}">{{ q.prompt }}</label>
+            <div class="q-reason">
+              {% if q.extracted %}<span class="conf {{ q.extracted.confidence | lower }}">{{ q.extracted.document }} {{ q.extracted.page }}: {{ q.extracted.display() }}</span> · {% endif %}{{ q.reason }}
+              {% if q.extracted and q.prefill != q.current %} Model input {{ q.current | field }}{% if q.kind == 'pct' %}{{ '' }}{% endif %}.{% endif %}
+            </div>
+          </div>
+          <div class="q-input">
+            <input class="input r" type="text" inputmode="decimal" autocomplete="off" id="q-{{ loop.index0 }}-{{ group }}" name="{{ q.key }}" value="{{ (q.prefill * 100) | round(4) | field if q.kind == 'pct' else q.prefill | field }}">
+            <span class="q-unit">{{ {'money': '$', 'pct': '%', 'count': '', 'months': 'mo', 'years': 'yrs', 'rent': '$ / mo', 'per_unit_year': '$ / unit / yr'}[q.kind] }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <div class="panel-foot" style="align-items: center;">
+        <span>Answers and document facts land on the sample deal's base inputs and open as the Screened case.</span>
+        <button class="btn btn-primary" type="submit">Run the underwriting</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+{% endblock %}

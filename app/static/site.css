@@ -215,3 +215,28 @@ td.active-col { font-weight: 600; }
 .about-page .headline { margin-top: 0; }
 .about-page .section-text { max-width: 720px; }
 .about-page .fact-table { max-width: 720px; margin-top: 8px; }
+
+/* Copilot screen step */
+.step { text-decoration: none; }
+.step:hover { text-decoration: none; color: var(--ink); }
+.doc-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.doc-slot { border: 1px solid var(--border); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.doc-slot.loaded { border-color: var(--ink); }
+.doc-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.muted { color: var(--muted); }
+.file { font-size: 12px; color: var(--ink-2); max-width: 100%; }
+.text-link.small { font-size: 12px; }
+.quote { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+.q-group { border-top: 1px solid var(--rule); padding-top: 10px; margin-top: 10px; }
+.q-group:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.q-group-title { font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.q-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--hairline); }
+.q-row:last-child { border-bottom: 0; }
+.q-copy { min-width: 0; flex: 1; }
+.q-prompt { font-size: 13px; color: var(--ink); display: block; }
+.q-reason { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+.q-input { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.q-input .input { width: 110px; }
+.q-unit { font-size: 11px; color: var(--muted); width: 70px; }
+button.btn { font-family: inherit; cursor: pointer; background: var(--surface); }
+button.btn-primary { background: var(--accent); }
