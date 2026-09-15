@@ -352,10 +352,35 @@ def draft_from_payload(raw: Any) -> Draft:
                 decoded = json.loads(value)
             except ValueError:
                 decoded = value
-            value = decoded if isinstance(decoded, list) else [str(decoded)]
+            value = decoded if isinstance(decoded, (list, dict)) else split_items(str(decoded))
+        if isinstance(value, dict):
+            value = list(value.values())
         if isinstance(value, list):
-            data[key] = [str(v) for v in value]
+            items: list[str] = []
+            for v in value:
+                items.extend(split_items(str(v)) if len(value) == 1 else [str(v).strip()])
+            data[key] = [i for i in items if i]
     return Draft.model_validate(data)
+
+
+_LIST_BREAK = re.compile(r"\n+|\s+(?=(?:[-*\u2022]|\(?\d+[.)])\s)")
+_SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+(?=[A-Z{(\"])")
+_SEMICOLON_BREAK = re.compile(r"\s*;\s+")
+
+
+def split_items(text: str) -> list[str]:
+    """A paragraph the model should have returned as a list, split into its items: on
+    newlines, bullets or numbering when present, else on sentence ends, else on semicolons."""
+    text = text.strip()
+    if not text:
+        return []
+    for pattern in (_LIST_BREAK, _SENTENCE_BREAK, _SEMICOLON_BREAK):
+        parts = [part.strip(" -*\u2022\t") for part in pattern.split(text)]
+        parts = [re.sub(r"^\(?\d+[.)]\s*", "", part).strip() for part in parts]
+        parts = [part for part in parts if part]
+        if len(parts) > 1:
+            return parts
+    return [text]
 
 
 # --------------------------------------------------------------------------------------------

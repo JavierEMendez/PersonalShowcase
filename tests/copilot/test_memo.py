@@ -194,3 +194,25 @@ def test_draft_from_stringified_payload(base_facts: MemoFacts) -> None:
         base_facts, ClaudeWriter(client=SimpleNamespace(messages=FakeMessages(payload)), model="m")
     )
     assert not memo.fallback and memo.problems == []
+
+
+def test_paragraph_body_is_split_into_sentences(base_facts: MemoFacts) -> None:
+    from core.copilot.memo import draft_from_payload, split_items
+
+    payload = dict(GOOD_DRAFT)
+    payload["body"] = " ".join(GOOD_DRAFT["body"])
+    payload["cannot"] = "\n".join(f"- {c}" for c in GOOD_DRAFT["cannot"])
+    draft = draft_from_payload(payload)
+    assert draft.body == GOOD_DRAFT["body"]
+    assert draft.cannot == GOOD_DRAFT["cannot"]
+    memo = write_memo(
+        base_facts, ClaudeWriter(client=SimpleNamespace(messages=FakeMessages(payload)), model="m")
+    )
+    assert not memo.fallback and memo.problems == []
+    numbered = "1. First item here. 2. Second item {bid}. 3. Third one."
+    assert split_items(numbered) == ["First item here.", "Second item {bid}.", "Third one."]
+    semis = "Alpha risk; beta risk; gamma risk."
+    assert split_items(semis) == ["Alpha risk", "beta risk", "gamma risk."]
+    as_dict: dict[str, Any] = dict(GOOD_DRAFT)
+    as_dict["body"] = {str(i): s for i, s in enumerate(GOOD_DRAFT["body"])}
+    assert draft_from_payload(as_dict).body == GOOD_DRAFT["body"]
