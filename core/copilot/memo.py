@@ -28,6 +28,8 @@ DEFAULT_MODEL = os.environ.get("COPILOT_MODEL", "claude-sonnet-5")
 THRESHOLD_IRR = 0.12
 TOKEN = re.compile(r"\{([a-z0-9_]+)\}")
 DIGIT = re.compile(r"\d")
+# Names that carry digits but are not figures; stripped before the digit check.
+ALLOWED_WITH_DIGITS = re.compile(r"\bT-?12\b|\bLP\b|\bGP\b", re.I)
 
 
 # --------------------------------------------------------------------------------------------
@@ -290,7 +292,8 @@ floor or breach. The last section lists what the model cannot tell you: reassess
 premium holding, physical condition, and the seller's appetite, plus any low-confidence
 extraction named in the facts.
 Format: body and cannot are JSON arrays of strings, one sentence per element. Do not join
-them into a paragraph."""
+them into a paragraph. The only digits allowed outside placeholders are in the name T-12; write
+other counts and dates in words or leave them out."""
 
 
 class ClaudeWriter:
@@ -440,8 +443,11 @@ def check_draft(draft: Draft, facts: MemoFacts) -> list[str]:
         for token in TOKEN.findall(text):
             if token not in facts.figures:
                 problems.append(f"unknown placeholder {{{token}}}")
-        if DIGIT.search(TOKEN.sub("", text)):
-            problems.append(f"digit written by the writer: {text[:60]!r}")
+        stripped = ALLOWED_WITH_DIGITS.sub("", TOKEN.sub("", text))
+        hit = DIGIT.search(stripped)
+        if hit:
+            around = stripped[max(0, hit.start() - 30) : hit.start() + 30].strip()
+            problems.append(f"digit written by the writer: ...{around}...")
     for label in violations(" ".join(texts)):
         problems.append(f"banned: {label}")
     if "?" in " ".join(texts):

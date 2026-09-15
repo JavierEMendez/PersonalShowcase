@@ -237,3 +237,19 @@ def test_sections_in_any_shape_are_flattened(base_facts: MemoFacts) -> None:
     )
     assert memo.fallback
     assert any(p.startswith("draft as received: Recommendation: bid {bid}") for p in memo.problems)
+
+
+def test_t12_is_not_a_digit_but_other_numbers_are(base_facts: MemoFacts) -> None:
+    ok = dict(GOOD_DRAFT)
+    ok["cannot"] = [
+        "Whether the seller's T-12 taxes at {taxes_share_of_opex} of expenses survive the sale.",
+        *GOOD_DRAFT["cannot"][1:],
+    ]
+    assert not any("digit" in p for p in check_draft(Draft.model_validate(ok), base_facts))
+    bad = dict(GOOD_DRAFT)
+    bad["cannot"] = [
+        "Whether the 2025 assessed value of the T-12 taxes survives reassessment.",
+        *GOOD_DRAFT["cannot"][1:],
+    ]
+    problems = check_draft(Draft.model_validate(bad), base_facts)
+    assert any(p.startswith("digit written by the writer: ...") and "2025" in p for p in problems)
