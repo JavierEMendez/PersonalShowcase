@@ -6,21 +6,12 @@ Usage: python scripts/lint_copy.py README.md docs/*.md app/templates/*.html
 
 import re
 import sys
+from pathlib import Path
 
-BANNED = [
-    (r"—", "em dash"),
-    (r"\bdelve", "delve"),
-    (r"\bleverag(e|es|ed|ing)\b", "leverage as a verb"),
-    (r"\brobust\b", "robust"),
-    (r"\bseamless(ly)?\b", "seamless"),
-    (r"\bunlock(s|ed|ing)?\b", "unlock"),
-    (r"\bempower(s|ed|ing)?\b", "empower"),
-    (r"\bcutting-edge\b", "cutting-edge"),
-    (r"\bgame-changing\b", "game-changing"),
-    (r"\bit'?s not [^.]{1,60}, it'?s\b", "'it's not X, it's Y' construction"),
-    (r"\bnot just [^.]{1,60}, but\b", "'not just X, but Y' construction"),
-    (r"(?<!<)!(?=[\s\"'\)]|$)", "exclamation point"),
-]
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from core.copy_rules import BANNED  # noqa: E402
 
 
 def main(paths):

@@ -103,3 +103,19 @@ def test_upload_rejects_bad_files_and_reads_good_ones() -> None:
     assert client.get("/copilot/screen/sample/../secret").status_code in (400, 404)
     session.post("/copilot/screen/reset")
     assert "Not loaded" in session.get("/copilot/screen").text
+
+
+def test_memo_draft_and_download() -> None:
+    session = TestClient(app)
+    page = session.get("/copilot?case=Lender").text
+    assert "IC memo · sentence template" in page
+    assert "Recommendation: pass at $46.0M" in page
+    response = session.post("/copilot/memo?case=Lender", follow_redirects=False)
+    assert response.status_code == 303 and response.headers["location"].endswith("case=Lender#memo")
+    page = session.get("/copilot?case=Lender").text
+    assert "Recommendation: pass at $46.0M" in page  # template writer without an API key
+    md = session.get("/copilot/memo.md?case=Lender")
+    assert md.status_code == 200 and md.text.startswith(
+        "# Sawyer Bend Apartments: investment committee memo (Lender case)"
+    )
+    assert 'filename="sawyer-bend-memo-lender.md"' in md.headers["content-disposition"]

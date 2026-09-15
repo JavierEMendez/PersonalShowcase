@@ -48,10 +48,16 @@ Run one per session. Each starts with Claude Code reading `CLAUDE.md` automatica
 **Session 6, screen module.** (Done on 2026-09-14; see `docs/screen-failure-modes.md` and `evals/screen/`. Uploads are xlsx or csv for the structured files rather than PDF, since that is what brokers send and it keeps the parsing deterministic.)
 "Build core/copilot/screen.py: extract the 15 assumptions in docs/synthetic-deals.md from a synthetic OM, rent roll, and T-12 PDF (generate all three in data/ with realistic layout), returning value, source page or line, and confidence. Use the Claude API with structured output. Then build the question loop: compare extracted inputs against the typed model inputs, list what is missing or low confidence, and render one question per gap with the extracted figure and its source beside it; accepted or overridden answers flow into the scenario inputs. Add upload routes for the OM, rent roll, and T-12 with size and type limits. Build evals/screen/ with the 15 expected values and a scorer. Document failure modes in docs/screen-failure-modes.md. Wire the results into the Extracted assumptions panel."
 
-**Session 7, recommend module.**
+**Session 7, recommend module.** (Done on 2026-09-14. The writer emits placeholders and the code fills the figures, which is how 'every figure from the model output dict' is enforced rather than checked after the fact; see `docs/memo-failure-modes.md`.)
 "Build core/copilot/memo.py: generate the IC memo from model outputs with the structure in docs/synthetic-deals.md (recommendation, body, what the model cannot tell you). Every figure in the memo must come from the model output dict, never from the language model. Run scripts/lint_copy.py on the output. Build evals/memo/ that checks figure fidelity and banned phrases. Wire 'Draft IC memo' to it."
 
-**Session 8, README and case study.**
+**Session 8, buyer's model port.**
+"Port the internal buyer's model into core/copilot/ the way calc.py was ported for the MPC tool: read every sheet's formulas with openpyxl from the workbook in Box (never copy it into the repo), write typed inputs that mirror the workbook's input cells, implement the modules in the workbook's calculation order, and reconcile to the workbook's cached values on the internal deal with a private script under private/ until there are zero mismatches. Then reseed the port with the Sawyer Bend synthetic inputs, replace the structural engine, regenerate the fixture and docs/synthetic-deals.md, and record the figure differences in docs/decisions.md."
+
+**Session 9, re-point the Copilot.**
+"Rebuild the Underwrite screen with input tabs that mirror the workbook's sheets, wire Screen so the intake fills those inputs from the OM, rent roll and T-12, rebuild the memo facts from the ported outputs, and rerun both eval sets."
+
+**Session 10, README and case study.**
 "Rewrite README.md as an IC memo: outcome first, a GIF of the two screens, 'How to evaluate this in five minutes', architecture, link to docs/decisions.md. Write docs/case-study.md, 1,200 words, on what changed in the workflow when the model was ported from Excel and what the evals caught. Run scripts/lint_copy.py on both."
 
 ## Working rules for every session

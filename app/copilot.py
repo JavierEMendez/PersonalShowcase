@@ -34,8 +34,9 @@ from core.copilot.documents import (
 from core.copilot.engine import run
 from core.copilot.excel import export_workbook
 from core.copilot.inputs import CopilotInputs
+from core.copilot.memo import ClaudeWriter, Memo, TemplateWriter, build_facts, write_memo
 from core.copilot.screen import ClaudeReader, Question, RuleReader, ScreenResult
-from core.copilot.sensitivity import StressRow, at_price, stress_table
+from core.copilot.sensitivity import at_price, stress_table
 from core.copilot.summary import CopilotOutputs
 
 router = APIRouter(prefix="/copilot")
@@ -98,6 +99,7 @@ class CopilotSession:
     result: ScreenResult | None = None
     answers: dict[str, float] = field(default_factory=dict)
     screened: CopilotInputs | None = None
+    memos: dict[str, Memo] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
     updated: float = field(default_factory=time.time)
 
@@ -137,78 +139,6 @@ def money_m(v: float, d: int = 1) -> str:
 
 def mult(v: float | None) -> str:
     return "n/a" if v is None else f"{v:.2f}×"
-
-
-def draft_memo(out: CopilotOutputs, ask: CopilotOutputs, stress: list[StressRow]) -> dict[str, Any]:
-    """The Recommend step, drafted from model figures alone.
-
-    Build step 7 adds the language model for prose; every figure comes from the engine and
-    would still.
-    """
-    s, r = out.summary, out.returns
-    bid = money_m(s.purchase_price)
-    ask_price = money_m(s.asking_price or 0)
-    irr = r.levered_irr or 0.0
-    cushion_bps = round((irr - THRESHOLD_IRR) * 10_000)
-    clears = irr >= THRESHOLD_IRR
-    growth = next((row for row in stress if row.label.startswith("Rent growth")), None)
-    premium = next((row for row in stress if row.label.startswith("Renovation premium")), None)
-    floor_row = min(stress, key=lambda row: row.min_dscr or 9.0) if stress else None
-    breaches = [row for row in stress if not row.holds]
-    threshold = f"{THRESHOLD_IRR:.0%}"
-
-    if clears:
-        recommendation = (
-            f"Recommendation: bid {bid}, subject to a tax reassessment estimate from the "
-            f"appraisal district and a scope walk of the unit interiors. "
-            f"Do not pursue at the {ask_price} ask."
-        )
-    else:
-        recommendation = (
-            f"Recommendation: pass at {bid}. The deal returns {pct(irr)} levered against a "
-            f"{threshold} threshold; revisit if the price or the renovation premium moves."
-        )
-    direction = "above" if clears else "below"
-    body = [
-        (
-            f"At {bid} the deal returns a {pct(irr)} levered IRR and a "
-            f"{r.equity_multiple:.2f}× multiple, {abs(cushion_bps):,} bps {direction} the "
-            f"{threshold} threshold, with a year 1 DSCR of {mult(s.dscr_year1)} against a "
-            f"{mult(out.loan.covenant_dscr)} covenant."
-        ),
-        f"At the {ask_price} ask the levered IRR falls to {pct(ask.returns.levered_irr)}.",
-    ]
-    if growth:
-        body.append(
-            "Returns are most sensitive to market rent growth: at 1% the IRR is "
-            f"{pct(growth.levered_irr)}."
-        )
-    if premium:
-        body.append(
-            f"The renovation premium carries the value-add thesis: at "
-            f"{premium.label.split(' ')[-1]} rather than ${out.renovation.premium_per_month:,.0f} "
-            f"the IRR is {pct(premium.levered_irr)}."
-        )
-    if breaches:
-        body.append(
-            f"The covenant breaks under {breaches[0].label.lower()}, where DSCR falls to "
-            f"{mult(breaches[0].min_dscr)}."
-        )
-    elif floor_row is not None:
-        body.append(
-            f"No single stress breaches the covenant; the floor is {mult(floor_row.min_dscr)} "
-            f"under {floor_row.label.lower()}. The risk in this deal is to equity return, "
-            "not to the debt."
-        )
-    cannot = [
-        "Whether the appraisal district reassesses to the purchase price (taxes are "
-        f"{pct(s.taxes_share_of_opex, 0)} of operating expenses).",
-        f"Whether the ${out.renovation.premium_per_month:,.0f} premium holds once "
-        f"{out.renovation.units} more renovated units reach the submarket.",
-        "The condition of roofs and HVAC beyond the property condition sample.",
-        f"The seller's appetite for a bid {pct(s.discount_to_ask)} below ask.",
-    ]
-    return {"recommendation": recommendation, "body": body, "cannot": cannot, "clears": clears}
 
 
 def _row(
@@ -352,6 +282,8 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
     stress = stress_table(current.inputs)
     outputs = {c.name: run(c.inputs) for c in session.cases()}
     assumptions, assumptions_note = assumption_rows(session.result)
+    facts = build_facts(out, ask, stress, current.name, THRESHOLD_IRR, session.result)
+    memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
     response = render(
         request,
         "copilot/underwrite.html",
@@ -365,7 +297,8 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
         stress=stress,
         assumptions=assumptions,
         assumptions_note=assumptions_note,
-        memo=draft_memo(out, ask, stress),
+        memo=memo,
+        memo_live=ClaudeWriter.available(),
         monitor=monitor_rows(out),
         compare=compare_rows(outputs),
         compare_names=list(outputs),
@@ -374,6 +307,40 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
     )
     set_session_cookie(response, sid)
     return response
+
+
+@router.post("/memo")
+async def draft_memo(request: Request, case: str | None = None) -> Response:
+    """Draft the IC memo for a case with the configured writer and keep it in the session."""
+    session, sid = store.load(request)
+    current = session.case_named(case)
+    memo = write_memo(_facts(session, current))
+    session.memos[current.name] = memo
+    return _redirect(request, f"/copilot?case={quote(current.name)}#memo", sid)
+
+
+@router.get("/memo.md")
+async def memo_markdown(request: Request, case: str | None = None) -> Response:
+    session, sid = store.load(request)
+    current = session.case_named(case)
+    memo = session.memos.get(current.name) or write_memo(_facts(session, current), TemplateWriter())
+    filename = f"sawyer-bend-memo-{current.name.lower()}.md"
+    response = Response(
+        memo.markdown(META["name"]),
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+    set_session_cookie(response, sid)
+    return response
+
+
+def _facts(session: CopilotSession, current: Case) -> Any:
+    out = run(current.inputs)
+    acq = current.inputs.acquisition
+    ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
+    return build_facts(
+        out, ask, stress_table(current.inputs), current.name, THRESHOLD_IRR, session.result
+    )
 
 
 @router.get("/export.xlsx")
@@ -499,6 +466,7 @@ async def answers(request: Request) -> Response:
     if not errors:
         try:
             session.screened = screening.apply_screen(base, session.result, parsed)
+            session.memos.pop(SCREENED, None)
             session.answers = parsed
         except ValidationError as exc:
             errors = [e.get("msg", "invalid") for e in exc.errors()]
