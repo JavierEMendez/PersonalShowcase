@@ -136,7 +136,7 @@ design/         approved mockups; the layout reference, figures superseded by th
   sentences, with checks on both.
 - Every figure on a page comes from an engine at request time or startup; nothing is hard-coded.
 - Every trade-off goes in `docs/decisions.md` with the date and what was rejected.
-- Copy rules: no em dashes, no filler verbs, no "it's not X, it's Y", no exclamation points.
+- Copy rules: no em dashes, no filler verbs, none of the contrast constructions on the banned list, no exclamation points.
 
 ## If something looks wrong
 
