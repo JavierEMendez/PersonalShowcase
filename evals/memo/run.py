@@ -18,7 +18,8 @@ from pathlib import Path
 from core.copilot.engine import run
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import ClaudeWriter, TemplateWriter, Writer, build_facts, write_memo
-from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
+from core.copilot.recommend import valuation_range
+from core.copilot.sensitivity import stress_table
 from evals.memo.score import score_memo
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,13 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     ok = True
     for name, inputs in cases():
         out = run(inputs)
-        acq = inputs.acquisition
-        ask = run(at_price(inputs, acq.asking_price or acq.purchase_price))
-        max_bid = max_price_for_lp_irr(inputs, 0.15)
-        at_max = run(at_price(inputs, max_bid)) if max_bid else None
-        facts = build_facts(
-            out, ask, stress_table(inputs), name, max_bid=max_bid, at_max_bid=at_max
-        )
+        facts = build_facts(out, valuation_range(inputs), stress_table(inputs), name)
         memo = write_memo(facts, writer)
         report = score_memo(memo, facts)
         ok = ok and report.ok

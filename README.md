@@ -4,13 +4,13 @@ I build transaction tools that improve decision making. This repo has two of the
 
 Live site: https://javiermendez.up.railway.app
 
-![Land Underwriting, the Copilot intake, and the Copilot underwrite screen](docs/media/demo.gif)
+![Land Underwriting, the screening intake, and the underwrite screen](docs/media/demo.gif)
 
 ## What is here
 
 **Land Underwriting.** A Python port of the master-planned-community land model I use at work: 640 acres, 21 cost lines, a 360-month ledger, unlevered XIRR. On the sample deal it matches the source engine to the dollar on every line and every month, and the XIRR to ten decimals, across three scenarios. You can edit every input in the browser, save scenarios, move the sensitivity grid across six drivers, and download the IC memo as a two-page PDF with the recommended land price solved from a 15% unlevered IRR floor.
 
-**Multifamily Copilot.** Upload a broker package (OM, rent roll, T-12). The tool pulls out the model inputs it can find, each with a page, a quote and a confidence grade, then asks about what the documents leave open: the bid, the renovation scope, the loan terms, the tax reassessment. Answers flow into a monthly acquisition model with loan sizing, a stress table and an LP/GP waterfall. Then it drafts the IC memo.
+**Multifamily Screening Tool.** A pre-screen rather than a full underwriting: it decides whether a deal is worth two weeks of diligence and at what price. Upload a broker package (OM, rent roll, T-12). The tool pulls out the model inputs it can find, each with a page, a quote and a confidence grade, then asks about what the documents leave open: the renovation scope, the loan terms, the tax reassessment. Answers flow into a monthly acquisition model with loan sizing, a stress table and an LP/GP waterfall. The recommendation is a valuation range solved from levered LP IRR targets (13% sets the max, 15% the mid, 17% or 20% below ask the low) with the KPIs at each price, and a memo.
 
 **Where the AI sits.** The model reads documents and writes sentences. It never does the math. Every extraction is checked against the page it cites. The memo writer works with placeholders and cannot write a digit; the code fills in every number from the model output. Both paths have eval sets and a written list of the ways they fail.
 
@@ -18,7 +18,7 @@ Live site: https://javiermendez.up.railway.app
 
 1. Open [Land Underwriting](https://javiermendez.up.railway.app/underwriting). Change the lot price on the Revenue tab and watch the strip, the cash flow and the grid update. Download the IC memo: the recommended price per acre moves with your edits.
 2. Open [Screen](https://javiermendez.up.railway.app/copilot/screen) and click "Use the sample documents". Fifteen figures come back with sources. Set insurance to the broker quote, click "Run the underwriting", and a Screened case shows up next to Base, Downside and Lender.
-3. On the underwrite screen, read the stress table and the memo. Click "Draft IC memo" to have it rewritten. Download it as markdown.
+3. Click "View recommendation". The range says what the deal can bear and what to open at, with the KPIs at each price. Click "Draft with the model" to have the memo rewritten, and download the PDF.
 4. Skim [docs/decisions.md](docs/decisions.md). Every trade-off is in there with the date and what I turned down, including a full port of the multifamily workbook that I decided was not worth it.
 5. Run it yourself:
 

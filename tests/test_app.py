@@ -21,7 +21,7 @@ def test_landing_renders() -> None:
     ("path", "title", "pill"),
     [
         ("/underwriting", "Cypress Ridge", "Lower lot price"),
-        ("/copilot", "Sawyer Bend Apartments", "Downside"),
+        ("/copilot/underwrite", "Sawyer Bend Apartments", "Downside"),
     ],
 )
 def test_tool_stubs_render(path: str, title: str, pill: str) -> None:
@@ -64,4 +64,7 @@ def test_brand_assets_and_titles() -> None:
     assert "<title>Javier Mendez</title>" in landing
     assert 'href="/static/brand/mark.svg" type="image/svg+xml"' in landing
     assert "<title>Javier Mendez · Land Underwriting</title>" in client.get("/underwriting").text
-    assert "<title>Javier Mendez · Multifamily Copilot</title>" in client.get("/copilot").text
+    assert (
+        "<title>Javier Mendez · Multifamily Screening Tool</title>"
+        in client.get("/copilot/underwrite").text
+    )

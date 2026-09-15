@@ -7,9 +7,10 @@ version to keep open during a demo or a change.
 
 One FastAPI app on Railway serves a landing page, an About page and two tools. **Land
 Underwriting** (`/underwriting`) is a Python port of the MPC land model with editable inputs,
-scenarios, a sensitivity grid and an IC memo PDF. **Multifamily Copilot** (`/copilot`) reads a
-broker package, asks about what the documents leave open, runs a monthly acquisition model and
-drafts the IC memo. All deals are synthetic. State lives in the browser session for a day; a
+scenarios, a sensitivity grid and an IC memo PDF. **Multifamily Screening Tool** (`/copilot`, which
+opens on Screen) reads a broker package, asks about what the documents leave open, runs a monthly
+acquisition model and recommends a valuation range: whether the deal is worth a full underwriting
+and at what price. All deals are synthetic. State lives in the browser session for a day; a
 redeploy resets everyone.
 
 ## URLs
@@ -22,10 +23,11 @@ redeploy resets everyone.
 | Input tabs | `/underwriting/tract`, `/costs`, `/revenue`, `/lookups` | Editable inputs; a blank field resets to the model default |
 | Cashflows | `/underwriting/cashflows` | Yearly and monthly schedule |
 | Land memo | `/underwriting/memo.pdf?scenario=Main` | Two-page IC memo: recommendation with the price per acre solved from a 15% unlevered IRR floor, then the evidence |
-| Copilot Screen | `/copilot/screen` | Uploads, extracted figures with citations, unit mix, questions |
-| Copilot Underwrite | `/copilot?case=Base` | Cases Base, Downside, Lender, and Screened once Screen has run |
-| Memo | `POST /copilot/memo?case=Base`, `GET /copilot/memo.md?case=Base` | Draft with the configured writer; download as markdown |
-| Deck | `GET /copilot/memo.pdf?case=Base` | Two-page PDF (recommendation, evidence); a third audit-trail page for the Screened case |
+| Screen | `/copilot/screen` (also `/copilot`) | Uploads, extracted figures with citations, unit mix, questions |
+| Underwrite | `/copilot/underwrite?case=Base` | Cases Base, Downside, Lender, and Screened once Screen has run; no memo here |
+| Recommend | `/copilot/recommend?case=Base` | Valuation range (low, mid, max) with KPIs at each price, the memo, stress table, market context |
+| Memo | `POST /copilot/memo?case=Base`, `GET /copilot/memo.md?case=Base` | Draft with the configured writer (returns to Recommend); download as markdown |
+| Deck | `GET /copilot/memo.pdf?case=Base` | Two-page PDF (recommendation with the range, evidence); a third audit-trail page for the Screened case |
 | Health | `/health` | Railway health check |
 
 ## Demo in five minutes
@@ -35,8 +37,9 @@ redeploy resets everyone.
    IC memo and point at the recommended price per acre.
 2. Copilot Screen: "Use the sample documents". Point at a quote and its confidence. Change
    insurance to 850 and controllables to 3,850 (the buyer's numbers); "Run the underwriting".
-3. Copilot Underwrite: the Screened pill is active. Read the stress table, then "Draft IC memo".
-   Without an API key it says "sentence template"; with one it names the model.
+3. Underwrite: the Screened pill is active. Read the strip and the stress table, then "View
+   recommendation". The range table shows low, mid and max with the KPIs at each; "Draft with the
+   model" rewrites the memo (without an API key it says "sentence template").
 4. Say what is synthetic (everything) and where the logic came from (internal models, ported and
    reconciled for the land tool; structure-faithful for the multifamily tool).
 
@@ -65,9 +68,11 @@ is checked: quote on the cited page, figure in the quote. About twenty questions
 extracted figure or the current model input; answers land on the Base inputs as the Screened
 case.
 
-**Memo** (`core/copilot/memo.py`). The bid rule is a 15% levered LP IRR floor (`LP_FLOOR`), the LP return after debt and the waterfall; the engine
-solves the highest price that still reaches it and the verdict is bid, bid lower, or pass (a
-bid more than 20% below the ask). A facts table of about forty formatted figures. The writer
+**Recommend** (`core/copilot/recommend.py`, `core/copilot/memo.py`). The range is solved from
+levered LP IRR targets (`LP_TARGETS`): 13% sets the max, 15% the mid, and the low is the lower
+of the 17% price and 20% below the ask (`LOW_DISCOUNT_CAP`). The verdict is pursue when the ask
+sits inside the range, engage (only below the max) when it is above, pass when no price returns
+13%. A facts table of about sixty formatted figures. The writer
 (template, or Claude when the key is set) writes prose with `{placeholders}` and may not write a
 digit. Drafts that break a rule fall back to the template and say so.
 

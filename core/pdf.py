@@ -83,7 +83,7 @@ class Deck(FPDF):
         self.set_title("Investment committee memo")
         self._site_fonts = self._load_fonts()
         self.footer_text = ""
-        self.product = "Multifamily Copilot"
+        self.product = "Multifamily Screening Tool"
 
     # -- fonts ---------------------------------------------------------------------------------
     def _load_fonts(self) -> bool:

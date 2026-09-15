@@ -1,4 +1,4 @@
-"""Multifamily Copilot routes: the Screen intake, the underwrite screen, cases and the memo."""
+"""Multifamily Screening Tool routes: Screen, Underwrite, Recommend, and the memo downloads."""
 
 from __future__ import annotations
 
@@ -10,12 +10,7 @@ from typing import Annotated, Any
 from urllib.parse import quote
 
 from fastapi import APIRouter, File, Request, UploadFile
-from fastapi.responses import (
-    FileResponse,
-    HTMLResponse,
-    RedirectResponse,
-    Response,
-)
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from pydantic import BaseModel, ValidationError
 
 from app.deals import DATA_DIR
@@ -34,13 +29,22 @@ from core.copilot.documents import (
 )
 from core.copilot.engine import run
 from core.copilot.inputs import CopilotInputs
-from core.copilot.memo import ClaudeWriter, Memo, TemplateWriter, build_facts, write_memo
+from core.copilot.memo import (
+    ClaudeWriter,
+    Memo,
+    MemoFacts,
+    TemplateWriter,
+    build_facts,
+    write_memo,
+)
+from core.copilot.recommend import LOW_DISCOUNT_CAP, LP_TARGETS, ValuationRange, valuation_range
 from core.copilot.screen import ClaudeReader, Question, RuleReader, ScreenResult
-from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
+from core.copilot.sensitivity import StressRow, stress_table
 from core.copilot.summary import CopilotOutputs
 
 router = APIRouter(prefix="/copilot")
 
+PRODUCT = "Multifamily Screening Tool"
 SAMPLE_DIR: Path = DATA_DIR / "sawyer_bend"
 SAMPLE_FILES: dict[Kind, str] = {
     "om": "sawyer-bend-om.pdf",
@@ -65,14 +69,11 @@ def _load() -> tuple[dict[str, Any], list[Case], list[dict[str, str]]]:
 
 
 META, CASES, ASSUMPTIONS = _load()
-STEPS: list[tuple[str, str]] = [
+STEP_NAMES: list[tuple[str, str]] = [
     ("Screen", "/copilot/screen"),
-    ("Underwrite", "/copilot"),
-    ("Recommend", "/copilot#memo"),
-    ("Monitor", "/copilot#monitor"),
+    ("Underwrite", "/copilot/underwrite"),
+    ("Recommend", "/copilot/recommend"),
 ]
-LP_FLOOR = 0.15  # a bid must return this to the LP after the waterfall
-MONTHS_IN = 6  # the Monitor panel reports the second quarter after closing
 
 COMPARE_METRICS: list[tuple[str, str, str]] = [
     ("Levered IRR", "levered_irr", "pct"),
@@ -113,9 +114,12 @@ class CopilotSession:
         return cases
 
     def case_named(self, name: str | None) -> Case:
+        """The named case, else the screened case when there is one, else the first seed."""
         for case in self.cases():
             if case.name == name:
                 return case
+        if name is None and self.screened is not None:
+            return Case(name=SCREENED, inputs=self.screened)
         return CASES[0]
 
 
@@ -124,6 +128,10 @@ store: SessionStore[CopilotSession] = SessionStore(CopilotSession)
 
 def _reader() -> screening.OMReader:
     return ClaudeReader() if ClaudeReader.available() else RuleReader()
+
+
+def _steps(query: str) -> list[tuple[str, str]]:
+    return [(name, href if name == "Screen" else href + query) for name, href in STEP_NAMES]
 
 
 # --------------------------------------------------------------------------------------------
@@ -139,89 +147,6 @@ def money_m(v: float, d: int = 1) -> str:
 
 def mult(v: float | None) -> str:
     return "n/a" if v is None else f"{v:.2f}×"
-
-
-def _row(
-    test: str, covenant: str, underwritten: str, actual: str, cushion: str, status: str, ok: bool
-) -> dict[str, Any]:
-    return {
-        "test": test,
-        "covenant": covenant,
-        "underwritten": underwritten,
-        "actual": actual,
-        "cushion": cushion,
-        "status": status,
-        "ok": ok,
-    }
-
-
-def monitor_rows(out: CopilotOutputs) -> list[dict[str, Any]]:
-    """A synthetic quarter of actuals, two quarters after closing, tested against underwriting."""
-    s, ln, reno = out.summary, out.loan, out.renovation
-    dscr_uw = s.dscr_year1 or 0.0
-    dscr_actual = dscr_uw + 0.03
-    dy_actual = s.debt_yield + 0.002
-    occupancy_uw, occupancy_actual, occupancy_min = 0.94, 0.948, 0.85
-    months_active = max(0, MONTHS_IN - reno.start_month + 1)
-    planned = round(min(reno.units, reno.pace_per_month * months_active))
-    actual_units = max(0, planned - 3)
-    io_left = ln.io_months - MONTHS_IN
-    return [
-        _row(
-            "DSCR",
-            mult(ln.covenant_dscr),
-            mult(dscr_uw),
-            mult(dscr_actual),
-            mult(dscr_actual - ln.covenant_dscr),
-            "In compliance",
-            dscr_actual >= ln.covenant_dscr,
-        ),
-        _row(
-            "Debt yield",
-            "7.5%",
-            pct(s.debt_yield),
-            pct(dy_actual),
-            f"{round((dy_actual - 0.075) * 10_000)} bps",
-            "In compliance",
-            dy_actual >= 0.075,
-        ),
-        _row(
-            "Occupancy",
-            pct(occupancy_min),
-            pct(occupancy_uw),
-            pct(occupancy_actual),
-            f"{round((occupancy_actual - occupancy_min) * 10_000):,} bps",
-            "In compliance",
-            True,
-        ),
-        _row(
-            "Renovations completed",
-            "",
-            f"{planned} of {reno.units}",
-            f"{actual_units} of {reno.units}",
-            f"({planned - actual_units}) units",
-            "Behind plan",
-            False,
-        ),
-        _row(
-            "Interest-only expiry",
-            ln.io_expiry.strftime("%B %Y"),
-            "",
-            f"{io_left} months",
-            "",
-            f"Amortization begins in {io_left} months",
-            True,
-        ),
-        _row(
-            "Loan maturity",
-            ln.maturity.strftime("%B %Y"),
-            "",
-            f"{ln.term_months - MONTHS_IN} months",
-            "",
-            "Refinance review at 60 months",
-            True,
-        ),
-    ]
 
 
 def compare_rows(outputs: dict[str, CopilotOutputs]) -> list[tuple[str, list[str]]]:
@@ -240,14 +165,6 @@ def compare_rows(outputs: dict[str, CopilotOutputs]) -> list[tuple[str, list[str
                 values.append(money_m(v))
         rows.append((label, values))
     return rows
-
-
-def bid_at_floor(inputs: CopilotInputs) -> tuple[float | None, CopilotOutputs | None]:
-    """The highest price at which the LP IRR reaches the floor, and the engine output there."""
-    price = max_price_for_lp_irr(inputs, LP_FLOOR)
-    if price is None:
-        return None, None
-    return price, run(at_price(inputs, price))
 
 
 def assumption_rows(result: ScreenResult | None) -> tuple[list[dict[str, str]], str]:
@@ -271,51 +188,107 @@ def assumption_rows(result: ScreenResult | None) -> tuple[list[dict[str, str]], 
     )
 
 
-# --------------------------------------------------------------------------------------------
-# Underwrite
-# --------------------------------------------------------------------------------------------
+@dataclass
+class Analysis:
+    """Everything the Recommend step and the downloads need for one case."""
+
+    out: CopilotOutputs
+    stress: list[StressRow]
+    valuation: ValuationRange
+    facts: MemoFacts
+    memo: Memo
+
+
+def analyse(session: CopilotSession, current: Case) -> Analysis:
+    out = run(current.inputs)
+    stress = stress_table(current.inputs)
+    valuation = valuation_range(current.inputs)
+    facts = build_facts(out, valuation, stress, current.name, session.result)
+    memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
+    return Analysis(out=out, stress=stress, valuation=valuation, facts=facts, memo=memo)
+
+
 def _redirect(request: Request, url: str, sid: str | None) -> Response:
     response = RedirectResponse(url, status_code=303)
     set_session_cookie(response, sid)
     return response
 
 
-@router.get("", response_class=HTMLResponse)
+def _query(current: Case) -> str:
+    return f"?case={quote(current.name)}"
+
+
+# --------------------------------------------------------------------------------------------
+# Entry, Underwrite, Recommend
+# --------------------------------------------------------------------------------------------
+@router.get("")
+async def entry() -> Response:
+    """The tool starts at Screen."""
+    return RedirectResponse("/copilot/screen", status_code=307)
+
+
+@router.get("/underwrite", response_class=HTMLResponse)
 async def underwrite(request: Request, case: str | None = None) -> Response:
     session, sid = store.load(request)
     current = session.case_named(case)
+    query = _query(current)
     out = run(current.inputs)
-    acq = current.inputs.acquisition
-    ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
     stress = stress_table(current.inputs)
+    valuation = valuation_range(current.inputs)
     outputs = {c.name: run(c.inputs) for c in session.cases()}
     assumptions, assumptions_note = assumption_rows(session.result)
-    max_bid, at_max = bid_at_floor(current.inputs)
-    facts = build_facts(out, ask, stress, current.name, LP_FLOOR, session.result, max_bid, at_max)
-    memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
     response = render(
         request,
         "copilot/underwrite.html",
         meta=META,
+        product=PRODUCT,
         cases=[c.name for c in session.cases()],
         case=current.name,
-        steps=STEPS,
+        steps=_steps(query),
         active_step=2,
         out=out,
-        ask=ask,
         stress=stress,
+        valuation=valuation,
+        targets=LP_TARGETS,
         assumptions=assumptions,
         assumptions_note=assumptions_note,
-        memo=memo,
-        memo_live=ClaudeWriter.available(),
-        monitor=monitor_rows(out),
         compare=compare_rows(outputs),
         compare_names=list(outputs),
-        lp_floor=LP_FLOOR,
-        max_bid=max_bid,
-        at_max=at_max,
         market=multifamily_context(current.inputs, out),
-        query=f"?case={quote(current.name)}",
+        query=query,
+    )
+    set_session_cookie(response, sid)
+    return response
+
+
+@router.get("/recommend", response_class=HTMLResponse)
+async def recommend(request: Request, case: str | None = None) -> Response:
+    session, sid = store.load(request)
+    current = session.case_named(case)
+    query = _query(current)
+    a = analyse(session, current)
+    assumptions, assumptions_note = assumption_rows(session.result)
+    response = render(
+        request,
+        "copilot/recommend.html",
+        meta=META,
+        product=PRODUCT,
+        cases=[c.name for c in session.cases()],
+        case=current.name,
+        steps=_steps(query),
+        active_step=3,
+        out=a.out,
+        stress=a.stress,
+        valuation=a.valuation,
+        points=a.valuation.points,
+        targets=LP_TARGETS,
+        low_cap=LOW_DISCOUNT_CAP,
+        memo=a.memo,
+        memo_live=ClaudeWriter.available(),
+        assumptions=assumptions,
+        assumptions_note=assumptions_note,
+        market=multifamily_context(current.inputs, a.out),
+        query=query,
     )
     set_session_cookie(response, sid)
     return response
@@ -323,19 +296,19 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
 
 @router.post("/memo")
 async def draft_memo(request: Request, case: str | None = None) -> Response:
-    """Draft the IC memo for a case with the configured writer and keep it in the session."""
+    """Draft the memo for a case with the configured writer and keep it in the session."""
     session, sid = store.load(request)
     current = session.case_named(case)
-    memo = write_memo(_facts(session, current))
-    session.memos[current.name] = memo
-    return _redirect(request, f"/copilot?case={quote(current.name)}#memo", sid)
+    a = analyse(session, current)
+    session.memos[current.name] = write_memo(a.facts)
+    return _redirect(request, f"/copilot/recommend{_query(current)}", sid)
 
 
 @router.get("/memo.md")
 async def memo_markdown(request: Request, case: str | None = None) -> Response:
     session, sid = store.load(request)
     current = session.case_named(case)
-    memo = session.memos.get(current.name) or write_memo(_facts(session, current), TemplateWriter())
+    memo = analyse(session, current).memo
     filename = f"sawyer-bend-memo-{current.name.lower()}.md"
     response = Response(
         memo.markdown(META["name"]),
@@ -351,13 +324,7 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
     """The memo as a two- or three-page PDF deck for the case."""
     session, sid = store.load(request)
     current = session.case_named(case)
-    out = run(current.inputs)
-    acq = current.inputs.acquisition
-    ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
-    stress = stress_table(current.inputs)
-    max_bid, at_max = bid_at_floor(current.inputs)
-    facts = build_facts(out, ask, stress, current.name, LP_FLOOR, session.result, max_bid, at_max)
-    memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
+    a = analyse(session, current)
     assumptions, _ = assumption_rows(session.result)
     screened = session.result if current.name == SCREENED and session.result else None
     documents: list[tuple[str, str, str]] = []
@@ -380,7 +347,7 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
                 else ""
             )
             qa.append((q.prompt, source, shown))
-    s = out.summary
+    s = a.out.summary
     facts_line = (
         f"{s.units} units · {s.rentable_sf:,.0f} SF · {META['location']} · "
         f"{s.occupancy * 100:.1f}% occupied · {s.hold_months // 12}-year hold"
@@ -389,17 +356,16 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
         META["name"],
         facts_line,
         current.name,
-        out,
-        memo,
-        stress,
+        a.out,
+        a.memo,
+        a.stress,
         assumptions,
-        LP_FLOOR,
-        max_bid,
+        a.valuation,
         screen=screened,
         documents=documents,
         qa=qa,
     )
-    filename = f"sawyer-bend-ic-memo-{current.name.lower()}.pdf"
+    filename = f"sawyer-bend-screening-memo-{current.name.lower()}.pdf"
     response = Response(
         pdf,
         media_type="application/pdf",
@@ -407,23 +373,6 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
     )
     set_session_cookie(response, sid)
     return response
-
-
-def _facts(session: CopilotSession, current: Case) -> Any:
-    out = run(current.inputs)
-    acq = current.inputs.acquisition
-    ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
-    max_bid, at_max = bid_at_floor(current.inputs)
-    return build_facts(
-        out,
-        ask,
-        stress_table(current.inputs),
-        current.name,
-        LP_FLOOR,
-        session.result,
-        max_bid,
-        at_max,
-    )
 
 
 # --------------------------------------------------------------------------------------------
@@ -447,7 +396,8 @@ async def screen_page(request: Request) -> Response:
         request,
         "copilot/screen.html",
         meta=META,
-        steps=STEPS,
+        product=PRODUCT,
+        steps=_steps(f"?case={SCREENED}" if session.screened else ""),
         active_step=1,
         documents=session.documents,
         kinds=[(k, KIND_LABELS[k], SAMPLE_FILES[k]) for k in ("om", "rent_roll", "t12")],
@@ -470,6 +420,7 @@ def _run_screen(session: CopilotSession) -> None:
     session.result = screening.screen(session.documents, _reader()) if session.documents else None
     session.screened = None
     session.answers = {}
+    session.memos.pop(SCREENED, None)
 
 
 @router.post("/screen/upload")
@@ -541,7 +492,7 @@ async def answers(request: Request) -> Response:
     if errors:
         session.errors = errors
         return _redirect(request, "/copilot/screen", sid)
-    return _redirect(request, f"/copilot?case={SCREENED}", sid)
+    return _redirect(request, f"/copilot/underwrite?case={SCREENED}", sid)
 
 
 @router.post("/screen/reset")

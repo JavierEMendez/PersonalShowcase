@@ -14,6 +14,7 @@ import datetime
 from collections.abc import Sequence
 
 from core.copilot.memo import Memo
+from core.copilot.recommend import ValuationRange
 from core.copilot.screen import ScreenResult
 from core.copilot.sensitivity import StressRow
 from core.copilot.summary import CopilotOutputs
@@ -45,8 +46,7 @@ def build_deck(
     memo: Memo,
     stress: Sequence[StressRow],
     assumptions: Sequence[dict[str, str]],
-    floor: float,
-    max_bid: float | None = None,
+    valuation: ValuationRange,
     screen: ScreenResult | None = None,
     documents: Sequence[tuple[str, str, str]] = (),
     qa: Sequence[tuple[str, str, str]] = (),
@@ -96,12 +96,13 @@ def build_deck(
             MUTED,
         )
 
-    lp_color = POS if (r.lp_irr or 0) >= floor else NEG
+    lo, hi = valuation.low, valuation.max
     bid_note = (
-        f"Levered LP floor {floor:.0%} · max bid {_money_m(max_bid)}"
-        if max_bid
-        else f"Levered LP floor {floor:.0%}"
+        f"Range {_money_m(lo.price)} to {_money_m(hi.price)}"
+        if lo and hi
+        else "No price returns the target"
     )
+    lp_color = POS if valuation.verdict == "pursue" else INK
     dscr_color = POS if (s.dscr_year1 or 0) >= ln.covenant_dscr else NEG
     cells = [
         (
@@ -138,62 +139,36 @@ def build_deck(
         if i % 2 == 1:
             pdf.rule(right_x, cy + cell_h - 0.5, right_w, HAIRLINE, 0.18)
     y = y0 + 1.5 + 4 * cell_h + 4
-    pdf.eyebrow(right_x, y, "Sources and uses  ·  $ millions")
+    pdf.eyebrow(right_x, y, "Valuation range  ·  levered LP IRR targets")
+    points = valuation.points
+    labels = [p.label for p in points] + ["Ask"]
+    cols = [right_w * 0.34] + [right_w * 0.66 / len(labels)] * len(labels)
+    aligns = ["L"] + ["R"] * len(labels)
+    allp = points + [valuation.at_ask]
     rows = [
-        [
-            f"Agency loan, {_pct(ln.ltv)} LTV",
-            f"{su.loan / 1e6:,.1f}",
-            _pct(su.loan / su.total_uses),
-        ],
-        ["Equity", f"{su.equity / 1e6:,.1f}", _pct(su.equity / su.total_uses)],
-        [
-            "Purchase price",
-            f"{su.purchase_price / 1e6:,.1f}",
-            _pct(su.purchase_price / su.total_uses),
-        ],
-        [
-            "Capital budget",
-            f"{su.capital_budget / 1e6:,.1f}",
-            _pct(su.capital_budget / su.total_uses),
-        ],
-        [
-            "Closing costs and fees",
-            f"{(su.closing_costs + su.loan_fees + su.acquisition_fee) / 1e6:,.1f}",
-            _pct((su.closing_costs + su.loan_fees + su.acquisition_fee) / su.total_uses),
-        ],
-        ["Total uses", f"{su.total_uses / 1e6:,.1f}", "100.0%"],
+        ["Price"] + [_money_m(p.price) for p in allp],
+        ["Per unit"] + [_money(p.per_unit) for p in allp],
+        ["Set by"] + [p.basis.replace("LP IRR ", "LP ") for p in points] + ["seller"],
+        ["Going-in cap"] + [_pct(p.going_in_cap, 2) for p in allp],
+        ["Levered LP IRR"] + [_pct(p.lp_irr) for p in allp],
+        ["Levered IRR"] + [_pct(p.levered_irr) for p in allp],
+        ["Equity multiple"] + [_mult(p.equity_multiple) for p in allp],
+        ["DSCR, year 1"] + [_mult(p.dscr_year1) for p in allp],
+        ["Loan"] + [_money_m(p.loan) for p in allp],
+        ["Equity"] + [_money_m(p.equity) for p in allp],
     ]
-    y = pdf.grid(
+    colors = {(4, len(labels)): NEG if valuation.verdict != "pursue" else POS}
+    pdf.grid(
         right_x,
         y + 4.5,
-        [right_w * 0.58, right_w * 0.22, right_w * 0.20],
-        [],
+        cols,
+        [""] + labels,
         rows,
-        ["L", "R", "R"],
-        total_rows=[5],
-        size=7.2,
-        lh=4.3,
-    )
-    pdf.eyebrow(right_x, y + 3, "Senior loan")
-    pdf.kv(
-        right_x,
-        y + 7.5,
-        right_w,
-        [
-            ("Fixed rate", _pct(ln.rate, 2)),
-            ("Interest only", f"{ln.io_months} months to {ln.io_expiry:%b %Y}"),
-            (
-                "Amortization and term",
-                f"{ln.amortization_years} years · {ln.term_months // 12} years",
-            ),
-            (
-                "Sizing",
-                f"LTV {_money_m(ln.by_ltv)} · DSCR {_money_m(ln.by_dscr)} · "
-                f"DY {_money_m(ln.by_debt_yield)}",
-            ),
-        ],
-        size=7.0,
-        lh=4.3,
+        aligns,
+        total_rows=[0],
+        size=6.8,
+        lh=4.2,
+        colors=colors,
     )
 
     # ---------------------------------------------------------------- page 2: evidence

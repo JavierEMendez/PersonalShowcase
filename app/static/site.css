@@ -246,3 +246,10 @@ button.btn-primary { background: var(--accent); }
 .flag.ok { color: var(--pos); border-color: var(--pos); }
 .flag.watch { color: var(--warn); border-color: var(--warn); }
 .flag.info { color: var(--muted); }
+
+/* Recommend page */
+.btn-wide { padding-left: 18px; padding-right: 18px; }
+table.range th .range-label { font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: 0; text-transform: none; }
+table.range td.muted-col, table.range th.muted-col { color: var(--muted); border-left: 1px solid var(--hairline); }
+.verdict .memo-lead { font-size: 20px; }
+.verdict.engage .memo-lead::first-line { color: var(--ink); }

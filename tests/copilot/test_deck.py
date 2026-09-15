@@ -1,4 +1,4 @@
-"""The IC memo deck: two pages for a seeded case, three for a screened one, figures on the page."""
+"""The screening memo deck: two pages for a seeded case, three for a screened one."""
 
 from __future__ import annotations
 
@@ -13,8 +13,9 @@ from core.copilot.deck import build_deck
 from core.copilot.engine import run
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import TemplateWriter, build_facts, write_memo
+from core.copilot.recommend import valuation_range
 from core.copilot.screen import RuleReader, questions, screen
-from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
+from core.copilot.sensitivity import stress_table
 from evals.screen.run import load_sample
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,12 +36,9 @@ def _assumptions() -> list[dict[str, str]]:
 def _deck(name: str, with_screen: bool = False) -> bytes:
     inputs = _case(name)
     out = run(inputs)
-    acq = inputs.acquisition
-    ask = run(at_price(inputs, acq.asking_price or acq.purchase_price))
     stress = stress_table(inputs)
-    max_bid = max_price_for_lp_irr(inputs, 0.15)
-    at_max = run(at_price(inputs, max_bid)) if max_bid else None
-    facts = build_facts(out, ask, stress, name, max_bid=max_bid, at_max_bid=at_max)
+    valuation = valuation_range(inputs)
+    facts = build_facts(out, valuation, stress, name)
     memo = write_memo(facts, TemplateWriter())
     result = screen(load_sample(), RuleReader()) if with_screen else None
     qa = []
@@ -62,8 +60,7 @@ def _deck(name: str, with_screen: bool = False) -> bytes:
         memo,
         stress,
         _assumptions(),
-        0.15,
-        max_bid,
+        valuation,
         screen=result,
         documents=documents,
         qa=qa,
@@ -71,28 +68,30 @@ def _deck(name: str, with_screen: bool = False) -> bytes:
     )
 
 
-def test_seeded_case_is_two_pages_with_the_memo_and_figures() -> None:
+def test_seeded_case_is_two_pages_with_the_memo_and_range() -> None:
     pdf = _deck("Base")
     assert pdf.startswith(b"%PDF")
     reader = PdfReader(io.BytesIO(pdf))
     assert len(reader.pages) == 2
-    page1 = reader.pages[0].extract_text()
-    assert "Recommendation: bid no more than $43.7M" in page1
-    assert "LEVERED LP FLOOR 15% · MAX BID $43.7M" in page1.upper()
+    page1 = " ".join(reader.pages[0].extract_text().split())
+    assert "Recommendation: worth a full underwriting only if" in page1
+    assert "at or below" in page1 and "$46.0M" in page1
     assert "Sawyer Bend Apartments" in page1 and "Base case" in page1
-    assert "$46.0M" in page1 and "14.8%" in page1 and "1.89x" in page1
+    assert "Multifamily Screening Tool" in page1
+    assert "VALUATION RANGE" in page1
+    assert "$40.4M" in page1 and "$43.7M" in page1 and "$46.0M" in page1 and "$50.5M" in page1
+    assert "20% below ask" in page1 and "LP 15%" in page1
     assert "WHAT THE MODEL CANNOT TELL YOU" in page1
-    assert "SOURCES AND USES" in page1 and "SENIOR LOAN" in page1
     page2 = reader.pages[1].extract_text()
     assert "NET OPERATING INCOME" in page2 and "WHAT BREAKS IT" in page2
     assert "UNIT MIX" in page2 and "EXTRACTED ASSUMPTIONS" in page2
-    assert "Net operating income" in page2 and "2,639" in page2  # year 1 NOI in thousands
     assert "SEPTEMBER 14, 2026" in page1
 
 
-def test_downside_case_reads_as_a_pass() -> None:
+def test_downside_case_names_its_own_range() -> None:
     reader = PdfReader(io.BytesIO(_deck("Downside")))
-    assert "Recommendation: pass." in reader.pages[0].extract_text()
+    page1 = " ".join(reader.pages[0].extract_text().split())
+    assert "at or below" in page1 and "$38.2M" in page1 and "$34.6M" in page1
     assert "Breach" in reader.pages[1].extract_text()
 
 

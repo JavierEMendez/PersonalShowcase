@@ -51,28 +51,24 @@ def score_memo(memo: Memo, facts: MemoFacts) -> MemoReport:
     if not memo.recommendation.startswith("Recommendation:"):
         report.problems.append("no 'Recommendation:' lead")
     lowered = memo.recommendation.lower()
-    if facts.verdict == "pass":
-        if "pass" not in lowered:
-            report.problems.append("floor test says pass but not a pass")
-    else:
-        if "bid" not in lowered:
-            report.problems.append("floor test says bid but not a bid")
-        wanted = facts.figures["bid" if facts.verdict == "bid" else "max_bid"]
-        if wanted not in memo.recommendation:
-            report.problems.append("recommendation does not name the bid price")
-    if not 3 <= len(memo.body) <= 6:
+    if facts.verdict == "pursue" and "pursue" not in lowered:
+        report.problems.append("ask inside the range but not a pursue")
+    if facts.verdict == "engage":
+        if facts.figures["range_max"] not in memo.recommendation or "below" not in lowered:
+            report.problems.append("ask above the range but the max is not named as the cap")
+    if facts.verdict == "pass" and "pass" not in lowered:
+        report.problems.append("no price returns the target but not a pass")
+    if not 3 <= len(memo.body) <= 7:
         report.problems.append(f"body has {len(memo.body)} sentences")
     if not 3 <= len(memo.cannot) <= 5:
         report.problems.append(f"cannot section has {len(memo.cannot)} items")
     body = " ".join([memo.recommendation, *memo.body])
-    if facts.figures["lp_floor"] not in body:
-        report.problems.append("memo omits the LP floor")
-    if not any(facts.figures[k] in body for k in ("levered_irr_at_ask", "lp_irr_at_ask")):
+    if facts.verdict != "pass":
+        for key in ("range_low", "range_mid", "range_max"):
+            if facts.figures[key] not in body:
+                report.problems.append(f"memo omits {key}")
+    if not any(facts.figures[k] in body for k in ("lp_ask", "lev_ask")):
         report.problems.append("memo omits the return at the ask")
-    if not any(
-        k in facts.figures and facts.figures[k] in body for k in ("floor_dscr", "breach_dscr")
-    ):
-        report.problems.append("body omits the covenant floor or breach")
     if memo.fallback:
         report.problems.append("writer draft rejected, template used")
     return report

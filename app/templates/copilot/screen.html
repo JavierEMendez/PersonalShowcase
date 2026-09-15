@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% import "copilot/_topbar.html" as bar with context %}
-{% block title %}{{ site.wordmark }} · Multifamily Copilot · Screen{% endblock %}
+{% block title %}{{ site.wordmark }} · Multifamily Screening Tool · Screen{% endblock %}
 {% block body %}
 {% call bar.topbar(steps, active_step) %}
-  {% if screened %}<a class="btn" href="/copilot?case=Screened">Open the screened case</a>{% endif %}
+  {% if screened %}<a class="btn" href="/copilot/underwrite?case=Screened">Open the screened case</a>{% endif %}
   <form method="post" action="/copilot/screen/reset" style="display: inline;"><button class="btn" type="submit">Start over</button></form>
 {% endcall %}
 
 <div class="deal-head">
   <div class="deal-head-copy">
-    <div class="eyebrow">Step 1 · Screen · Read the broker package, then answer what it leaves open</div>
+    <div class="eyebrow">Step 1 · Screen · Read the broker package, answer what it leaves open, then see whether the deal is worth a full underwriting</div>
     <div class="deal-title-row">
       <h1 class="deal-title">{{ meta.name }}</h1>
       <div class="deal-facts">{{ meta.facts }}</div>

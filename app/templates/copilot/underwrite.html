@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}{{ site.wordmark }} · Multifamily Copilot{% endblock %}
+{% block title %}{{ site.wordmark }} · Multifamily Screening Tool{% endblock %}
 {% block body %}
 {% set s = out.summary %}
 {% import "copilot/_topbar.html" as bar with context %}
 {% call bar.topbar(steps, active_step) %}
   <a class="btn" href="/copilot/memo.pdf{{ query }}">Download IC memo</a>
-  <form method="post" action="/copilot/memo{{ query }}" style="display: inline;"><button class="btn btn-primary" type="submit">Draft IC memo</button></form>
+  <a class="btn btn-primary btn-wide" href="/copilot/recommend{{ query }}">View recommendation</a>
 {% endcall %}
 
 <div class="deal-head">
@@ -18,7 +18,7 @@
   </div>
   <div class="pills">
     <span class="eyebrow">Case</span>
-    {% for name in cases %}{% if name == case %}<span class="pill active">{{ name }}</span>{% else %}<a class="pill" href="/copilot?case={{ name | urlencode }}">{{ name }}</a>{% endif %}{% endfor %}
+    {% for name in cases %}{% if name == case %}<span class="pill active">{{ name }}</span>{% else %}<a class="pill" href="/copilot/underwrite?case={{ name | urlencode }}">{{ name }}</a>{% endif %}{% endfor %}
   </div>
 </div>
 
@@ -26,7 +26,7 @@
   <div class="kpi"><div class="eyebrow">Purchase price</div><div class="figure num">{{ s.purchase_price | money_m }}</div><div class="note">{{ s.price_per_unit | money }} / unit{% if s.asking_price %} · ask {{ s.asking_price | money_m }}{% endif %}</div></div>
   <div class="kpi"><div class="eyebrow">Going-in cap</div><div class="figure num">{{ s.going_in_cap | pct(2) }}</div><div class="note">Year 1 NOI {{ s.noi_year1 | money_m(2) }}</div></div>
   <div class="kpi"><div class="eyebrow">Levered IRR</div><div class="figure num">{{ out.returns.levered_irr | pct }}</div><div class="note">Unlevered {{ out.returns.unlevered_irr | pct }} · {{ out.returns.equity_multiple | mult }} multiple</div></div>
-  <div class="kpi"><div class="eyebrow">LP IRR</div><div class="figure num {{ 'pos' if (out.returns.lp_irr or 0) >= lp_floor else 'neg' }}">{{ out.returns.lp_irr | pct }}</div><div class="note">Levered LP floor {{ lp_floor | pct(0) }}{% if max_bid %} · max bid {{ max_bid | money_m }}{% else %} · no price clears it{% endif %}</div></div>
+  <div class="kpi"><div class="eyebrow">LP IRR</div><div class="figure num">{{ out.returns.lp_irr | pct }}</div><div class="note">{% if valuation.low and valuation.max %}Range {{ valuation.low.price | money_m }} to {{ valuation.max.price | money_m }} at {{ targets.low | pct(0) }} to {{ targets.max | pct(0) }}{% else %}No price in reach returns {{ targets.max | pct(0) }}{% endif %}</div></div>
   <div class="kpi"><div class="eyebrow">Equity multiple</div><div class="figure num">{{ out.returns.equity_multiple | mult }}</div><div class="note">On {{ out.sources_uses.equity | money_m }} equity</div></div>
   <div class="kpi"><div class="eyebrow">DSCR, year 1</div><div class="figure num {{ 'pos' if (s.dscr_year1 or 0) >= out.loan.covenant_dscr else 'neg' }}">{{ s.dscr_year1 | mult }}</div><div class="note">Covenant {{ out.loan.covenant_dscr | mult }} · minimum {{ s.min_dscr | mult }}</div></div>
   <div class="kpi"><div class="eyebrow">LTV</div><div class="figure num">{{ s.ltv | pct }}</div><div class="note">Debt yield {{ s.debt_yield | pct }} · {{ out.loan.binding }} bound</div></div>
@@ -104,7 +104,7 @@
         </tbody>
       </table>
       <div class="panel-foot">
-        <span>Low-confidence figures are flagged in the memo and tested in the downside case. <a class="text-link" href="/copilot/screen">Open Screen</a> to read your own documents.</span>
+        <span>Low-confidence figures are flagged in the recommendation and tested in the downside case. <a class="text-link" href="/copilot/screen">Open Screen</a> to read your own documents.</span>
         <a href="#" class="text-link" onclick="for (const r of this.closest('.panel').querySelectorAll('tr.more')) r.hidden = !r.hidden; this.textContent = this.textContent.startsWith('Show') ? 'Show fewer' : 'Show all {{ assumptions | length }}'; return false;">Show all {{ assumptions | length }}</a>
       </div>
     </div>
@@ -152,18 +152,6 @@
       </table>
     </div>
 
-    <div class="panel memo" id="memo">
-      <div class="panel-head"><div class="eyebrow">IC memo · {{ 'drafted by ' ~ memo.writer if memo.writer != 'template' else 'sentence template' }}</div><div class="note">Step 3 · Recommend · <a class="text-link" href="/copilot/memo.pdf{{ query }}">Download deck (PDF)</a> · <a class="text-link" href="/copilot/memo.md{{ query }}">.md</a></div></div>
-      {% if memo.fallback %}<div class="errors">The model draft was rejected and the template was used: {% for p in memo.problems %}{{ p }}{% if not loop.last %}; {% endif %}{% endfor %}.</div>{% endif %}
-      <div class="memo-lead">{{ memo.recommendation }}</div>
-      <p class="memo-body">{% for sentence in memo.body %}{{ sentence }} {% endfor %}</p>
-      <div class="memo-cannot">
-        <div class="eyebrow" style="margin-bottom: 6px;">What the model cannot tell you</div>
-        <div class="memo-body">{% for item in memo.cannot %}{{ item }} {% endfor %}</div>
-      </div>
-      <div class="panel-foot"><span>Every figure is a model output; the writer works with placeholders and never writes a digit. {% if memo_live %}Draft IC memo asks the Claude API for new prose.{% else %}Set ANTHROPIC_API_KEY to have the Claude API draft the prose.{% endif %}</span></div>
-    </div>
-
     <div class="panel">
       <div class="panel-head"><div class="eyebrow">Waterfall</div><div class="note">$ millions · cash to equity through each tier</div></div>
       <table>
@@ -179,20 +167,6 @@
         <div><div class="eyebrow">GP IRR · multiple</div><div class="figure num">{{ out.returns.gp_irr | pct }} · {{ out.returns.gp_multiple | mult }}</div></div>
         <div><div class="eyebrow">Promote</div><div class="figure num">{{ out.returns.promote | money_m(2) }}</div></div>
       </div>
-    </div>
-  </div>
-
-  <div class="span-12">
-    <div class="panel">
-      <div class="panel-head" id="monitor"><div class="eyebrow">Monitor · covenant tests</div><div class="note">Step 4 · Post-close, tested quarterly against underwriting · synthetic quarter two of year one</div></div>
-      <table>
-        <thead><tr><th>Test</th><th class="r">Covenant</th><th class="r">Underwritten</th><th class="r">Actual, Q2</th><th class="r">Cushion</th><th class="r">Status</th></tr></thead>
-        <tbody>
-          {% for row in monitor %}
-          <tr class="sub"><td>{{ row.test }}</td><td class="r num">{{ row.covenant }}</td><td class="r num">{{ row.underwritten }}</td><td class="r num">{{ row.actual }}</td><td class="r num">{{ row.cushion }}</td><td class="r {{ 'pos' if row.ok else 'warn' }}">{{ row.status }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
   </div>
 

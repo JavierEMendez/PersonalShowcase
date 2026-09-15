@@ -7,7 +7,7 @@ A public, hosted showcase of two products built by Javier Mendez with Claude Cod
 Two products live under one Railway app and one domain:
 
 1. `/underwriting`: MPC Underwriting. A port of the calculation engine from a private internal repo (EmberApps, `calc.py`, cloned as a sibling directory for reference), rebuilt here on synthetic data. It is an unlevered residential land pro forma: it returns unlevered XIRR, gross and net margin, and per-acre and per-lot metrics. It has no debt, equity waterfall, or equity multiple. Do not describe it as if it did.
-2. `/copilot`: Multifamily Copilot (the deal-to-portfolio workflow). New. Apartment acquisition workflow in four steps: Screen, Underwrite, Recommend, Monitor. Its model follows the structure of a private multifamily buyer's model, inventoried in `private/multifamily-model-inventory.md`: rent roll to market with loss-to-lease burn-off, unit renovation program with premiums, per-unit operating budget with tax reassessment, loan sized on the lesser of LTV, DSCR and debt yield with an interest-only period, exit on forward NOI, and an LP/GP waterfall.
+2. `/copilot`: Multifamily Screening Tool (the deal-to-portfolio workflow). New. Apartment acquisition workflow in four steps: Screen, Underwrite, Recommend, Monitor. Its model follows the structure of a private multifamily buyer's model, inventoried in `private/multifamily-model-inventory.md`: rent roll to market with loss-to-lease burn-off, unit renovation program with premiums, per-unit operating budget with tax reassessment, loan sized on the lesser of LTV, DSCR and debt yield with an interest-only period, exit on forward NOI, and an LP/GP waterfall.
 
 Read `docs/handoff.md` first, then `private/strategy-brief.md`, `private/mpc-tool-inventory.md`, `private/multifamily-model-inventory.md`, `docs/design-standard.md`, and `docs/synthetic-deals.md`. The `private/` folder is gitignored: it holds the strategy brief and the inventories of the internal tool and model being ported, and it never gets committed or quoted in public docs, README, or copy. The approved mockups are in `design/` as HTML and PNG. Match them.
 
@@ -64,7 +64,7 @@ README.md
 - Commit messages: imperative, one line, no emoji. Branch per feature, PR to `main`.
 - Do not add features that need explanation to a non-technical reader. If it needs a tooltip, reconsider it.
 - Do not start the Copilot UI before `core/copilot/` has passing tests and an Excel export.
-- Scenarios and cases: the MPC tool ships with Main, Faster pace, and Lower lot price; the Multifamily Copilot ships with Base, Downside, and Lender. Their input deltas are defined in `docs/synthetic-deals.md`.
+- Scenarios and cases: the MPC tool ships with Main, Faster pace, and Lower lot price; the Multifamily Screening Tool ships with Base, Downside, and Lender. Their input deltas are defined in `docs/synthetic-deals.md`.
 - When copy is generated (memo, README), run `scripts/lint_copy.py`, which fails on em dashes and the banned phrase list.
 
 ## Build order

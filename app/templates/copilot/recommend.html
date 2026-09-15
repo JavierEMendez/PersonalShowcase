@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% import "copilot/_topbar.html" as bar with context %}
+{% block title %}{{ site.wordmark }} · Multifamily Screening Tool · Recommend{% endblock %}
+{% block body %}
+{% set s = out.summary %}
+{% call bar.topbar(steps, active_step) %}
+  <a class="btn" href="/copilot/underwrite{{ query }}">Back to the underwriting</a>
+  <a class="btn" href="/copilot/memo.pdf{{ query }}">Download IC memo</a>
+  <form method="post" action="/copilot/memo{{ query }}" style="display: inline;"><button class="btn btn-primary" type="submit">Draft with the model</button></form>
+{% endcall %}
+
+<div class="deal-head">
+  <div class="deal-head-copy">
+    <div class="eyebrow">Step 3 · Recommend · Is this worth a full underwriting, and at what price</div>
+    <div class="deal-title-row">
+      <h1 class="deal-title">{{ meta.name }}</h1>
+      <div class="deal-facts">{{ s.units | num }} units · {{ meta.location }} · ask {{ valuation.ask | money_m }} · {{ (valuation.ask / s.units) | money }} / unit</div>
+    </div>
+  </div>
+  <div class="pills">
+    <span class="eyebrow">Case</span>
+    {% for name in cases %}{% if name == case %}<span class="pill active">{{ name }}</span>{% else %}<a class="pill" href="/copilot/recommend?case={{ name | urlencode }}">{{ name }}</a>{% endif %}{% endfor %}
+  </div>
+</div>
+
+<div class="tool-body" style="margin-top: 22px;">
+<div class="grid-12">
+  <div class="span-12">
+    <div class="panel memo verdict {{ valuation.verdict }}">
+      <div class="panel-head"><div class="eyebrow">Recommendation · {{ 'drafted by ' ~ memo.writer if memo.writer != 'template' else 'sentence template' }}</div><div class="note">Levered LP IRR targets: max {{ targets.max | pct(0) }} · mid {{ targets.mid | pct(0) }} · low the lower of {{ targets.low | pct(0) }} and {{ low_cap | pct(0) }} below ask</div></div>
+      {% if memo.fallback %}<div class="errors">The model draft was rejected and the template was used: {% for p in memo.problems %}{{ p }}{% if not loop.last %}; {% endif %}{% endfor %}.</div>{% endif %}
+      <div class="memo-lead">{{ memo.recommendation }}</div>
+    </div>
+  </div>
+
+  <div class="span-12">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Valuation range</div><div class="note">Every column is a full run of the model at that price · the loan re-sizes and taxes reassess</div></div>
+      <div class="scroll-x"><table class="range">
+        <thead><tr><th></th>{% for p in points %}<th class="r"><div class="range-label">{{ p.label }}</div><div class="quote">{{ p.basis }}</div></th>{% endfor %}<th class="r muted-col"><div class="range-label">Ask</div><div class="quote">seller</div></th></tr></thead>
+        <tbody>
+          <tr class="total"><td>Price</td>{% for p in points %}<td class="r num">{{ p.price | money_m }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.price | money_m }}</td></tr>
+          <tr class="sub"><td>Per unit</td>{% for p in points %}<td class="r num">{{ p.per_unit | money }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.per_unit | money }}</td></tr>
+          <tr class="sub"><td>Discount to ask</td>{% for p in points %}<td class="r num">{{ p.discount_to_ask | pct }}</td>{% endfor %}<td class="r num muted-col"></td></tr>
+          <tr class="sub"><td>Going-in cap</td>{% for p in points %}<td class="r num">{{ p.going_in_cap | pct(2) }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.going_in_cap | pct(2) }}</td></tr>
+          <tr class="sub"><td>Levered LP IRR</td>{% for p in points %}<td class="r num pos">{{ p.lp_irr | pct }}</td>{% endfor %}<td class="r num muted-col {{ 'neg' if (valuation.at_ask.lp_irr or 0) < targets.max else '' }}">{{ valuation.at_ask.lp_irr | pct }}</td></tr>
+          <tr class="sub"><td>Levered IRR</td>{% for p in points %}<td class="r num">{{ p.levered_irr | pct }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.levered_irr | pct }}</td></tr>
+          <tr class="sub"><td>Equity multiple</td>{% for p in points %}<td class="r num">{{ p.equity_multiple | mult }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.equity_multiple | mult }}</td></tr>
+          <tr class="sub"><td>DSCR, year 1</td>{% for p in points %}<td class="r num">{{ p.dscr_year1 | mult }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.dscr_year1 | mult }}</td></tr>
+          <tr class="sub"><td>Loan · LTV</td>{% for p in points %}<td class="r num">{{ p.loan | money_m }} · {{ p.ltv | pct(0) }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.loan | money_m }} · {{ valuation.at_ask.ltv | pct(0) }}</td></tr>
+          <tr class="sub"><td>Equity</td>{% for p in points %}<td class="r num">{{ p.equity | money_m }}</td>{% endfor %}<td class="r num muted-col">{{ valuation.at_ask.equity | money_m }}</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="span-7 stack">
+    <div class="panel memo">
+      <div class="panel-head"><div class="eyebrow">Screening memo</div><div class="note"><a class="text-link" href="/copilot/memo.md{{ query }}">Download .md</a></div></div>
+      <p class="memo-body">{% for sentence in memo.body %}{{ sentence }} {% endfor %}</p>
+      <div class="memo-cannot">
+        <div class="eyebrow" style="margin-bottom: 6px;">What the model cannot tell you</div>
+        <div class="memo-body">{% for item in memo.cannot %}{{ item }} {% endfor %}</div>
+      </div>
+      <div class="panel-foot"><span>Every figure is a model output; the writer works with placeholders and never writes a digit. {% if memo_live %}"Draft with the model" asks the Claude API for new prose.{% else %}Set ANTHROPIC_API_KEY to have the Claude API draft the prose.{% endif %}</span></div>
+    </div>
+    {% with context = market %}{% include "_market_context.html" %}{% endwith %}
+  </div>
+
+  <div class="span-5 stack">
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">What breaks it</div><div class="note">At the underwritten {{ s.purchase_price | money_m }}, loan held at {{ out.loan.amount | money_m }}</div></div>
+      <table>
+        <thead><tr><th>Stress</th><th class="r">Levered IRR</th><th class="r">Min DSCR</th><th class="r">Covenant</th></tr></thead>
+        <tbody>
+          {% for row in stress %}
+          <tr class="sub"><td>{{ row.label }}</td><td class="r num">{{ row.levered_irr | pct }}</td><td class="r num">{{ row.min_dscr | mult }}</td><td class="r {{ 'pos' if row.holds else 'neg' }}">{{ 'Holds' if row.holds else 'Breach' }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="eyebrow">Extracted assumptions</div><div class="note">{{ assumptions_note }}</div></div>
+      <table>
+        <thead><tr><th>Assumption</th><th class="r">Value</th><th>Confidence</th></tr></thead>
+        <tbody>
+          {% for a in assumptions %}
+          <tr class="sub"><td>{{ a.assumption }}<div class="quote">{{ a.source }}</div></td><td class="r num">{{ a.value }}</td><td><span class="conf {{ a.confidence | lower }}">{{ a.confidence }}</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
