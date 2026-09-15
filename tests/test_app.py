@@ -11,7 +11,7 @@ client = TestClient(app)
 def test_landing_renders() -> None:
     response = client.get("/")
     assert response.status_code == 200
-    assert "Mendez Valdez" in response.text
+    assert "Javier Mendez" in response.text
     assert "Cypress Ridge" in response.text
     assert "Sawyer Bend Apartments" in response.text
     assert "/static/site.css" in response.text
@@ -36,7 +36,7 @@ def test_tool_stubs_render(path: str, title: str, pill: str) -> None:
 def test_about_page_has_bio_and_portrait() -> None:
     response = client.get("/about")
     assert response.status_code == 200
-    assert "Javier Mendez Valdez" in response.text
+    assert "Javier Mendez" in response.text
     assert "/static/headshot.png" in response.text
     assert "Baylor University" in response.text
     assert "<title>Javier Mendez · About</title>" in response.text

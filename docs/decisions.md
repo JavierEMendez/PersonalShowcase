@@ -98,6 +98,9 @@ Both tools' Excel exports are gone, along with `core/underwriting/excel.py` and 
 ## 2026-09-14 · Market context from public data, with flags against the assumptions
 Both tools gain a Market context panel built from free public sources: FRED for the 10-year Treasury, SOFR, the 30-year mortgage rate, CPI rent inflation, Houston MSA employment and national multifamily permits; the Census Building Permits Survey county files for Harris County 5-plus-unit permits and Waller County single-family permits, as trailing twelve months; and Zillow's Observed Rent Index for Houston. Each row puts the public figure, its date and source beside the assumption it bears on and applies one stated rule (loan rate at least 150 bps over SOFR, the house guideline; exit cap at least 75 bps over it, rent growth no more than 1.5 points above measured rent inflation, permits no more than 25% above the prior year, the land project taking no more than half the county's permitting pace). Fetches run at request time with a six-second timeout and a day-long cache; a failed source falls back to a recorded snapshot and the panel says so, and tests run on the snapshot alone. Declined: paid comp databases (the honest public proxy for cap rates is the Treasury spread), appraisal-district scraping (the tax rate stays an input), and a Monitor step on uploaded actuals (the Copilot decides whether to buy; post-close monitoring is a different job and is removed from the plan). Deferred: HUD Fair Market Rents by ZIP once a HUD User token is set.
 
+## 2026-09-14 · The name on the site is Javier Mendez
+Every page, the About headline included, uses "Javier Mendez"; the full name "Javier Mendez Valdez" is retired from the site at the owner's request. The wordmark already read that way.
+
 ## Deferred
 - Financing layer (debt draw, interest, waterfall, equity multiple) for the MPC tool.
 - Benchmark module (public comps) for the Copilot.

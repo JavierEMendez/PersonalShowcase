@@ -2,7 +2,7 @@
 
 ## What this repo is
 
-A public, hosted showcase of two products built by Javier Mendez Valdez with Claude Code and Cowork, aimed at hiring managers in transaction advisory, corporate real estate strategy, credit, and private equity. The reader is a partner or MD with five minutes. They open the URL, read the landing page, click into one tool, and decide whether they trust the analysis. Everything in this repo serves that moment.
+A public, hosted showcase of two products built by Javier Mendez with Claude Code and Cowork, aimed at hiring managers in transaction advisory, corporate real estate strategy, credit, and private equity. The reader is a partner or MD with five minutes. They open the URL, read the landing page, click into one tool, and decide whether they trust the analysis. Everything in this repo serves that moment.
 
 Two products live under one Railway app and one domain:
 

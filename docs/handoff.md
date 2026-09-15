@@ -61,4 +61,4 @@ Run one per session. Each starts with Claude Code reading `CLAUDE.md` automatica
 - Commit at the end of each session with a one-line imperative message.
 - If Claude Code proposes a feature not in the build order, say no and log it in `docs/decisions.md` under "Deferred".
 - When the port's numbers differ from the mockup, the port wins. Update the docs and leave the model alone.
-- Keep the wordmark "Mendez Valdez" unless you decide otherwise; change it once in `app/templates/base.html` and in `design/` if you do.
+- Keep the wordmark "Javier Mendez" unless you decide otherwise; change it once in `app/templates/base.html` and in `design/` if you do.
