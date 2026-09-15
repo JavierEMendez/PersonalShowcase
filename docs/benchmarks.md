@@ -19,7 +19,7 @@ walks back from last month to the latest file.
 
 ## Rules behind the flags
 
-- Loan rate: the spread over the 10-year should sit between 125 and 325 bps.
+- Loan rate: at least 150 bps over SOFR, the house guideline; flagged when the underwritten rate sits below SOFR plus 150 bps.
 - Exit cap: at least 75 bps over today's 10-year.
 - Rent growth: no more than 1.5 points above CPI rent inflation or the Houston rent index.
 - Supply: trailing permits more than 25% above the prior twelve months.

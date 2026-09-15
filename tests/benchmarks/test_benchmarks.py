@@ -53,7 +53,7 @@ def test_multifamily_rows_and_flags_from_the_snapshot() -> None:
     ctx = multifamily_context(inputs, out, Sources(offline=True))
     topics = [r.topic for r in ctx.rows]
     assert topics == [
-        "Loan rate against the curve",
+        "Loan rate against SOFR",
         "Market rent growth",
         "Houston asking rents",
         "Exit cap against the 10-year",
@@ -62,7 +62,15 @@ def test_multifamily_rows_and_flags_from_the_snapshot() -> None:
     ]
     assert not ctx.live and ctx.recorded is not None and ctx.problems == []
     loan = ctx.rows[0]
-    assert "5.75% fixed" in loan.underwritten and "bps over the 10-year" in loan.note
+    assert "5.75% fixed" in loan.underwritten and "bps over SOFR" in loan.underwritten
+    assert "at least 150 bps over SOFR" in loan.note
+    # A rate under SOFR plus 150 bps is flagged; one above it is in range.
+    cheap = inputs.model_copy(deep=True)
+    cheap.loan.rate = 0.03
+    assert multifamily_context(cheap, out, Sources(offline=True)).rows[0].flag == "watch"
+    dear = inputs.model_copy(deep=True)
+    dear.loan.rate = 0.09
+    assert multifamily_context(dear, out, Sources(offline=True)).rows[0].flag == "ok"
     assert all(r.flag in ("ok", "watch", "info") for r in ctx.rows)
     # A 12% rent growth assumption is flagged against any measured rent inflation.
     hot = inputs.model_copy(deep=True)
@@ -118,5 +126,5 @@ def test_live_failure_falls_back_to_the_snapshot(monkeypatch: pytest.MonkeyPatch
 
 
 def test_rules_are_the_documented_ones() -> None:
-    assert context.LOAN_SPREAD_LOW == 0.0125 and context.LOAN_SPREAD_HIGH == 0.0325
+    assert context.LOAN_SPREAD_OVER_SOFR_MIN == 0.015
     assert context.EXIT_CAP_SPREAD_MIN == 0.0075 and context.RENT_GROWTH_HEADROOM == 0.015

@@ -41,8 +41,8 @@ HOUSTON_MSA = "Houston, TX"
 HARRIS = ("48", "201")
 WALLER = ("48", "473")
 
-# Agency multifamily debt has priced between roughly 125 and 300 bps over the 10-year.
-LOAN_SPREAD_LOW, LOAN_SPREAD_HIGH = 0.0125, 0.0325
+# House guideline: the underwritten loan rate is at least 150 bps over SOFR.
+LOAN_SPREAD_OVER_SOFR_MIN = 0.015
 # Cap rates below the 10-year plus this spread leave little room for rates to rise.
 EXIT_CAP_SPREAD_MIN = 0.0075
 # Rent growth this far above measured rent inflation is a bet, not a base case.
@@ -155,19 +155,24 @@ def multifamily_context(
         t10 = src.fred("DGS10")
         sofr = src.fred("SOFR")
         rate = inputs.loan.rate
-        spread = rate - t10.latest[1] / 100
-        flag: Flag = "ok" if LOAN_SPREAD_LOW <= spread <= LOAN_SPREAD_HIGH else "watch"
+        sofr_rate = sofr.latest[1] / 100
+        floor_rate = sofr_rate + LOAN_SPREAD_OVER_SOFR_MIN
+        spread = rate - sofr_rate
+        flag: Flag = "ok" if rate >= floor_rate else "watch"
         return Row(
-            topic="Loan rate against the curve",
-            public=f"10-year {t10.latest[1]:.2f}% · SOFR {sofr.latest[1]:.2f}%",
-            as_of=_as_of(t10),
+            topic="Loan rate against SOFR",
+            public=(
+                f"SOFR {sofr.latest[1]:.2f}% · guideline floor {_pct(floor_rate, 2)} · "
+                f"10-year {t10.latest[1]:.2f}%"
+            ),
+            as_of=_as_of(sofr),
             source="FRED",
-            source_url=t10.source_url,
-            underwritten=f"{_pct(rate, 2)} fixed",
+            source_url=sofr.source_url,
+            underwritten=f"{_pct(rate, 2)} fixed · {spread * 10_000:.0f} bps over SOFR",
             flag=flag,
             note=(
-                f"Spread of {spread * 10_000:.0f} bps over the 10-year; agency debt has priced "
-                f"between {LOAN_SPREAD_LOW * 10_000:.0f} and {LOAN_SPREAD_HIGH * 10_000:.0f} bps."
+                f"House guideline: at least {LOAN_SPREAD_OVER_SOFR_MIN * 10_000:.0f} bps over "
+                "SOFR. Flagged when the underwritten rate sits below that floor."
             ),
         )
 
