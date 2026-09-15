@@ -1,6 +1,6 @@
 # Javier Mendez: transaction tools
 
-Two underwriting tools for real estate transactions, built in Python, deployed on Railway, developed with Claude Code. Both started as internal systems and were rebuilt here on synthetic deals so the full model can be read.
+Two underwriting tools for real estate transactions developed with Claude Code. Both started as internal systems and were rebuilt here on synthetic deals so the full model can be read.
 
 Live site: https://javiermendez.up.railway.app
 
