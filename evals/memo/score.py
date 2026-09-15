@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from core.copilot.memo import Memo, MemoFacts
 from core.copy_rules import violations
 
-NUMBER = re.compile(r"\$?\d[\d,]*(?:\.\d+)?(?:%|×|M|k| bps)?")
+NUMBER = re.compile(r"\$?\d(?:[\d,]*\d)?(?:\.\d+)?(?:%|×|M|k| bps)?")
 
 
 @dataclass
