@@ -871,7 +871,7 @@ def parse_tool_payload(
         try:
             plans.append(
                 PlanFacts(
-                    code=str(fp.get("code", fp.get("plan", ""))),
+                    code=str(fp.get("code", fp.get("plan", fp.get("key", "")))),
                     unit_type=str(fp.get("unit_type", fp.get("type", ""))),
                     units=int(coerce_number(fp.get("units"), "count") or 0),
                     sf=coerce_number(fp.get("sf", fp.get("avg_sf")), "sf") or 0.0,
