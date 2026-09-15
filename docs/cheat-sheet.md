@@ -65,7 +65,9 @@ is checked: quote on the cited page, figure in the quote. About twenty questions
 extracted figure or the current model input; answers land on the Base inputs as the Screened
 case.
 
-**Memo** (`core/copilot/memo.py`). A facts table of about thirty formatted figures. The writer
+**Memo** (`core/copilot/memo.py`). The bid rule is a 15% LP IRR floor (`LP_FLOOR`); the engine
+solves the highest price that still reaches it and the verdict is bid, bid lower, or pass (a
+bid more than 20% below the ask). A facts table of about forty formatted figures. The writer
 (template, or Claude when the key is set) writes prose with `{placeholders}` and may not write a
 digit. Drafts that break a rule fall back to the template and say so.
 

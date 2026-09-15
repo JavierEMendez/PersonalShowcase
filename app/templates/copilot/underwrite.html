@@ -26,8 +26,8 @@
 <div class="kpis strip">
   <div class="kpi"><div class="eyebrow">Purchase price</div><div class="figure num">{{ s.purchase_price | money_m }}</div><div class="note">{{ s.price_per_unit | money }} / unit{% if s.asking_price %} · ask {{ s.asking_price | money_m }}{% endif %}</div></div>
   <div class="kpi"><div class="eyebrow">Going-in cap</div><div class="figure num">{{ s.going_in_cap | pct(2) }}</div><div class="note">Year 1 NOI {{ s.noi_year1 | money_m(2) }}</div></div>
-  <div class="kpi"><div class="eyebrow">Levered IRR</div><div class="figure num {{ 'pos' if (out.returns.levered_irr or 0) >= threshold else 'neg' }}">{{ out.returns.levered_irr | pct }}</div><div class="note">Unlevered {{ out.returns.unlevered_irr | pct }} · threshold {{ threshold | pct(0) }}</div></div>
-  <div class="kpi"><div class="eyebrow">LP IRR</div><div class="figure num">{{ out.returns.lp_irr | pct }}</div><div class="note">{{ out.returns.lp_multiple | mult }} after the waterfall</div></div>
+  <div class="kpi"><div class="eyebrow">Levered IRR</div><div class="figure num">{{ out.returns.levered_irr | pct }}</div><div class="note">Unlevered {{ out.returns.unlevered_irr | pct }} · {{ out.returns.equity_multiple | mult }} multiple</div></div>
+  <div class="kpi"><div class="eyebrow">LP IRR</div><div class="figure num {{ 'pos' if (out.returns.lp_irr or 0) >= lp_floor else 'neg' }}">{{ out.returns.lp_irr | pct }}</div><div class="note">Floor {{ lp_floor | pct(0) }}{% if max_bid %} · max bid {{ max_bid | money_m }}{% else %} · no price clears it{% endif %}</div></div>
   <div class="kpi"><div class="eyebrow">Equity multiple</div><div class="figure num">{{ out.returns.equity_multiple | mult }}</div><div class="note">On {{ out.sources_uses.equity | money_m }} equity</div></div>
   <div class="kpi"><div class="eyebrow">DSCR, year 1</div><div class="figure num {{ 'pos' if (s.dscr_year1 or 0) >= out.loan.covenant_dscr else 'neg' }}">{{ s.dscr_year1 | mult }}</div><div class="note">Covenant {{ out.loan.covenant_dscr | mult }} · minimum {{ s.min_dscr | mult }}</div></div>
   <div class="kpi"><div class="eyebrow">LTV</div><div class="figure num">{{ s.ltv | pct }}</div><div class="note">Debt yield {{ s.debt_yield | pct }} · {{ out.loan.binding }} bound</div></div>
@@ -147,7 +147,7 @@
         <thead><tr><th>Stress</th><th class="r">Levered IRR</th><th class="r">DSCR, yr 1</th><th class="r">Minimum</th><th class="r">Covenant</th></tr></thead>
         <tbody>
           {% for row in stress %}
-          <tr class="sub"><td>{{ row.label }}</td><td class="r num {{ 'neg' if (row.levered_irr or 0) < threshold else '' }}">{{ row.levered_irr | pct }}</td><td class="r num">{{ row.dscr_year1 | mult }}</td><td class="r num">{{ row.min_dscr | mult }}</td><td class="r {{ 'pos' if row.holds else 'neg' }}">{{ 'Holds' if row.holds else 'Breach' }}</td></tr>
+          <tr class="sub"><td>{{ row.label }}</td><td class="r num">{{ row.levered_irr | pct }}</td><td class="r num">{{ row.dscr_year1 | mult }}</td><td class="r num">{{ row.min_dscr | mult }}</td><td class="r {{ 'pos' if row.holds else 'neg' }}">{{ 'Holds' if row.holds else 'Breach' }}</td></tr>
           {% endfor %}
         </tbody>
       </table>

@@ -20,7 +20,7 @@ from core.copilot.memo import (
     check_draft,
     write_memo,
 )
-from core.copilot.sensitivity import at_price, stress_table
+from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
 from core.copy_rules import violations
 from evals.memo.run import cases
 from evals.memo.score import score_memo
@@ -33,7 +33,9 @@ def facts_for(name: str) -> MemoFacts:
     out = run(inputs)
     acq = inputs.acquisition
     ask = run(at_price(inputs, acq.asking_price or acq.purchase_price))
-    return build_facts(out, ask, stress_table(inputs), name)
+    max_bid = max_price_for_lp_irr(inputs, 0.15)
+    at_max = run(at_price(inputs, max_bid)) if max_bid else None
+    return build_facts(out, ask, stress_table(inputs), name, max_bid=max_bid, at_max_bid=at_max)
 
 
 @pytest.fixture(scope="module")
@@ -45,10 +47,12 @@ def test_facts_match_the_documented_memo(base_facts: MemoFacts) -> None:
     f = base_facts.figures
     assert f["bid"] == "$46.0M" and f["ask"] == "$50.5M"
     assert f["levered_irr"] == "14.8%" and f["equity_multiple"] == "1.89×"
-    assert f["cushion_bps"] == "275 bps" and f["threshold"] == "12%"
+    assert f["lp_irr"] == "13.0%" and f["lp_floor"] == "15%"
+    assert f["max_bid"] == "$43.7M" and f["lp_irr_at_max_bid"] == "15.0%"
+    assert f["discount_max_bid"] == "13.4%"
     assert f["dscr_year1"] == "1.53×" and f["covenant_dscr"] == "1.25×"
     assert f["levered_irr_at_ask"] == "7.9%"
-    assert base_facts.clears and not base_facts.has_breach
+    assert base_facts.verdict == "bid_lower" and not base_facts.has_breach
     assert "floor_dscr" in f and "breach_dscr" not in f
 
 
@@ -59,7 +63,8 @@ def test_template_memo_passes_every_check(name: str) -> None:
     assert memo.problems == [] and not memo.fallback and memo.writer == "template"
     report = score_memo(memo, facts)
     assert report.ok, report.problems
-    assert memo.recommendation.startswith("Recommendation: " + ("bid" if facts.clears else "pass"))
+    verb = "pass" if facts.verdict == "pass" else "bid"
+    assert memo.recommendation.startswith("Recommendation: " + verb)
     assert violations(memo.markdown("Sawyer Bend Apartments")) == []
 
 
@@ -82,8 +87,8 @@ def test_check_draft_catches_the_failure_modes(base_facts: MemoFacts) -> None:
     assert "unknown placeholder {irr_made_up}" in labels
     assert "banned: exclamation point" in labels and "banned: leverage" in labels
     assert "rhetorical question" in labels
-    assert "clears the threshold but the recommendation is not a bid" in labels
-    assert "does not name the bid" in labels
+    assert "the floor test says bid but the recommendation is not a bid" in labels
+    assert "does not name {max_bid}" in labels
     assert "body has 2 sentences" in labels and "cannot section has 2 items" in labels
     assert "covenant floor or breach" in labels
 
@@ -100,12 +105,12 @@ class FakeMessages:
 
 GOOD_DRAFT = {
     "recommendation": (
-        "Recommendation: bid {bid}, conditioned on a reassessment estimate and an interior "
-        "scope walk. Do not chase the {ask} ask."
+        "Recommendation: bid no more than {max_bid}, where the LP IRR reaches the {lp_floor} "
+        "floor, conditioned on a reassessment estimate and an interior scope walk."
     ),
     "body": [
-        "At {bid} the deal earns a {levered_irr} levered IRR and a {equity_multiple} multiple, "
-        "{cushion_bps} above the {threshold} threshold.",
+        "At {bid} the deal earns a {levered_irr} levered IRR and a {lp_irr} LP IRR, "
+        "{lp_cushion_bps} short of the {lp_floor} floor.",
         "{year_one} DSCR is {dscr_year1} against a {covenant_dscr} covenant.",
         "Paying the {ask} ask cuts the levered IRR to {levered_irr_at_ask}.",
         "Market rent growth is the sensitive driver: at {growth_stress} the IRR is "
@@ -126,11 +131,11 @@ def test_claude_writer_draft_is_filled_from_facts(base_facts: MemoFacts) -> None
     writer = ClaudeWriter(client=SimpleNamespace(messages=fake), model="test-model")
     memo = write_memo(base_facts, writer)
     assert memo.writer == "test-model" and not memo.fallback and memo.problems == []
-    assert memo.recommendation.startswith("Recommendation: bid $46.0M")
-    assert "14.8% levered IRR and a 1.89× multiple, 275 bps above the 12% threshold" in memo.body[0]
+    assert memo.recommendation.startswith("Recommendation: bid no more than $43.7M")
+    assert "14.8% levered IRR and a 13.0% LP IRR" in memo.body[0]
     assert fake.calls[0]["tool_choice"] == {"type": "tool", "name": "record_memo"}
     prompt = fake.calls[0]["messages"][0]["content"]
-    assert "{levered_irr} = 14.8%" in prompt and "clears the threshold" in prompt
+    assert "{levered_irr} = 14.8%" in prompt and "Verdict from the floor test: bid lower" in prompt
     assert score_memo(memo, base_facts).ok
 
 
@@ -142,7 +147,7 @@ def test_claude_writer_with_digits_falls_back_to_the_template(base_facts: MemoFa
     memo = write_memo(base_facts, writer)
     assert memo.fallback and memo.writer == "template"
     assert any("digit written by the writer" in p for p in memo.problems)
-    assert memo.recommendation.startswith("Recommendation: bid $46.0M, subject to")
+    assert memo.recommendation.startswith("Recommendation: bid no more than $43.7M")
     report = score_memo(memo, base_facts)
     assert not report.ok and "writer draft rejected, template used" in report.problems
 
@@ -236,7 +241,10 @@ def test_sections_in_any_shape_are_flattened(base_facts: MemoFacts) -> None:
         base_facts, ClaudeWriter(client=SimpleNamespace(messages=FakeMessages(bad)), model="m")
     )
     assert memo.fallback
-    assert any(p.startswith("draft as received: Recommendation: bid {bid}") for p in memo.problems)
+    assert any(
+        p.startswith("draft as received: Recommendation: bid no more than {max_bid}")
+        for p in memo.problems
+    )
 
 
 def test_t12_is_not_a_digit_but_other_numbers_are(base_facts: MemoFacts) -> None:

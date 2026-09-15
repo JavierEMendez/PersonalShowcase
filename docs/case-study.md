@@ -78,7 +78,7 @@ from the language model. Checking figures after the fact would have met the lett
 implementation meets it by construction: the writer receives a table of placeholders with their
 values and meanings, writes prose that uses the placeholders, and is not allowed to write a
 digit. The code fills the numbers. A draft with a digit, an unknown placeholder, a banned phrase
-or a recommendation that disagrees with the threshold test is rejected and the sentence template
+or a recommendation that disagrees with the LP floor test is rejected and the sentence template
 takes over, with the rejection recorded on the memo. The eval counts a fallback as a failure for
 the model writer, so the rate is visible rather than hidden behind a working page.
 

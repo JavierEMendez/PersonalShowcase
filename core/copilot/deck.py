@@ -280,7 +280,8 @@ def build_deck(
     memo: Memo,
     stress: Sequence[StressRow],
     assumptions: Sequence[dict[str, str]],
-    threshold: float,
+    floor: float,
+    max_bid: float | None = None,
     screen: ScreenResult | None = None,
     documents: Sequence[tuple[str, str, str]] = (),
     qa: Sequence[tuple[str, str, str]] = (),
@@ -330,7 +331,10 @@ def build_deck(
             MUTED,
         )
 
-    irr_color = POS if (r.levered_irr or 0) >= threshold else NEG
+    lp_color = POS if (r.lp_irr or 0) >= floor else NEG
+    bid_note = (
+        f"floor {floor:.0%} · max bid {_money_m(max_bid)}" if max_bid else f"floor {floor:.0%}"
+    )
     dscr_color = POS if (s.dscr_year1 or 0) >= ln.covenant_dscr else NEG
     cells = [
         (
@@ -344,10 +348,10 @@ def build_deck(
         (
             "Levered IRR",
             _pct(r.levered_irr),
-            f"Unlevered {_pct(r.unlevered_irr)} · threshold {threshold:.0%}",
-            irr_color,
+            f"Unlevered {_pct(r.unlevered_irr)} · {_mult(r.lp_multiple)} to the LP",
+            INK,
         ),
-        ("LP IRR", _pct(r.lp_irr), f"{_mult(r.lp_multiple)} after the waterfall", INK),
+        ("LP IRR", _pct(r.lp_irr), bid_note, lp_color),
         ("Equity multiple", _mult(r.equity_multiple), f"On {_money_m(su.equity)} equity", INK),
         (
             "DSCR, year 1",
@@ -480,9 +484,6 @@ def build_deck(
         for row in stress
     ]
     stress_colors = {(i, 3): (POS if row.holds else NEG) for i, row in enumerate(stress)}
-    for i, row in enumerate(stress):
-        if (row.levered_irr or 0) < threshold:
-            stress_colors[(i, 1)] = NEG
     y_stress = pdf.grid(
         x1,
         y + 4.5,

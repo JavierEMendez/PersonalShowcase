@@ -99,6 +99,32 @@ def stress_table(
     return rows
 
 
+def max_price_for_lp_irr(
+    inputs: CopilotInputs, floor: float, low_share: float = 0.5, high_share: float = 1.25
+) -> float | None:
+    """The highest purchase price at which the LP IRR still reaches `floor`, by bisection
+    between `low_share` and `high_share` of the underwritten price (the loan re-sizes and taxes
+    reassess at each price). None when even the low end misses the floor."""
+    base = inputs.acquisition.purchase_price
+    lo, hi = base * low_share, base * high_share
+
+    def lp(price: float) -> float:
+        value = run(at_price(inputs, price)).returns.lp_irr
+        return value if value is not None else -1.0
+
+    if lp(lo) < floor:
+        return None
+    if lp(hi) >= floor:
+        return hi
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if lp(mid) >= floor:
+            lo = mid
+        else:
+            hi = mid
+    return round(lo, -4)  # to the nearest $10,000
+
+
 def at_price(inputs: CopilotInputs, price: float) -> CopilotInputs:
     """The same deal bought at a different price; the loan re-sizes on the constraints."""
     priced = inputs.model_copy(deep=True)

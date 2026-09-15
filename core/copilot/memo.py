@@ -1,11 +1,16 @@
 """The Recommend step: an investment committee memo whose every figure comes from the model.
 
+The bid rule is an LP IRR floor: a bid must return at least the floor to the limited partners
+after the waterfall. The recommended bid is solved from it, the highest price at which the LP
+IRR still reaches the floor, so the recommendation adjusts the number rather than only grading
+the underwritten price.
+
 The writer (a sentence template, or the Claude API when `ANTHROPIC_API_KEY` is set) produces
-prose with placeholders such as `{levered_irr}`; it is not allowed to write a digit. The code
-then fills every placeholder from a facts table built from the engine output, so a figure can
-only appear in the memo if the model produced it. A draft that breaks a rule (an unknown
+prose with placeholders such as `{lp_irr}`; it is not allowed to write a digit. The code then
+fills every placeholder from a facts table built from the engine output, so a figure can only
+appear in the memo if the model produced it. A draft that breaks a rule (an unknown
 placeholder, a digit in the prose, a banned phrase, a missing section, a recommendation that
-contradicts the threshold test) is rejected and the template memo is used in its place, with the
+contradicts the floor test) is rejected and the template memo is used in its place, with the
 rejection recorded on the memo.
 """
 
@@ -15,7 +20,7 @@ import json
 import os
 import re
 from collections.abc import Mapping
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel
 
@@ -25,11 +30,15 @@ from core.copilot.summary import CopilotOutputs
 from core.copy_rules import violations
 
 DEFAULT_MODEL = os.environ.get("COPILOT_MODEL", "claude-sonnet-5")
-THRESHOLD_IRR = 0.12
+LP_FLOOR = 0.15
+# A recommended bid this far below the ask is not a bid a seller entertains; recommend a pass.
+MAX_DISCOUNT_TO_ASK = 0.20
 TOKEN = re.compile(r"\{([a-z0-9_]+)\}")
 DIGIT = re.compile(r"\d")
 # Names that carry digits but are not figures; stripped before the digit check.
 ALLOWED_WITH_DIGITS = re.compile(r"\bT-?12\b|\bLP\b|\bGP\b", re.I)
+
+Verdict = Literal["bid", "bid_lower", "pass"]
 
 
 # --------------------------------------------------------------------------------------------
@@ -51,11 +60,15 @@ class MemoFacts(BaseModel):
     """Every figure the memo may use, formatted, keyed by placeholder name."""
 
     case: str
-    clears: bool
+    verdict: Verdict
     figures: dict[str, str]
     descriptions: dict[str, str]
     has_breach: bool
     low_confidence: list[str]
+
+    @property
+    def clears(self) -> bool:
+        return self.verdict == "bid"
 
 
 def build_facts(
@@ -63,19 +76,29 @@ def build_facts(
     ask: CopilotOutputs,
     stress: list[StressRow],
     case: str,
-    threshold: float = THRESHOLD_IRR,
+    floor: float = LP_FLOOR,
     screen: ScreenResult | None = None,
+    max_bid: float | None = None,
+    at_max_bid: CopilotOutputs | None = None,
 ) -> MemoFacts:
+    """`max_bid` is the highest price at which the LP IRR reaches the floor (None when no price
+    above half the underwritten price does) and `at_max_bid` the engine output at that price."""
     s, r, ln, reno = out.summary, out.returns, out.loan, out.renovation
-    irr = r.levered_irr or 0.0
-    clears = irr >= threshold
+    lp = r.lp_irr or 0.0
+    ask_price = s.asking_price or s.purchase_price
+    if lp >= floor:
+        verdict: Verdict = "bid"
+    elif max_bid is not None and max_bid >= ask_price * (1 - MAX_DISCOUNT_TO_ASK):
+        verdict = "bid_lower"
+    else:
+        verdict = "pass"
     growth = next((row for row in stress if row.label.startswith("Rent growth")), None)
     premium = next((row for row in stress if row.label.startswith("Renovation premium")), None)
     floor_row = min(stress, key=lambda row: row.min_dscr or 9.0) if stress else None
     breaches = [row for row in stress if not row.holds]
     figures: dict[str, str] = {
         "bid": _money_m(s.purchase_price),
-        "ask": _money_m(s.asking_price or s.purchase_price),
+        "ask": _money_m(ask_price),
         "price_per_unit": f"${s.price_per_unit:,.0f}",
         "units": f"{s.units}",
         "hold_years": f"{s.hold_months // 12}",
@@ -83,9 +106,10 @@ def build_facts(
         "unlevered_irr": _pct(r.unlevered_irr),
         "equity_multiple": _mult(r.equity_multiple),
         "lp_irr": _pct(r.lp_irr),
+        "lp_multiple": _mult(r.lp_multiple),
         "gp_irr": _pct(r.gp_irr),
-        "threshold": f"{threshold:.0%}",
-        "cushion_bps": f"{abs(round((irr - threshold) * 10_000)):,} bps",
+        "lp_floor": f"{floor:.0%}",
+        "lp_cushion_bps": f"{abs(round((lp - floor) * 10_000)):,} bps",
         "year_one": "year 1",
         "dscr_year1": _mult(s.dscr_year1),
         "covenant_dscr": _mult(ln.covenant_dscr),
@@ -99,6 +123,7 @@ def build_facts(
         "exit_cap": _pct(out.exit.cap_rate, 2),
         "exit_value": _money_m(s.exit_value),
         "levered_irr_at_ask": _pct(ask.returns.levered_irr),
+        "lp_irr_at_ask": _pct(ask.returns.lp_irr),
         "premium": f"${reno.premium_per_month:,.0f}",
         "renovation_units": f"{reno.units}",
         "renovation_cost": f"${reno.cost_per_unit:,.0f}",
@@ -106,18 +131,19 @@ def build_facts(
         "discount_to_ask": _pct(s.discount_to_ask),
     }
     descriptions: dict[str, str] = {
-        "bid": "purchase price underwritten",
+        "bid": "the underwritten purchase price",
         "ask": "seller's asking price",
-        "price_per_unit": "price per unit at the bid",
+        "price_per_unit": "underwritten price per unit",
         "units": "unit count",
         "hold_years": "hold period in years",
-        "levered_irr": "levered IRR at the bid",
-        "unlevered_irr": "unlevered IRR at the bid",
-        "equity_multiple": "equity multiple at the bid",
-        "lp_irr": "LP IRR after the waterfall",
+        "levered_irr": "levered IRR at the underwritten price",
+        "unlevered_irr": "unlevered IRR at the underwritten price",
+        "equity_multiple": "equity multiple at the underwritten price",
+        "lp_irr": "LP IRR after the waterfall at the underwritten price; what the floor tests",
+        "lp_multiple": "LP equity multiple",
         "gp_irr": "GP IRR including promote",
-        "threshold": "levered IRR threshold for a bid",
-        "cushion_bps": "distance from the threshold, in basis points, unsigned",
+        "lp_floor": "LP IRR floor a bid must clear",
+        "lp_cushion_bps": "distance of the LP IRR from the floor, in basis points, unsigned",
         "year_one": "the words 'year 1'",
         "dscr_year1": "year 1 debt service coverage",
         "covenant_dscr": "DSCR covenant",
@@ -126,17 +152,34 @@ def build_facts(
         "debt_yield": "debt yield on year 1 NOI",
         "loan": "loan amount",
         "equity": "equity required",
-        "going_in_cap": "going-in cap rate at the bid",
+        "going_in_cap": "going-in cap rate at the underwritten price",
         "cap_at_ask": "going-in cap rate at the ask",
         "exit_cap": "exit cap rate",
         "exit_value": "gross exit value",
         "levered_irr_at_ask": "levered IRR if bought at the ask",
+        "lp_irr_at_ask": "LP IRR if bought at the ask",
         "premium": "renovation premium per month",
         "renovation_units": "units to renovate",
         "renovation_cost": "renovation cost per unit",
         "taxes_share_of_opex": "real estate taxes as a share of operating expenses",
-        "discount_to_ask": "bid discount to the ask",
+        "discount_to_ask": "discount of the underwritten price to the ask",
     }
+    if max_bid is not None and at_max_bid is not None:
+        figures["max_bid"] = _money_m(max_bid)
+        figures["max_bid_per_unit"] = f"${max_bid / s.units:,.0f}"
+        figures["discount_max_bid"] = _pct(1 - max_bid / ask_price)
+        figures["lp_irr_at_max_bid"] = _pct(at_max_bid.returns.lp_irr)
+        figures["levered_irr_at_max_bid"] = _pct(at_max_bid.returns.levered_irr)
+        figures["dscr_at_max_bid"] = _mult(at_max_bid.summary.dscr_year1)
+        descriptions["max_bid"] = (
+            "highest price at which the LP IRR reaches the floor; the recommended bid when the "
+            "underwritten price misses"
+        )
+        descriptions["max_bid_per_unit"] = "that price per unit"
+        descriptions["discount_max_bid"] = "discount of the maximum bid to the ask"
+        descriptions["lp_irr_at_max_bid"] = "LP IRR at the maximum bid (the floor)"
+        descriptions["levered_irr_at_max_bid"] = "levered IRR at the maximum bid"
+        descriptions["dscr_at_max_bid"] = "year 1 DSCR at the maximum bid"
     if growth:
         figures["growth_stress"] = growth.label.split(" ")[-1]
         figures["growth_stress_irr"] = _pct(growth.levered_irr)
@@ -162,9 +205,12 @@ def build_facts(
         for e in screen.extractions:
             if not e.plan and e.value is not None and e.confidence == "Low":
                 low.append(f"{e.label.lower()} ({e.document} {e.page})")
+    if low:
+        figures["low_confidence"] = "; ".join(low)
+        descriptions["low_confidence"] = "the low-confidence extractions with their sources"
     return MemoFacts(
         case=case,
-        clears=clears,
+        verdict=verdict,
         figures=figures,
         descriptions=descriptions,
         has_breach=bool(breaches),
@@ -196,33 +242,58 @@ class TemplateWriter:
 
     def draft(self, facts: MemoFacts) -> Draft:
         f = facts.figures
-        if facts.clears:
+        has_max = "max_bid" in f
+        if facts.verdict == "bid":
             recommendation = (
-                "Recommendation: bid {bid}, subject to a tax reassessment estimate from the "
-                "appraisal district and a scope walk of the unit interiors. Do not pursue at the "
-                "{ask} ask."
+                "Recommendation: bid {bid}. The LP IRR of {lp_irr} clears the {lp_floor} floor by "
+                "{lp_cushion_bps}"
+                + (
+                    ", and the price could rise to {max_bid} before the floor binds"
+                    if has_max
+                    else ""
+                )
+                + ". Do not pursue at the {ask} ask."
+            )
+        elif facts.verdict == "bid_lower":
+            recommendation = (
+                "Recommendation: bid no more than {max_bid}, the price at which the LP IRR reaches "
+                "the {lp_floor} floor, {discount_max_bid} below the {ask} ask. At the {bid} "
+                "underwritten price the LP IRR is {lp_irr}, {lp_cushion_bps} short of the floor."
+            )
+        elif has_max:
+            recommendation = (
+                "Recommendation: pass. The LP IRR reaches the {lp_floor} floor only at {max_bid}, "
+                "{discount_max_bid} below the {ask} ask, and the underwritten {bid} returns "
+                "{lp_irr} to the LP."
             )
         else:
             recommendation = (
-                "Recommendation: pass at {bid}. The deal returns {levered_irr} levered against a "
-                "{threshold} threshold; revisit if the price or the renovation premium moves."
+                "Recommendation: pass. No price near the {ask} ask returns the {lp_floor} floor "
+                "to the LP; the underwritten {bid} returns {lp_irr}."
             )
-        direction = "above" if facts.clears else "below"
         body = [
-            "At {bid} the deal returns a {levered_irr} levered IRR and a {equity_multiple} "
-            f"multiple, {{cushion_bps}} {direction} the {{threshold}} threshold, with a "
-            "{year_one} DSCR of {dscr_year1} against a {covenant_dscr} covenant.",
-            "At the {ask} ask the levered IRR falls to {levered_irr_at_ask}.",
+            "At {bid} the deal returns a {levered_irr} levered IRR, a {lp_irr} LP IRR after the "
+            "waterfall and a {equity_multiple} multiple, with a {year_one} DSCR of {dscr_year1} "
+            "against a {covenant_dscr} covenant.",
         ]
+        if has_max:
+            body.append(
+                "At {max_bid} ({max_bid_per_unit} per unit) the LP IRR is {lp_irr_at_max_bid}, the "
+                "levered IRR {levered_irr_at_max_bid} and the {year_one} DSCR {dscr_at_max_bid}."
+            )
+        body.append(
+            "At the {ask} ask the levered IRR falls to {levered_irr_at_ask} and the LP IRR to "
+            "{lp_irr_at_ask}."
+        )
         if "growth_stress" in f:
             body.append(
-                "Returns are most sensitive to market rent growth: at {growth_stress} the IRR is "
-                "{growth_stress_irr}."
+                "Returns are most sensitive to market rent growth: at {growth_stress} the levered "
+                "IRR is {growth_stress_irr}."
             )
         if "premium_stress" in f:
             body.append(
                 "The renovation premium carries the value-add thesis: at {premium_stress} rather "
-                "than {premium} the IRR is {premium_stress_irr}."
+                "than {premium} the levered IRR is {premium_stress_irr}."
             )
         if facts.has_breach:
             body.append(
@@ -234,14 +305,19 @@ class TemplateWriter:
                 "{floor_stress}. The risk in this deal sits with the equity return rather than "
                 "the debt."
             )
+        appetite = (
+            "{discount_max_bid}" if facts.verdict != "bid" and has_max else "{discount_to_ask}"
+        )
         cannot = [
             "Whether the appraisal district reassesses to the purchase price (taxes are "
             "{taxes_share_of_opex} of operating expenses).",
             "Whether the {premium} premium holds once {renovation_units} more renovated units "
             "reach the submarket.",
             "The condition of roofs and HVAC beyond the property condition sample.",
-            "The seller's appetite for a bid {discount_to_ask} below ask.",
+            f"The seller's appetite for a bid {appetite} below ask.",
         ]
+        if "low_confidence" in f:
+            cannot.append("Whether the low-confidence extractions hold: {low_confidence}.")
         return Draft(recommendation=recommendation, body=body, cannot=cannot)
 
 
@@ -254,21 +330,21 @@ MEMO_TOOL: dict[str, Any] = {
             "recommendation": {
                 "type": "string",
                 "description": (
-                    "One or two sentences starting with 'Recommendation:'. Bid or pass, "
-                    "with conditions."
+                    "One to three sentences starting with 'Recommendation:'. Bid, bid at a lower "
+                    "price, or pass, with conditions."
                 ),
             },
             "body": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "Three to six sentences, one per item, in reading order.",
+                "description": "Three to seven sentences, one per item, in reading order.",
             },
             "cannot": {
                 "type": "array",
                 "items": {"type": "string"},
                 "description": (
                     "Three to five items for the section 'What the model cannot tell you', "
-                    "one sentence each."
+                    "one sentence each, as separate array elements."
                 ),
             },
         },
@@ -278,22 +354,24 @@ MEMO_TOOL: dict[str, Any] = {
 
 SYSTEM_PROMPT = """You draft investment committee memos for a multifamily acquisitions team.
 You are given a facts table: placeholder names with their values and meanings. Write the memo
-using placeholders in braces, such as {levered_irr}, wherever a figure belongs. Never write a
-digit yourself; every number, percentage, multiple, dollar amount and count must be a placeholder
-from the table. Use only placeholders that exist in the table.
+using placeholders in braces, such as {lp_irr}, wherever a figure belongs. Never write a digit
+yourself; every number, percentage, multiple, dollar amount, count, page or row reference must be
+a placeholder from the table. Use only placeholders that exist in the table.
 Style: executive, bank style. Short declarative sentences. Say the number, then what it means.
 No em dashes, no exclamation points, no rhetorical questions, no "it's not X, it's Y" or
 "X, not Y" constructions, and none of these words: delve, leverage, robust, seamless, unlock,
 empower, cutting-edge, game-changing.
-Content: the recommendation must be to bid when the levered IRR clears the threshold and to
-pass when it does not, and must name the bid. The body must compare the return to the
-threshold, state the return at the ask, name the most sensitive driver, and state the covenant
-floor or breach. The last section lists what the model cannot tell you: reassessment, the
-premium holding, physical condition, and the seller's appetite, plus any low-confidence
-extraction named in the facts.
-Format: body and cannot are JSON arrays of strings, one sentence per element. Do not join
-them into a paragraph. The only digits allowed outside placeholders are in the name T-12; write
-other counts and dates in words or leave them out."""
+The bid rule is an LP IRR floor. The verdict is given: "bid" means bid the underwritten price
+{bid}; "bid lower" means recommend a bid no higher than {max_bid}, the price at which the LP IRR
+reaches the floor; "pass" means recommend passing. The recommendation must use the word bid or
+pass to match, and must name {bid} for a bid and {max_bid} for a lower bid. The body must state
+the LP IRR against the {lp_floor} floor, the return at the ask, the most sensitive driver, and
+the covenant floor or breach. The last section lists what the model cannot tell you:
+reassessment, the premium holding, physical condition, the seller's appetite, and the
+low-confidence extractions through {low_confidence} when that placeholder exists.
+Format: body and cannot are JSON arrays of strings, one sentence per element, three to five
+separate elements in cannot. Do not join them into a paragraph. The only digits allowed outside
+placeholders are in the name T-12; write other counts and dates in words or leave them out."""
 
 
 class ClaudeWriter:
@@ -321,15 +399,9 @@ class ClaudeWriter:
         table = "\n".join(
             f"- {{{k}}} = {v}  ({facts.descriptions.get(k, '')})" for k, v in facts.figures.items()
         )
-        verdict = "clears" if facts.clears else "does not clear"
-        low = (
-            "Low-confidence extractions: " + "; ".join(facts.low_confidence) + "."
-            if facts.low_confidence
-            else "No low-confidence extractions."
-        )
+        verdict = {"bid": "bid", "bid_lower": "bid lower", "pass": "pass"}[facts.verdict]
         prompt = (
-            f"Case: {facts.case}. The levered IRR {verdict} the threshold.\n{low}\n\n"
-            f"Facts table:\n{table}"
+            f"Case: {facts.case}. Verdict from the floor test: {verdict}.\n\nFacts table:\n{table}"
         )
         response = self._messages().create(
             model=self.model,
@@ -386,7 +458,7 @@ def flatten_text(value: Any) -> list[str]:
     return [str(value)]
 
 
-_LIST_BREAK = re.compile(r"\n+|\s+(?=(?:[-*\u2022]|\(?\d+[.)])\s)")
+_LIST_BREAK = re.compile(r"\n+|\s+(?=(?:[-*•]|\(?\d+[.)])\s)")
 _SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+(?=[A-Z{(\"])")
 _SEMICOLON_BREAK = re.compile(r"\s*;\s+")
 
@@ -398,7 +470,7 @@ def split_items(text: str) -> list[str]:
     if not text:
         return []
     for pattern in (_LIST_BREAK, _SENTENCE_BREAK, _SEMICOLON_BREAK):
-        parts = [part.strip(" -*\u2022\t") for part in pattern.split(text)]
+        parts = [part.strip(" -*•\t") for part in pattern.split(text)]
         parts = [re.sub(r"^\(?\d+[.)]\s*", "", part).strip() for part in parts]
         parts = [part for part in parts if part]
         if len(parts) > 1:
@@ -455,22 +527,26 @@ def check_draft(draft: Draft, facts: MemoFacts) -> list[str]:
     if not draft.recommendation.startswith("Recommendation:"):
         problems.append("recommendation does not start with 'Recommendation:'")
     lowered = draft.recommendation.lower()
-    if facts.clears and "bid" not in lowered:
-        problems.append("levered IRR clears the threshold but the recommendation is not a bid")
-    if not facts.clears and "pass" not in lowered:
-        problems.append("levered IRR misses the threshold but the recommendation is not a pass")
-    if "{bid}" not in draft.recommendation:
-        problems.append("recommendation does not name the bid")
-    if not 3 <= len(draft.body) <= 6:
-        problems.append(f"body has {len(draft.body)} sentences; three to six required")
+    if facts.verdict == "pass":
+        if "pass" not in lowered:
+            problems.append("the floor test says pass but the recommendation is not a pass")
+    else:
+        if "bid" not in lowered:
+            problems.append("the floor test says bid but the recommendation is not a bid")
+        wanted = "{bid}" if facts.verdict == "bid" else "{max_bid}"
+        if wanted not in draft.recommendation:
+            problems.append(f"recommendation does not name {wanted}")
+    if not 3 <= len(draft.body) <= 7:
+        problems.append(f"body has {len(draft.body)} sentences; three to seven required")
     if not 3 <= len(draft.cannot) <= 5:
         problems.append(f"cannot section has {len(draft.cannot)} items; three to five required")
-    body_text = " ".join(draft.body)
-    for required in ("{threshold}", "{levered_irr_at_ask}"):
-        if required not in body_text:
-            problems.append(f"body does not use {required}")
-    if not any(t in body_text for t in ("{floor_dscr}", "{breach_dscr}")):
-        problems.append("body does not state the covenant floor or breach")
+    all_text = " ".join(texts)
+    if "{lp_floor}" not in all_text:
+        problems.append("memo does not use {lp_floor}")
+    if not any(t in all_text for t in ("{levered_irr_at_ask}", "{lp_irr_at_ask}")):
+        problems.append("memo does not state the return at the ask")
+    if not any(t in all_text for t in ("{floor_dscr}", "{breach_dscr}")):
+        problems.append("memo does not state the covenant floor or breach")
     return problems
 
 
@@ -507,8 +583,11 @@ def write_memo(
         draft = writer.draft(facts)
         problems = check_draft(draft, facts)
         if problems:
-            excerpt = " | ".join([draft.recommendation, *draft.body, *draft.cannot])[:400]
-            problems.append(f"draft as received: {excerpt}")
+            received = (
+                f"{draft.recommendation} | body: {' | '.join(draft.body)} | "
+                f"cannot: {' | '.join(draft.cannot)}"
+            )
+            problems.append(f"draft as received: {received[:700]}")
     except Exception as exc:  # network or schema failure from the model
         problems = [f"writer failed: {exc}"]
     if problems and writer.name != TemplateWriter.name:

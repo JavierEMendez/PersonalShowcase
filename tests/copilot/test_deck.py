@@ -14,7 +14,7 @@ from core.copilot.engine import run
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import TemplateWriter, build_facts, write_memo
 from core.copilot.screen import RuleReader, questions, screen
-from core.copilot.sensitivity import at_price, stress_table
+from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
 from evals.screen.run import load_sample
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -38,7 +38,9 @@ def _deck(name: str, with_screen: bool = False) -> bytes:
     acq = inputs.acquisition
     ask = run(at_price(inputs, acq.asking_price or acq.purchase_price))
     stress = stress_table(inputs)
-    facts = build_facts(out, ask, stress, name)
+    max_bid = max_price_for_lp_irr(inputs, 0.15)
+    at_max = run(at_price(inputs, max_bid)) if max_bid else None
+    facts = build_facts(out, ask, stress, name, max_bid=max_bid, at_max_bid=at_max)
     memo = write_memo(facts, TemplateWriter())
     result = screen(load_sample(), RuleReader()) if with_screen else None
     qa = []
@@ -60,7 +62,8 @@ def _deck(name: str, with_screen: bool = False) -> bytes:
         memo,
         stress,
         _assumptions(),
-        0.12,
+        0.15,
+        max_bid,
         screen=result,
         documents=documents,
         qa=qa,
@@ -74,7 +77,8 @@ def test_seeded_case_is_two_pages_with_the_memo_and_figures() -> None:
     reader = PdfReader(io.BytesIO(pdf))
     assert len(reader.pages) == 2
     page1 = reader.pages[0].extract_text()
-    assert "Recommendation: bid $46.0M" in page1
+    assert "Recommendation: bid no more than $43.7M" in page1
+    assert "FLOOR 15% · MAX BID $43.7M" in page1.upper()
     assert "Sawyer Bend Apartments" in page1 and "Base case" in page1
     assert "$46.0M" in page1 and "14.8%" in page1 and "1.89x" in page1
     assert "WHAT THE MODEL CANNOT TELL YOU" in page1
@@ -88,7 +92,7 @@ def test_seeded_case_is_two_pages_with_the_memo_and_figures() -> None:
 
 def test_downside_case_reads_as_a_pass() -> None:
     reader = PdfReader(io.BytesIO(_deck("Downside")))
-    assert "Recommendation: pass at $46.0M" in reader.pages[0].extract_text()
+    assert "Recommendation: pass." in reader.pages[0].extract_text()
     assert "Breach" in reader.pages[1].extract_text()
 
 

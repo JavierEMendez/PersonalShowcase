@@ -1,4 +1,4 @@
-"""Score a memo: figure fidelity, copy rules, structure, and agreement with the threshold test.
+"""Score a memo: figure fidelity, copy rules, structure, and agreement with the floor test.
 
 Fidelity is the check that matters. Every number in the finished memo must be a value in the
 facts table built from the engine output; a number the writer produced on its own is a failure
@@ -51,20 +51,24 @@ def score_memo(memo: Memo, facts: MemoFacts) -> MemoReport:
     if not memo.recommendation.startswith("Recommendation:"):
         report.problems.append("no 'Recommendation:' lead")
     lowered = memo.recommendation.lower()
-    if facts.clears and "bid" not in lowered:
-        report.problems.append("clears threshold but not a bid")
-    if not facts.clears and "pass" not in lowered:
-        report.problems.append("misses threshold but not a pass")
-    if facts.figures["bid"] not in memo.recommendation:
-        report.problems.append("recommendation does not name the bid")
+    if facts.verdict == "pass":
+        if "pass" not in lowered:
+            report.problems.append("floor test says pass but not a pass")
+    else:
+        if "bid" not in lowered:
+            report.problems.append("floor test says bid but not a bid")
+        wanted = facts.figures["bid" if facts.verdict == "bid" else "max_bid"]
+        if wanted not in memo.recommendation:
+            report.problems.append("recommendation does not name the bid price")
     if not 3 <= len(memo.body) <= 6:
         report.problems.append(f"body has {len(memo.body)} sentences")
     if not 3 <= len(memo.cannot) <= 5:
         report.problems.append(f"cannot section has {len(memo.cannot)} items")
-    body = " ".join(memo.body)
-    for key in ("threshold", "levered_irr_at_ask"):
-        if facts.figures[key] not in body:
-            report.problems.append(f"body omits {key}")
+    body = " ".join([memo.recommendation, *memo.body])
+    if facts.figures["lp_floor"] not in body:
+        report.problems.append("memo omits the LP floor")
+    if not any(facts.figures[k] in body for k in ("levered_irr_at_ask", "lp_irr_at_ask")):
+        report.problems.append("memo omits the return at the ask")
     if not any(
         k in facts.figures and facts.figures[k] in body for k in ("floor_dscr", "breach_dscr")
     ):

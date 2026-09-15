@@ -28,8 +28,8 @@ def test_underwrite_renders_base_case() -> None:
     ):
         assert panel in page, panel
     assert '<span class="pill active">Base</span>' in page
-    assert "Recommendation: bid $46.0M" in page
-    assert "Do not pursue at the $50.5M ask" in page
+    assert "Recommendation: bid no more than $43.7M" in page
+    assert "Floor 15% · max bid $43.7M" in page
     assert "What the model cannot tell you" in page
     assert "Show all 15" in page
 
@@ -37,7 +37,7 @@ def test_underwrite_renders_base_case() -> None:
 def test_cases_switch() -> None:
     downside = client.get("/copilot?case=Downside").text
     assert '<span class="pill active">Downside</span>' in downside
-    assert "Recommendation: pass at $46.0M" in downside  # below the 12% threshold
+    assert "Recommendation: pass." in downside  # no bid within 20% of the ask clears the floor
     lender = client.get("/copilot?case=Lender").text
     assert '<span class="pill active">Lender</span>' in lender
     assert "55.0%" in lender
@@ -109,11 +109,11 @@ def test_memo_draft_and_download() -> None:
     session = TestClient(app)
     page = session.get("/copilot?case=Lender").text
     assert "IC memo · sentence template" in page
-    assert "Recommendation: pass at $46.0M" in page
+    assert "Recommendation: pass." in page
     response = session.post("/copilot/memo?case=Lender", follow_redirects=False)
     assert response.status_code == 303 and response.headers["location"].endswith("case=Lender#memo")
     page = session.get("/copilot?case=Lender").text
-    assert "Recommendation: pass at $46.0M" in page  # template writer without an API key
+    assert "Recommendation: pass." in page  # template writer without an API key
     md = session.get("/copilot/memo.md?case=Lender")
     assert md.status_code == 200 and md.text.startswith(
         "# Sawyer Bend Apartments: investment committee memo (Lender case)"

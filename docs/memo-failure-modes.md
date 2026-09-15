@@ -36,12 +36,13 @@ nothing. The parser now splits a single string on newlines, bullets and numberin
 sentence ends, then on semicolons, and the prompt asks for arrays explicitly. The rejection
 banner names the reason when a fallback still happens.
 
-**The recommendation contradicts the model.** A fluent draft that says "bid" for a deal below
-the threshold is the most dangerous output a memo tool can produce. The check compares the
-recommendation's verb (bid or pass) against the threshold test computed by the engine and
-rejects a mismatch. The recommendation must also name the bid figure.
+**The recommendation contradicts the model.** A fluent draft that says "bid" for a deal that
+misses the LP IRR floor is the most dangerous output a memo tool can produce. The engine gives
+the verdict (bid, bid lower, pass) from the floor test and the solved maximum bid; the check
+compares the recommendation's verb against it and rejects a mismatch. The recommendation must
+also name the price: the underwritten price for a bid, the maximum bid for a lower bid.
 
-**Missing sections.** The body must state the threshold comparison, the return at the ask, and
+**Missing sections.** The memo must state the LP IRR against the floor, the return at the ask, and
 the covenant floor or breach; the "what the model cannot tell you" section must have three to
 five items. Drafts that skip them are rejected. Gap: the check confirms the placeholders are
 present, not that the sentence around them is sensible.

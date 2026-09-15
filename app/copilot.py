@@ -37,7 +37,7 @@ from core.copilot.excel import export_workbook
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import ClaudeWriter, Memo, TemplateWriter, build_facts, write_memo
 from core.copilot.screen import ClaudeReader, Question, RuleReader, ScreenResult
-from core.copilot.sensitivity import at_price, stress_table
+from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
 from core.copilot.summary import CopilotOutputs
 
 router = APIRouter(prefix="/copilot")
@@ -72,7 +72,7 @@ STEPS: list[tuple[str, str]] = [
     ("Recommend", "/copilot#memo"),
     ("Monitor", "/copilot#monitor"),
 ]
-THRESHOLD_IRR = 0.12
+LP_FLOOR = 0.15  # a bid must return this to the LP after the waterfall
 MONTHS_IN = 6  # the Monitor panel reports the second quarter after closing
 
 COMPARE_METRICS: list[tuple[str, str, str]] = [
@@ -243,6 +243,14 @@ def compare_rows(outputs: dict[str, CopilotOutputs]) -> list[tuple[str, list[str
     return rows
 
 
+def bid_at_floor(inputs: CopilotInputs) -> tuple[float | None, CopilotOutputs | None]:
+    """The highest price at which the LP IRR reaches the floor, and the engine output there."""
+    price = max_price_for_lp_irr(inputs, LP_FLOOR)
+    if price is None:
+        return None, None
+    return price, run(at_price(inputs, price))
+
+
 def assumption_rows(result: ScreenResult | None) -> tuple[list[dict[str, str]], str]:
     """The Extracted assumptions panel: live from the session's Screen when there is one."""
     if result is None:
@@ -283,7 +291,8 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
     stress = stress_table(current.inputs)
     outputs = {c.name: run(c.inputs) for c in session.cases()}
     assumptions, assumptions_note = assumption_rows(session.result)
-    facts = build_facts(out, ask, stress, current.name, THRESHOLD_IRR, session.result)
+    max_bid, at_max = bid_at_floor(current.inputs)
+    facts = build_facts(out, ask, stress, current.name, LP_FLOOR, session.result, max_bid, at_max)
     memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
     response = render(
         request,
@@ -303,7 +312,9 @@ async def underwrite(request: Request, case: str | None = None) -> Response:
         monitor=monitor_rows(out),
         compare=compare_rows(outputs),
         compare_names=list(outputs),
-        threshold=THRESHOLD_IRR,
+        lp_floor=LP_FLOOR,
+        max_bid=max_bid,
+        at_max=at_max,
         query=f"?case={quote(current.name)}",
     )
     set_session_cookie(response, sid)
@@ -344,7 +355,8 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
     acq = current.inputs.acquisition
     ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
     stress = stress_table(current.inputs)
-    facts = build_facts(out, ask, stress, current.name, THRESHOLD_IRR, session.result)
+    max_bid, at_max = bid_at_floor(current.inputs)
+    facts = build_facts(out, ask, stress, current.name, LP_FLOOR, session.result, max_bid, at_max)
     memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
     assumptions, _ = assumption_rows(session.result)
     screened = session.result if current.name == SCREENED and session.result else None
@@ -381,7 +393,8 @@ async def memo_deck(request: Request, case: str | None = None) -> Response:
         memo,
         stress,
         assumptions,
-        THRESHOLD_IRR,
+        LP_FLOOR,
+        max_bid,
         screen=screened,
         documents=documents,
         qa=qa,
@@ -400,8 +413,16 @@ def _facts(session: CopilotSession, current: Case) -> Any:
     out = run(current.inputs)
     acq = current.inputs.acquisition
     ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
+    max_bid, at_max = bid_at_floor(current.inputs)
     return build_facts(
-        out, ask, stress_table(current.inputs), current.name, THRESHOLD_IRR, session.result
+        out,
+        ask,
+        stress_table(current.inputs),
+        current.name,
+        LP_FLOOR,
+        session.result,
+        max_bid,
+        at_max,
     )
 
 

@@ -4,7 +4,7 @@
     python -m evals.memo.run --writer claude  # Claude API drafts; needs ANTHROPIC_API_KEY
 
 Exit code 0 when every case passes: all figures trace to the engine output, no banned phrases,
-the structure holds, and the recommendation agrees with the threshold test. A model draft that
+the structure holds, and the recommendation agrees with the LP floor test. A model draft that
 was rejected and replaced by the template counts as a failure for the model writer.
 """
 
@@ -18,7 +18,7 @@ from pathlib import Path
 from core.copilot.engine import run
 from core.copilot.inputs import CopilotInputs
 from core.copilot.memo import ClaudeWriter, TemplateWriter, Writer, build_facts, write_memo
-from core.copilot.sensitivity import at_price, stress_table
+from core.copilot.sensitivity import at_price, max_price_for_lp_irr, stress_table
 from evals.memo.score import score_memo
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -49,7 +49,11 @@ def main(argv: list[str] | None = None) -> int:
         out = run(inputs)
         acq = inputs.acquisition
         ask = run(at_price(inputs, acq.asking_price or acq.purchase_price))
-        facts = build_facts(out, ask, stress_table(inputs), name)
+        max_bid = max_price_for_lp_irr(inputs, 0.15)
+        at_max = run(at_price(inputs, max_bid)) if max_bid else None
+        facts = build_facts(
+            out, ask, stress_table(inputs), name, max_bid=max_bid, at_max_bid=at_max
+        )
         memo = write_memo(facts, writer)
         report = score_memo(memo, facts)
         ok = ok and report.ok
