@@ -297,3 +297,70 @@ def test_claude_reader_tolerates_stringified_payloads(documents: dict[str, Docum
         {"om": documents["om"]}, ClaudeReader(client=SimpleNamespace(messages=fake_str), model="m")
     )
     assert res2.get("units") is not None and res2.get("units").confidence == "High"  # type: ignore[union-attr]
+
+
+def test_claude_reader_tolerates_labels_and_string_values(documents: dict[str, Document]) -> None:
+    from core.copilot.screen import coerce_number, match_key
+
+    assert match_key("Asking price") == "asking_price"
+    assert match_key("om.exit_cap") == "exit_cap" and match_key("Exit Cap Rate") == "exit_cap"
+    assert match_key("units") == "units" and match_key("broker name") is None
+    assert coerce_number("$50,500,000", "money") == 50_500_000
+    assert coerce_number("5.50%", "pct") == pytest.approx(0.055)
+    assert (
+        coerce_number(5.5, "pct") == pytest.approx(0.055) and coerce_number(0.055, "pct") == 0.055
+    )
+    assert (
+        coerce_number("261,360 SF", "sf") == 261_360
+        and coerce_number("not stated", "money") is None
+    )
+    payload = {
+        "extractions": [
+            {
+                "key": "Asking price",
+                "value": "$50,500,000",
+                "page": "p. 2",
+                "quote": "Asking price $50,500,000",
+                "confidence": "high",
+            },
+            {
+                "name": "Exit cap rate",
+                "value": "5.50%",
+                "page": 6,
+                "quote": "Average cap rate across the five sales: 5.50%",
+                "confidence": "Medium",
+            },
+            {"key": "Broker", "value": "Ridgeline", "page": 1, "quote": "", "confidence": "High"},
+        ],
+        "floor_plans": [
+            {
+                "plan": "A1",
+                "type": "1 x 1",
+                "units": "144",
+                "avg_sf": "720",
+                "occupied": "136",
+                "in_place_rent": "$1,245",
+                "market_rent": "$1,310",
+            }
+        ],
+    }
+    fake = FakeMessages(payload)
+    res = screen(
+        {"om": documents["om"]}, ClaudeReader(client=SimpleNamespace(messages=fake), model="m")
+    )
+    ask = res.get("asking_price")
+    assert (
+        ask is not None
+        and ask.value == 50_500_000
+        and ask.page == "p. 2"
+        and ask.confidence == "High"
+    )
+    cap = res.get("exit_cap")
+    assert cap is not None and cap.value == pytest.approx(0.055) and cap.confidence == "Medium"
+    assert res.plans[0].units == 144 and res.plans[0].sf == 720
+    assert any("did not match the catalogue: Broker" in n for n in res.notes)
+    empty = screen(
+        {"om": documents["om"]},
+        ClaudeReader(client=SimpleNamespace(messages=FakeMessages({"figures": []})), model="m"),
+    )
+    assert any("returned no figures (payload keys: figures)" in n for n in empty.notes)

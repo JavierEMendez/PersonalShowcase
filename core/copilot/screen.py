@@ -12,6 +12,7 @@ into questions; answers flow into the typed inputs and the Underwrite step runs 
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from collections.abc import Callable, Mapping
@@ -22,6 +23,8 @@ from pydantic import BaseModel
 
 from core.copilot.documents import Cell, Document, Kind
 from core.copilot.inputs import CopilotInputs, FloorPlan
+
+log = logging.getLogger(__name__)
 
 Confidence = Literal["High", "Medium", "Low"]
 CONFIDENCE_RANK: dict[str, int] = {"High": 3, "Medium": 2, "Low": 1}
@@ -705,6 +708,11 @@ class ClaudeReader:
             messages=[{"role": "user", "content": prompt}],
         )
         payload: dict[str, Any] | None = None
+        log.warning(
+            "OM reader response: stop_reason=%s blocks=%s",
+            getattr(response, "stop_reason", None),
+            [getattr(b, "type", "?") for b in response.content],
+        )
         for block in response.content:
             if getattr(block, "type", "") == "tool_use":
                 raw_input = block.input
@@ -748,24 +756,82 @@ def _records(raw: Any, notes: list[str], what: str) -> list[Mapping[str, Any]]:
     return records
 
 
+def _slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
+
+
+_LABEL_KEYS: dict[str, str] = {}
+
+
+def match_key(raw_key: Any) -> str | None:
+    """The catalogue key for what the model called a figure: the key itself, its label, or a
+    prefixed or spaced variant of either."""
+    if not _LABEL_KEYS:
+        for f in OM_FIELDS:
+            _LABEL_KEYS[_slug(f.label)] = f.key
+    slug = _slug(str(raw_key))
+    if slug in FIELD_BY_KEY:
+        return slug
+    if slug in _LABEL_KEYS:
+        return _LABEL_KEYS[slug]
+    for key in FIELD_BY_KEY:
+        if slug.endswith("_" + key):
+            return key
+    return None
+
+
+def coerce_number(raw: Any, kind: str) -> float | None:
+    """A figure as a float. Strings such as "$50,500,000", "5.50%" or "261,360 SF" are read;
+    percentages above one are taken as percent and divided by one hundred."""
+    if raw is None or isinstance(raw, bool):
+        return None
+    if isinstance(raw, (int, float)):
+        value = float(raw)
+    elif isinstance(raw, str):
+        text = raw.strip()
+        if not text or text.lower() in ("null", "none", "n/a", "not found", "not stated"):
+            return None
+        percent = "%" in text
+        m = re.search(r"-?\d[\d,]*(?:\.\d+)?", text.replace("$", ""))
+        if not m:
+            return None
+        value = float(m.group(0).replace(",", ""))
+        if percent:
+            value /= 100
+    else:
+        return None
+    if kind == "pct" and value > 1:
+        value /= 100
+    return value
+
+
+def coerce_page(raw: Any) -> int:
+    m = re.search(r"\d+", str(raw or ""))
+    return int(m.group(0)) if m else 0
+
+
 def parse_tool_payload(
     payload: Mapping[str, Any],
 ) -> tuple[list[Extraction], list[PlanFacts], list[str]]:
     extractions: list[Extraction] = []
     notes: list[str] = []
     seen: set[str] = set()
-    for item in _records(payload.get("extractions"), notes, "extraction"):
-        key = str(item.get("key", ""))
-        spec = FIELD_BY_KEY.get(key)
-        if spec is None or spec.document != "om" or key in seen:
+    records = _records(payload.get("extractions"), notes, "extraction")
+    unknown: list[str] = []
+    for item in records:
+        key = match_key(item.get("key", item.get("name", item.get("field", ""))))
+        spec = FIELD_BY_KEY.get(key or "")
+        if key is None or spec is None or spec.document != "om":
+            unknown.append(str(item.get("key", item.get("name", "?")))[:40])
+            continue
+        if key in seen:
             continue
         seen.add(key)
-        raw = item.get("value")
-        value = float(raw) if isinstance(raw, (int, float)) and not isinstance(raw, bool) else None
+        value = coerce_number(item.get("value"), spec.kind)
         if value is None:
             notes.append(f"OM: {spec.label.lower()} not found.")
             continue
-        confidence = item.get("confidence", "Low")
+        confidence = str(item.get("confidence", "Low")).title()
         extractions.append(
             Extraction(
                 key=key,
@@ -773,24 +839,38 @@ def parse_tool_payload(
                 value=value,
                 unit=spec.unit,
                 document="OM",
-                page=f"p. {int(item.get('page', 0) or 0)}",
-                quote=str(item.get("quote", ""))[:300],
-                confidence=confidence if confidence in CONFIDENCE_RANK else "Low",
+                page=f"p. {coerce_page(item.get('page'))}",
+                quote=str(item.get("quote", "") or "")[:300],
+                confidence=confidence if confidence in CONFIDENCE_RANK else "Low",  # type: ignore[arg-type]
                 note=str(item.get("note", "") or ""),
             )
         )
+    if unknown:
+        notes.append(
+            f"OM: {len(unknown)} record(s) did not match the catalogue: {', '.join(unknown[:5])}."
+        )
+    if not records:
+        keys = ", ".join(map(str, payload)) or "none"
+        notes.append(f"OM: the model returned no figures (payload keys: {keys}).")
+    log.warning(
+        "OM reader payload: keys=%s records=%d matched=%d unknown=%d",
+        list(payload),
+        len(records),
+        len(extractions),
+        len(unknown),
+    )
     plans: list[PlanFacts] = []
     for fp in _records(payload.get("floor_plans"), notes, "floor plan"):
         try:
             plans.append(
                 PlanFacts(
-                    code=str(fp.get("code", "")),
-                    unit_type=str(fp.get("unit_type", "")),
-                    units=int(fp.get("units", 0)),
-                    sf=float(fp.get("sf", 0)),
-                    occupied=int(fp.get("occupied", 0) or 0),
-                    in_place_rent=float(fp.get("in_place_rent", 0)),
-                    market_rent=float(fp.get("market_rent", 0)),
+                    code=str(fp.get("code", fp.get("plan", ""))),
+                    unit_type=str(fp.get("unit_type", fp.get("type", ""))),
+                    units=int(coerce_number(fp.get("units"), "count") or 0),
+                    sf=coerce_number(fp.get("sf", fp.get("avg_sf")), "sf") or 0.0,
+                    occupied=int(coerce_number(fp.get("occupied"), "count") or 0),
+                    in_place_rent=coerce_number(fp.get("in_place_rent"), "rent") or 0.0,
+                    market_rent=coerce_number(fp.get("market_rent"), "rent") or 0.0,
                 )
             )
         except (TypeError, ValueError):
