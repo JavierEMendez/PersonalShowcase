@@ -5,8 +5,8 @@
 {% set s = out.summary %}
 {% call bar.topbar(steps, active_step) %}
   <a class="btn" href="/copilot/underwrite{{ query }}">Back to the underwriting</a>
-  <a class="btn" href="/copilot/memo.pdf{{ query }}">Download IC memo</a>
-  <form method="post" action="/copilot/memo{{ query }}" style="display: inline;"><button class="btn btn-primary" type="submit">Draft with the model</button></form>
+  <form method="post" action="/copilot/memo{{ query }}" style="display: inline;"><button class="btn" type="submit">Draft the Memo</button></form>
+  <a class="btn btn-primary" href="/copilot/memo.pdf{{ query }}">Download IC Memo</a>
 {% endcall %}
 
 <div class="deal-head">
@@ -62,7 +62,7 @@
         <div class="eyebrow" style="margin-bottom: 6px;">What the model cannot tell you</div>
         <div class="memo-body">{% for item in memo.cannot %}{{ item }} {% endfor %}</div>
       </div>
-      <div class="panel-foot"><span>Every figure is a model output; the writer works with placeholders and never writes a digit. {% if memo_live %}"Draft with the model" asks the Claude API for new prose.{% else %}Set ANTHROPIC_API_KEY to have the Claude API draft the prose.{% endif %}</span></div>
+      <div class="panel-foot"><span>Every figure is a model output; the writer works with placeholders and never writes a digit. {% if memo_live %}"Draft the Memo" asks the Claude API for new prose on the same figures.{% else %}Set ANTHROPIC_API_KEY to have the Claude API draft the prose.{% endif %}</span></div>
     </div>
     {% with context = market %}{% include "_market_context.html" %}{% endwith %}
   </div>

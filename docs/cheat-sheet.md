@@ -38,8 +38,9 @@ redeploy resets everyone.
 2. Copilot Screen: "Use the sample documents". Point at a quote and its confidence. Change
    insurance to 850 and controllables to 3,850 (the buyer's numbers); "Run the underwriting".
 3. Underwrite: the Screened pill is active. Read the strip and the stress table, then "View
-   recommendation". The range table shows low, mid and max with the KPIs at each; "Draft with the
-   model" rewrites the memo (without an API key it says "sentence template").
+   recommendation". The range table shows low, mid and max with the KPIs at each; "Draft the Memo"
+   rewrites the prose on the same figures (without an API key it says "sentence template"); "Download IC
+   Memo" is the PDF.
 4. Say what is synthetic (everything) and where the logic came from (internal models, ported and
    reconciled for the land tool; structure-faithful for the multifamily tool).
 

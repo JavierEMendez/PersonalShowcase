@@ -54,7 +54,7 @@ def test_recommend_page_shows_the_range_and_the_memo() -> None:
     )
     assert "What the model cannot tell you" in page
     assert "Market context" in page and "What breaks it" in page
-    assert "Draft with the model" in page
+    assert "Draft the Memo" in page and "Download IC Memo" in page
 
 
 def test_cases_switch() -> None:
