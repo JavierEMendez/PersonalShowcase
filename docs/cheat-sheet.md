@@ -26,6 +26,7 @@ redeploy resets everyone.
 | Copilot Underwrite | `/copilot?case=Base` | Cases Base, Downside, Lender, and Screened once Screen has run |
 | Copilot export | `/copilot/export.xlsx?case=Base` | Inputs, Summary, Pro forma, Annual, Waterfall |
 | Memo | `POST /copilot/memo?case=Base`, `GET /copilot/memo.md?case=Base` | Draft with the configured writer; download as markdown |
+| Deck | `GET /copilot/memo.pdf?case=Base` | Two-page PDF (recommendation, evidence); a third audit-trail page for the Screened case |
 | Health | `/health` | Railway health check |
 
 ## Demo in five minutes
@@ -112,6 +113,7 @@ No other secrets. Nothing is written to disk at runtime.
   `evals/screen/expected.json`; a test checks the two agree.
 - **Questions**: `QUESTIONS` in `core/copilot/screen.py`.
 - **Memo sentences**: `TemplateWriter` in `core/copilot/memo.py`; placeholders in `build_facts`.
+- **Deck layout**: `core/copilot/deck.py`. Drop the four TTF files named in `FONT_FILES` into `app/static/fonts/` and the PDF switches from the core fonts to the site's typefaces.
 - **Copy rules**: `core/copy_rules.py`, used by the linter and the memo checks.
 
 ## Where things live

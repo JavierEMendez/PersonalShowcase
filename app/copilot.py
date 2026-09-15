@@ -23,6 +23,7 @@ from app.deals import DATA_DIR
 from app.sessions import SessionStore, set_session_cookie
 from app.templating import render
 from core.copilot import screen as screening
+from core.copilot.deck import build_deck
 from core.copilot.documents import (
     KIND_LABELS,
     MAX_BYTES,
@@ -328,6 +329,67 @@ async def memo_markdown(request: Request, case: str | None = None) -> Response:
     response = Response(
         memo.markdown(META["name"]),
         media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+    set_session_cookie(response, sid)
+    return response
+
+
+@router.get("/memo.pdf")
+async def memo_deck(request: Request, case: str | None = None) -> Response:
+    """The memo as a two- or three-page PDF deck for the case."""
+    session, sid = store.load(request)
+    current = session.case_named(case)
+    out = run(current.inputs)
+    acq = current.inputs.acquisition
+    ask = run(at_price(current.inputs, acq.asking_price or acq.purchase_price))
+    stress = stress_table(current.inputs)
+    facts = build_facts(out, ask, stress, current.name, THRESHOLD_IRR, session.result)
+    memo = session.memos.get(current.name) or write_memo(facts, TemplateWriter())
+    assumptions, _ = assumption_rows(session.result)
+    screened = session.result if current.name == SCREENED and session.result else None
+    documents: list[tuple[str, str, str]] = []
+    qa: list[tuple[str, str, str]] = []
+    if screened is not None:
+        for kind, doc in session.documents.items():
+            extent = (
+                f"{len(doc.pages)} pages"
+                if kind == "om"
+                else f"{len([r for r in doc.rows if r])} rows"
+            )
+            documents.append((KIND_LABELS[kind], doc.filename, extent))
+        base = CASES[0].inputs
+        for q in screening.questions(base, screened):
+            answer = session.answers.get(q.key, q.prefill)
+            shown = f"{answer * 100:.2f}%" if q.kind == "pct" else f"{answer:,.4g}"
+            source = (
+                f"{q.extracted.display()} ({q.extracted.document} {q.extracted.page})"
+                if q.extracted
+                else ""
+            )
+            qa.append((q.prompt, source, shown))
+    s = out.summary
+    facts_line = (
+        f"{s.units} units · {s.rentable_sf:,.0f} SF · {META['location']} · "
+        f"{s.occupancy * 100:.1f}% occupied · {s.hold_months // 12}-year hold"
+    )
+    pdf = build_deck(
+        META["name"],
+        facts_line,
+        current.name,
+        out,
+        memo,
+        stress,
+        assumptions,
+        THRESHOLD_IRR,
+        screen=screened,
+        documents=documents,
+        qa=qa,
+    )
+    filename = f"sawyer-bend-ic-memo-{current.name.lower()}.pdf"
+    response = Response(
+        pdf,
+        media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
     set_session_cookie(response, sid)
