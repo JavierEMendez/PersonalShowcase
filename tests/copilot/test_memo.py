@@ -179,3 +179,18 @@ def test_seed_json_is_the_eval_source() -> None:
     raw = json.loads((ROOT / "data" / "sawyer_bend.json").read_text(encoding="utf-8"))
     assert [c["name"] for c in raw["cases"]] == [n for n, _ in cases()]
     CopilotInputs.model_validate(raw["cases"][0]["inputs"])
+
+
+def test_draft_from_stringified_payload(base_facts: MemoFacts) -> None:
+    import json
+
+    from core.copilot.memo import draft_from_payload
+
+    payload = dict(GOOD_DRAFT)
+    payload["body"] = json.dumps(GOOD_DRAFT["body"])
+    draft = draft_from_payload(json.dumps(payload))
+    assert draft.body == GOOD_DRAFT["body"] and draft.cannot == GOOD_DRAFT["cannot"]
+    memo = write_memo(
+        base_facts, ClaudeWriter(client=SimpleNamespace(messages=FakeMessages(payload)), model="m")
+    )
+    assert not memo.fallback and memo.problems == []

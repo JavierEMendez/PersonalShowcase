@@ -259,3 +259,41 @@ def test_catalogue_matches_expected_file() -> None:
     from evals.screen.score import load_expected
 
     assert set(load_expected()["figures"]) == {f.key for f in FIELDS}
+
+
+def test_claude_reader_tolerates_stringified_payloads(documents: dict[str, Document]) -> None:
+    import json
+
+    items = [
+        {
+            "key": "asking_price",
+            "value": 50500000,
+            "page": 2,
+            "quote": "Asking price $50,500,000",
+            "confidence": "High",
+        },
+        {"key": "units", "value": 288, "page": 3, "quote": "Units 288", "confidence": "High"},
+    ]
+    payload = {
+        "extractions": json.dumps(items[:1]) + "",  # the whole list as a JSON string
+        "floor_plans": [
+            json.dumps(
+                {"code": "A1", "units": 144, "sf": 720, "in_place_rent": 1245, "market_rent": 1310}
+            ),
+            "garbage",
+            7,
+        ],
+    }
+    payload["extractions"] = [json.dumps(items[0]), items[1], "not json", 5]
+    fake = FakeMessages(payload)
+    reader = ClaudeReader(client=SimpleNamespace(messages=fake), model="test-model")
+    res = screen({"om": documents["om"]}, reader)
+    assert res.get("asking_price") is not None and res.get("units") is not None
+    assert res.plans and res.plans[0].code == "A1"
+    assert sum("was skipped" in n for n in res.notes) == 4
+    # A whole list as a JSON string is also accepted.
+    fake_str = FakeMessages({"extractions": json.dumps(items)})
+    res2 = screen(
+        {"om": documents["om"]}, ClaudeReader(client=SimpleNamespace(messages=fake_str), model="m")
+    )
+    assert res2.get("units") is not None and res2.get("units").confidence == "High"  # type: ignore[union-attr]

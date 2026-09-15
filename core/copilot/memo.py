@@ -11,6 +11,7 @@ rejection recorded on the memo.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from collections.abc import Mapping
@@ -335,8 +336,26 @@ class ClaudeWriter:
         )
         for block in response.content:
             if getattr(block, "type", "") == "tool_use":
-                return Draft.model_validate(dict(block.input))
+                return draft_from_payload(block.input)
         raise ValueError("the model returned no memo record")
+
+
+def draft_from_payload(raw: Any) -> Draft:
+    """A Draft from the tool payload, tolerating lists or the whole record returned as JSON text."""
+    if isinstance(raw, str):
+        raw = json.loads(raw)
+    data = dict(raw)
+    for key in ("body", "cannot"):
+        value = data.get(key)
+        if isinstance(value, str):
+            try:
+                decoded = json.loads(value)
+            except ValueError:
+                decoded = value
+            value = decoded if isinstance(decoded, list) else [str(decoded)]
+        if isinstance(value, list):
+            data[key] = [str(v) for v in value]
+    return Draft.model_validate(data)
 
 
 # --------------------------------------------------------------------------------------------

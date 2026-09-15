@@ -707,11 +707,45 @@ class ClaudeReader:
         payload: dict[str, Any] | None = None
         for block in response.content:
             if getattr(block, "type", "") == "tool_use":
-                payload = dict(block.input)
+                raw_input = block.input
+                if isinstance(raw_input, str):
+                    raw_input = json.loads(raw_input)
+                payload = dict(raw_input)
                 break
         if payload is None:
             return [], [], ["OM: the model returned no extraction record."]
         return parse_tool_payload(payload)
+
+
+def _records(raw: Any, notes: list[str], what: str) -> list[Mapping[str, Any]]:
+    """Tool payload lists as records. The model sometimes returns a list as a JSON string, or
+    an item as a string; those are decoded when possible and otherwise skipped with a note."""
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError:
+            notes.append(f"OM: the {what} list came back as text and could not be read.")
+            return []
+    if raw is None:
+        return []
+    if isinstance(raw, Mapping):
+        raw = [raw]
+    if not isinstance(raw, list):
+        notes.append(f"OM: the {what} list had an unexpected shape ({type(raw).__name__}).")
+        return []
+    records: list[Mapping[str, Any]] = []
+    for item in raw:
+        if isinstance(item, str):
+            try:
+                item = json.loads(item)
+            except ValueError:
+                notes.append(f"OM: one {what} came back as text and was skipped.")
+                continue
+        if isinstance(item, Mapping):
+            records.append(item)
+        else:
+            notes.append(f"OM: one {what} had an unexpected shape and was skipped.")
+    return records
 
 
 def parse_tool_payload(
@@ -720,7 +754,7 @@ def parse_tool_payload(
     extractions: list[Extraction] = []
     notes: list[str] = []
     seen: set[str] = set()
-    for item in payload.get("extractions", []):
+    for item in _records(payload.get("extractions"), notes, "extraction"):
         key = str(item.get("key", ""))
         spec = FIELD_BY_KEY.get(key)
         if spec is None or spec.document != "om" or key in seen:
@@ -746,7 +780,7 @@ def parse_tool_payload(
             )
         )
     plans: list[PlanFacts] = []
-    for fp in payload.get("floor_plans", []):
+    for fp in _records(payload.get("floor_plans"), notes, "floor plan"):
         try:
             plans.append(
                 PlanFacts(
