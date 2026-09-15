@@ -170,7 +170,9 @@ td.src { color: var(--muted); }
 .form-table td .input.wide { width: 160px; }
 .form-table td.unit { color: var(--muted); font-size: 12px; line-height: 1.3; }
 .form-table td.k { white-space: normal; }
-.form-grid td .input, .form-grid td select { width: 84px; }
+.form-grid td .input { width: 84px; }
+/* Dropdowns and free-text descriptions need room for their labels. */
+.form-grid td select, .form-grid td .input:not(.r) { width: 170px; }
 .form-grid td .input.sm { width: 64px; }
 .form-grid th, .form-grid td { padding: 4px 6px; }
 .form-grid td.k { white-space: nowrap; }
