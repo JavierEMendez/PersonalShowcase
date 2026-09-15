@@ -364,3 +364,44 @@ def test_claude_reader_tolerates_labels_and_string_values(documents: dict[str, D
         ClaudeReader(client=SimpleNamespace(messages=FakeMessages({"figures": []})), model="m"),
     )
     assert any("returned no figures (payload keys: figures)" in n for n in empty.notes)
+
+
+def test_claude_reader_accepts_an_object_keyed_by_figure(documents: dict[str, Document]) -> None:
+    payload = {
+        "extractions": {
+            "asking_price": {
+                "value": 50500000,
+                "page": 2,
+                "quote": "Asking price $50,500,000",
+                "confidence": "High",
+            },
+            "units": 288,
+            "year_built": {
+                "value": "2016",
+                "page": "3",
+                "quote": "Year built 2016",
+                "confidence": "High",
+            },
+        },
+        "floor_plans": {
+            "A1": {
+                "units": 144,
+                "sf": 720,
+                "occupied": 136,
+                "in_place_rent": 1245,
+                "market_rent": 1310,
+            }
+        },
+    }
+    fake = FakeMessages(payload)
+    res = screen(
+        {"om": documents["om"]}, ClaudeReader(client=SimpleNamespace(messages=fake), model="m")
+    )
+    assert res.get("asking_price").value == 50_500_000  # type: ignore[union-attr]
+    assert res.get("year_built").value == 2016 and res.get("year_built").page == "p. 3"  # type: ignore[union-attr]
+    units = res.get("units")
+    assert (
+        units is not None and units.value == 288 and units.confidence == "Low"
+    )  # no quote: unverified
+    assert res.plans and res.plans[0].code == "A1" and res.plans[0].units == 144
+    assert not any("did not match" in n for n in res.notes)

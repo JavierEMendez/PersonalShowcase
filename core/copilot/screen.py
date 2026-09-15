@@ -737,7 +737,14 @@ def _records(raw: Any, notes: list[str], what: str) -> list[Mapping[str, Any]]:
     if raw is None:
         return []
     if isinstance(raw, Mapping):
-        raw = [raw]
+        if any(k in raw for k in ("key", "name", "field", "value", "code", "plan")):
+            raw = [raw]  # a single record
+        else:
+            # An object keyed by figure name: {"asking_price": {...}} or {"asking_price": 50500000}.
+            raw = [
+                {**v, "key": k} if isinstance(v, Mapping) else {"key": k, "value": v}
+                for k, v in raw.items()
+            ]
     if not isinstance(raw, list):
         notes.append(f"OM: the {what} list had an unexpected shape ({type(raw).__name__}).")
         return []
