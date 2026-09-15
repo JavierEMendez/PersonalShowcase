@@ -16,7 +16,7 @@ Live site: https://javiermendez.up.railway.app
 
 ## Check it in five minutes
 
-1. Open [Land Underwriting](https://javiermendez.up.railway.app/underwriting). Change the lot price on the Revenue tab and watch the strip, the cash flow and the grid update. Export and open the Summary sheet: the XIRR is a formula over the months, not a pasted value.
+1. Open [Land Underwriting](https://javiermendez.up.railway.app/underwriting). Change the lot price on the Revenue tab and watch the strip, the cash flow and the grid update. Export and open the Summary sheet: the XIRR is a formula over the months, rather than a pasted value.
 2. Open [Screen](https://javiermendez.up.railway.app/copilot/screen) and click "Use the sample documents". Fifteen figures come back with sources. Set insurance to the broker quote, click "Run the underwriting", and a Screened case shows up next to Base, Downside and Lender.
 3. On the underwrite screen, read the stress table and the memo. Click "Draft IC memo" to have it rewritten. Download it as markdown.
 4. Skim [docs/decisions.md](docs/decisions.md). Every trade-off is in there with the date and what I turned down, including a full port of the multifamily workbook that I decided was not worth it.

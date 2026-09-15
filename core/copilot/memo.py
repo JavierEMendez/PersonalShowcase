@@ -109,7 +109,9 @@ def build_facts(
         "lp_multiple": _mult(r.lp_multiple),
         "gp_irr": _pct(r.gp_irr),
         "lp_floor": f"{floor:.0%}",
-        "lp_cushion_bps": f"{abs(round((lp - floor) * 10_000)):,} bps",
+        "lp_vs_floor": (
+            f"{abs(round((lp - floor) * 10_000)):,} bps " + ("above" if lp >= floor else "short of")
+        ),
         "year_one": "year 1",
         "dscr_year1": _mult(s.dscr_year1),
         "covenant_dscr": _mult(ln.covenant_dscr),
@@ -143,7 +145,10 @@ def build_facts(
         "lp_multiple": "LP equity multiple",
         "gp_irr": "GP IRR including promote",
         "lp_floor": "levered LP IRR floor a bid must clear",
-        "lp_cushion_bps": "distance of the LP IRR from the floor, in basis points, unsigned",
+        "lp_vs_floor": (
+            "the LP IRR's distance from the floor with its direction, such as '200 bps short of'; "
+            "always write it as '{lp_vs_floor} the {lp_floor} floor'"
+        ),
         "year_one": "the words 'year 1'",
         "dscr_year1": "year 1 debt service coverage",
         "covenant_dscr": "DSCR covenant",
@@ -245,8 +250,8 @@ class TemplateWriter:
         has_max = "max_bid" in f
         if facts.verdict == "bid":
             recommendation = (
-                "Recommendation: bid {bid}. The levered LP IRR of {lp_irr} clears the {lp_floor} "
-                "floor by {lp_cushion_bps}"
+                "Recommendation: bid {bid}. The levered LP IRR of {lp_irr} is {lp_vs_floor} the "
+                "{lp_floor} floor"
                 + (
                     ", and the price could rise to {max_bid} before the floor binds"
                     if has_max
@@ -258,8 +263,7 @@ class TemplateWriter:
             recommendation = (
                 "Recommendation: bid no more than {max_bid}, the price at which the levered LP IRR "
                 "reaches the {lp_floor} floor, {discount_max_bid} below the {ask} ask. At the "
-                "{bid} underwritten price the levered LP IRR is {lp_irr}, {lp_cushion_bps} short "
-                "of the floor."
+                "{bid} underwritten price the levered LP IRR is {lp_irr}, {lp_vs_floor} the floor."
             )
         elif has_max:
             recommendation = (
@@ -363,10 +367,14 @@ No em dashes, no exclamation points, no rhetorical questions, no "it's not X, it
 "X, not Y" constructions, and none of these words: delve, leverage, robust, seamless, unlock,
 empower, cutting-edge, game-changing.
 The bid rule is a levered LP IRR floor (the LP return after debt service and the waterfall).
-The verdict is given: "bid" means bid the underwritten price
-{bid}; "bid lower" means recommend a bid no higher than {max_bid}, the price at which the LP IRR
-reaches the floor; "pass" means recommend passing. The recommendation must use the word bid or
-pass to match, and must name {bid} for a bid and {max_bid} for a lower bid. The body must state
+The verdict is given: "bid" means bid the underwritten price {bid}; "bid lower" means recommend
+a bid no higher than {max_bid}, the price at which the LP IRR reaches the floor; "pass" means
+recommend passing. Write to the committee, never about the verdict: do not write the words
+"verdict", "bid lower case" or "floor test". The recommendation must use the word bid or pass to
+match, and must name {bid} for a bid and {max_bid} for a lower bid. State the LP IRR against the
+floor only as "{lp_irr} is {lp_vs_floor} the {lp_floor} floor"; that placeholder carries the
+direction, so never write clears, exceeds, short or below around it yourself. Never cite a page
+or row; {low_confidence} carries the citations when there are any. The body must state
 the levered LP IRR against the {lp_floor} floor, the return at the ask, the most sensitive
 driver, and the covenant floor or breach. The last section lists what the model cannot tell you:
 reassessment, the premium holding, physical condition, the seller's appetite, and the
@@ -542,6 +550,23 @@ def check_draft(draft: Draft, facts: MemoFacts) -> list[str]:
         problems.append(f"body has {len(draft.body)} sentences; three to seven required")
     if not 3 <= len(draft.cannot) <= 5:
         problems.append(f"cannot section has {len(draft.cannot)} items; three to five required")
+    for sentence in texts:
+        if "{lp_irr}" not in sentence:
+            continue
+        lowered_sentence = sentence.lower()
+        says_clears = any(
+            w in lowered_sentence for w in ("clears", "exceeds", "above the", "over the")
+        )
+        says_short = any(
+            w in lowered_sentence for w in ("short of", "below the", "misses", "under the")
+        )
+        if facts.verdict == "bid" and says_short and not says_clears:
+            problems.append("says the LP IRR misses the floor, but it clears it")
+        if facts.verdict != "bid" and says_clears and not says_short:
+            problems.append("says the LP IRR clears the floor, but it misses it")
+    meta = ("bid lower case", "verdict", "floor test", "this is a bid", "this is a pass")
+    if any(m in draft.recommendation.lower() for m in meta):
+        problems.append("recommendation talks about the verdict instead of the deal")
     all_text = " ".join(texts)
     if "{lp_floor}" not in all_text:
         problems.append("memo does not use {lp_floor}")

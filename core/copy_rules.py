@@ -20,6 +20,7 @@ BANNED: list[tuple[str, str]] = [
     (r"\bgame-changing\b", "game-changing"),
     (r"\bit'?s not [^.]{1,60}, it'?s\b", "'it's not X, it's Y' construction"),
     (r"\bnot just [^.]{1,60}, but\b", "'not just X, but Y' construction"),
+    (r", not (a|an|the) \w", "'X, not Y' construction"),
     (r"(?<!<)!(?=[\s\"'\)]|$)", "exclamation point"),
 ]
 

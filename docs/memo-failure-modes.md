@@ -53,6 +53,14 @@ it's Y" construction, exclamation points. Question marks are also rejected, sinc
 no place for rhetorical questions. Gap: "X, not Y" constructions are asked for in the
 prompt and not checked mechanically; the template avoids them.
 
+**Direction inverted.** Observed on the first accepted live draft: "the levered LP IRR is 13.0%,
+which clears the 15% floor by 200 bps", when it falls 200 bps short. The unsigned cushion
+figure invited the error. The figure now carries its direction ("200 bps short of"), the
+prompt asks for it in one fixed phrasing, and a check rejects a sentence that says clears or
+exceeds about an LP IRR that misses the floor, or short or below about one that clears it.
+The same draft opened with "Recommendation: bid lower", echoing the verdict label; drafts
+that talk about the verdict or the test instead of the deal are now rejected too.
+
 **Placeholders used with the wrong meaning.** The model can write "{ltv} of the equity" and pass
 every check, because the checks are about provenance and structure, not semantics. The facts
 table carries a one-line meaning for each placeholder to reduce this, and the eval's `--show`

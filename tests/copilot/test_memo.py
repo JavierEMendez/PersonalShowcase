@@ -49,6 +49,7 @@ def test_facts_match_the_documented_memo(base_facts: MemoFacts) -> None:
     assert f["levered_irr"] == "14.8%" and f["equity_multiple"] == "1.89×"
     assert f["lp_irr"] == "13.0%" and f["lp_floor"] == "15%"
     assert f["max_bid"] == "$43.7M" and f["lp_irr_at_max_bid"] == "15.0%"
+    assert f["lp_vs_floor"] == "200 bps short of"
     assert f["discount_max_bid"] == "13.4%"
     assert f["dscr_year1"] == "1.53×" and f["covenant_dscr"] == "1.25×"
     assert f["levered_irr_at_ask"] == "7.9%"
@@ -110,7 +111,7 @@ GOOD_DRAFT = {
     ),
     "body": [
         "At {bid} the deal earns a {levered_irr} levered IRR and a {lp_irr} LP IRR, "
-        "{lp_cushion_bps} short of the {lp_floor} floor.",
+        "{lp_vs_floor} the {lp_floor} floor.",
         "{year_one} DSCR is {dscr_year1} against a {covenant_dscr} covenant.",
         "Paying the {ask} ask cuts the levered IRR to {levered_irr_at_ask}.",
         "Market rent growth is the sensitive driver: at {growth_stress} the IRR is "
@@ -261,3 +262,21 @@ def test_t12_is_not_a_digit_but_other_numbers_are(base_facts: MemoFacts) -> None
     ]
     problems = check_draft(Draft.model_validate(bad), base_facts)
     assert any(p.startswith("digit written by the writer: ...") and "2025" in p for p in problems)
+
+
+def test_inverted_direction_and_meta_talk_are_rejected(base_facts: MemoFacts) -> None:
+    inverted = dict(GOOD_DRAFT)
+    inverted["body"] = [
+        "The levered LP IRR of {lp_irr} clears the {lp_floor} floor by {lp_vs_floor}.",
+        *GOOD_DRAFT["body"][1:],
+    ]
+    problems = check_draft(Draft.model_validate(inverted), base_facts)
+    assert "says the LP IRR clears the floor, but it misses it" in problems
+    meta = dict(GOOD_DRAFT)
+    meta["recommendation"] = (
+        "Recommendation: bid lower. Cap the bid at {max_bid}, where the LP IRR reaches the "
+        "{lp_floor} floor. This is a bid lower case, not a bid at the underwritten price."
+    )
+    problems = check_draft(Draft.model_validate(meta), base_facts)
+    assert "recommendation talks about the verdict instead of the deal" in problems
+    assert any("'X, not Y' construction" in p for p in problems)
