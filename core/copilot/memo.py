@@ -1,9 +1,9 @@
 """The Recommend step: an investment committee memo whose every figure comes from the model.
 
-The bid rule is an LP IRR floor: a bid must return at least the floor to the limited partners
-after the waterfall. The recommended bid is solved from it, the highest price at which the LP
-IRR still reaches the floor, so the recommendation adjusts the number rather than only grading
-the underwritten price.
+The bid rule is a levered LP IRR floor: a bid must return at least the floor to the limited
+partners after debt service and the waterfall. The recommended bid is solved from it, the
+highest price at which that return still reaches the floor, so the recommendation adjusts the
+number rather than only grading the underwritten price.
 
 The writer (a sentence template, or the Claude API when `ANTHROPIC_API_KEY` is set) produces
 prose with placeholders such as `{lp_irr}`; it is not allowed to write a digit. The code then
@@ -139,10 +139,10 @@ def build_facts(
         "levered_irr": "levered IRR at the underwritten price",
         "unlevered_irr": "unlevered IRR at the underwritten price",
         "equity_multiple": "equity multiple at the underwritten price",
-        "lp_irr": "LP IRR after the waterfall at the underwritten price; what the floor tests",
+        "lp_irr": "levered LP IRR after the waterfall at the underwritten price; the floor test",
         "lp_multiple": "LP equity multiple",
         "gp_irr": "GP IRR including promote",
-        "lp_floor": "LP IRR floor a bid must clear",
+        "lp_floor": "levered LP IRR floor a bid must clear",
         "lp_cushion_bps": "distance of the LP IRR from the floor, in basis points, unsigned",
         "year_one": "the words 'year 1'",
         "dscr_year1": "year 1 debt service coverage",
@@ -245,8 +245,8 @@ class TemplateWriter:
         has_max = "max_bid" in f
         if facts.verdict == "bid":
             recommendation = (
-                "Recommendation: bid {bid}. The LP IRR of {lp_irr} clears the {lp_floor} floor by "
-                "{lp_cushion_bps}"
+                "Recommendation: bid {bid}. The levered LP IRR of {lp_irr} clears the {lp_floor} "
+                "floor by {lp_cushion_bps}"
                 + (
                     ", and the price could rise to {max_bid} before the floor binds"
                     if has_max
@@ -256,15 +256,16 @@ class TemplateWriter:
             )
         elif facts.verdict == "bid_lower":
             recommendation = (
-                "Recommendation: bid no more than {max_bid}, the price at which the LP IRR reaches "
-                "the {lp_floor} floor, {discount_max_bid} below the {ask} ask. At the {bid} "
-                "underwritten price the LP IRR is {lp_irr}, {lp_cushion_bps} short of the floor."
+                "Recommendation: bid no more than {max_bid}, the price at which the levered LP IRR "
+                "reaches the {lp_floor} floor, {discount_max_bid} below the {ask} ask. At the "
+                "{bid} underwritten price the levered LP IRR is {lp_irr}, {lp_cushion_bps} short "
+                "of the floor."
             )
         elif has_max:
             recommendation = (
-                "Recommendation: pass. The LP IRR reaches the {lp_floor} floor only at {max_bid}, "
-                "{discount_max_bid} below the {ask} ask, and the underwritten {bid} returns "
-                "{lp_irr} to the LP."
+                "Recommendation: pass. The levered LP IRR reaches the {lp_floor} floor only at "
+                "{max_bid}, {discount_max_bid} below the {ask} ask, and the underwritten {bid} "
+                "returns {lp_irr} to the LP."
             )
         else:
             recommendation = (
@@ -272,9 +273,9 @@ class TemplateWriter:
                 "to the LP; the underwritten {bid} returns {lp_irr}."
             )
         body = [
-            "At {bid} the deal returns a {levered_irr} levered IRR, a {lp_irr} LP IRR after the "
-            "waterfall and a {equity_multiple} multiple, with a {year_one} DSCR of {dscr_year1} "
-            "against a {covenant_dscr} covenant.",
+            "At {bid} the deal returns a {levered_irr} levered IRR, a {lp_irr} levered LP IRR "
+            "after the waterfall and a {equity_multiple} multiple, with a {year_one} DSCR of "
+            "{dscr_year1} against a {covenant_dscr} covenant.",
         ]
         if has_max:
             body.append(
@@ -361,12 +362,13 @@ Style: executive, bank style. Short declarative sentences. Say the number, then 
 No em dashes, no exclamation points, no rhetorical questions, no "it's not X, it's Y" or
 "X, not Y" constructions, and none of these words: delve, leverage, robust, seamless, unlock,
 empower, cutting-edge, game-changing.
-The bid rule is an LP IRR floor. The verdict is given: "bid" means bid the underwritten price
+The bid rule is a levered LP IRR floor (the LP return after debt service and the waterfall).
+The verdict is given: "bid" means bid the underwritten price
 {bid}; "bid lower" means recommend a bid no higher than {max_bid}, the price at which the LP IRR
 reaches the floor; "pass" means recommend passing. The recommendation must use the word bid or
 pass to match, and must name {bid} for a bid and {max_bid} for a lower bid. The body must state
-the LP IRR against the {lp_floor} floor, the return at the ask, the most sensitive driver, and
-the covenant floor or breach. The last section lists what the model cannot tell you:
+the levered LP IRR against the {lp_floor} floor, the return at the ask, the most sensitive
+driver, and the covenant floor or breach. The last section lists what the model cannot tell you:
 reassessment, the premium holding, physical condition, the seller's appetite, and the
 low-confidence extractions through {low_confidence} when that placeholder exists.
 Format: body and cannot are JSON arrays of strings, one sentence per element, three to five

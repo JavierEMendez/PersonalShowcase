@@ -78,7 +78,7 @@ def test_seeded_case_is_two_pages_with_the_memo_and_figures() -> None:
     assert len(reader.pages) == 2
     page1 = reader.pages[0].extract_text()
     assert "Recommendation: bid no more than $43.7M" in page1
-    assert "FLOOR 15% · MAX BID $43.7M" in page1.upper()
+    assert "LEVERED LP FLOOR 15% · MAX BID $43.7M" in page1.upper()
     assert "Sawyer Bend Apartments" in page1 and "Base case" in page1
     assert "$46.0M" in page1 and "14.8%" in page1 and "1.89x" in page1
     assert "WHAT THE MODEL CANNOT TELL YOU" in page1

@@ -333,7 +333,9 @@ def build_deck(
 
     lp_color = POS if (r.lp_irr or 0) >= floor else NEG
     bid_note = (
-        f"floor {floor:.0%} · max bid {_money_m(max_bid)}" if max_bid else f"floor {floor:.0%}"
+        f"Levered LP floor {floor:.0%} · max bid {_money_m(max_bid)}"
+        if max_bid
+        else f"Levered LP floor {floor:.0%}"
     )
     dscr_color = POS if (s.dscr_year1 or 0) >= ln.covenant_dscr else NEG
     cells = [

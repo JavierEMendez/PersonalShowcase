@@ -121,7 +121,7 @@ Remaining six for the seed file: T-12 other income $115 per unit per month (T-12
 | Exit | 5.50% cap on forward NOI $3.46M: gross value $62.8M ($218,145 / unit), sale costs 1.5% $0.94M, loan payoff $29.1M, net proceeds after debt $32.8M |
 | Unlevered IRR | 10.2% |
 | Levered IRR | 14.8% |
-| LP IRR against the 15% floor | 13.0%; the floor is reached at a $43.7M bid (13.4% below ask), where the levered IRR is 18.1% |
+| Levered LP IRR against the 15% floor | 13.0%; the floor is reached at a $43.7M bid (13.4% below ask), where the levered IRR is 18.1% |
 | Equity multiple | 1.89× |
 | LP IRR / multiple | 13.0% / 1.76× |
 | GP IRR with promote | 27.0% (promote $2.41M) |
@@ -172,11 +172,11 @@ Forward NOI for the exit (months 61 to 72) is $3,455k.
 Downside case: levered IRR 1.0%, equity multiple 1.04×, minimum DSCR 1.34×. Lender case: loan $25.3M at 55% LTV, debt yield 10.1%, DSCR 1.76× in year 1, levered IRR 7.3%.
 
 ### IC memo (Recommend output)
-The bid rule is an LP IRR floor of 15%. The recommended bid is the highest price at which the LP IRR reaches the floor, solved by the engine; a recommended bid more than 20% below the ask is a pass.
+The bid rule is a levered LP IRR floor of 15%: the limited partners' return after debt service and the waterfall. The recommended bid is the highest price at which that return reaches the floor, solved by the engine; a recommended bid more than 20% below the ask is a pass.
 
-Recommendation: bid no more than $43.7M, the price at which the LP IRR reaches the 15% floor, 13.4% below the $50.5M ask. At the $46.0M underwritten price the LP IRR is 13.0%, short of the floor.
+Recommendation: bid no more than $43.7M, the price at which the levered LP IRR reaches the 15% floor, 13.4% below the $50.5M ask. At the $46.0M underwritten price the levered LP IRR is 13.0%, 200 bps short of the floor.
 
-At $46.0M the deal returns a 14.8% levered IRR, a 13.0% LP IRR after the waterfall and a 1.89× multiple, with a year 1 DSCR of 1.53× against a 1.25× covenant. At $43.7M the LP IRR is 15.0%, the levered IRR 18.1% and the year 1 DSCR 1.64×. At the $50.5M ask the levered IRR falls to 7.9%. Returns are most sensitive to market rent growth; the renovation premium carries the value-add thesis; no single stress breaches the covenant.
+At $46.0M the deal returns a 14.8% levered IRR, a 13.0% levered LP IRR after the waterfall and a 1.89× multiple, with a year 1 DSCR of 1.53× against a 1.25× covenant. At $43.7M the LP IRR is 15.0%, the levered IRR 18.1% and the year 1 DSCR 1.64×. At the $50.5M ask the levered IRR falls to 7.9%. Returns are most sensitive to market rent growth; the renovation premium carries the value-add thesis; no single stress breaches the covenant.
 
 What the model cannot tell you: whether the appraisal district reassesses to the purchase price (taxes are 39% of operating expenses); whether the $145 premium holds once 120 more renovated units reach the submarket; the condition of roofs and HVAC beyond the property condition sample; the seller's appetite for a bid 13.4% below ask.
 

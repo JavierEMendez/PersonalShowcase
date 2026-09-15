@@ -29,7 +29,7 @@ def test_underwrite_renders_base_case() -> None:
         assert panel in page, panel
     assert '<span class="pill active">Base</span>' in page
     assert "Recommendation: bid no more than $43.7M" in page
-    assert "Floor 15% · max bid $43.7M" in page
+    assert "Levered LP floor 15% · max bid $43.7M" in page
     assert "What the model cannot tell you" in page
     assert "Show all 15" in page
 
