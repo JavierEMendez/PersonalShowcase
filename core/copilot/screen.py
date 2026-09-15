@@ -669,7 +669,10 @@ Rules: report only what the document states; never compute, infer or fill from g
 If a figure is absent, record it with value null and an empty quote. Confidence is High when the
 document states the figure as a fact about the property, Medium when it is a broker estimate,
 survey, comparable-based figure or seller claim, Low when it is ambiguous or conflicts with
-another page. Percentages are fractions. Dollar figures are plain numbers without symbols."""
+another page. Percentages are fractions. Dollar figures are plain numbers without symbols.
+Format: extractions is a JSON array of objects, one per catalogue key, each with the fields
+key, value, page, quote, confidence; floor_plans is a JSON array of objects. Do not return
+an object keyed by figure name."""
 
 
 class ClaudeReader:

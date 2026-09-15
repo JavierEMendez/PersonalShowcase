@@ -86,6 +86,14 @@ that share them. A differently worded OM returns "not found" notes for those fig
 question loop asks for them; nothing is guessed. Reading arbitrary OMs needs the model reader,
 which needs `ANTHROPIC_API_KEY`.
 
+**Payload shapes the schema did not pin down.** Observed on the first live runs: the
+extractions list returned as an object keyed by figure name; figures returned as text
+("$50,500,000", "5.50%"); pages returned as "p. 2"; a whole list returned as a JSON string.
+The parser now accepts all of these, notes any record it still cannot place, and logs the
+payload shape and stop reason so the Railway log shows what the model sent. The prompt asks
+for arrays of objects explicitly. Gap: a shape not yet seen still drops to a note rather
+than a figure.
+
 **Model reader cost and latency.** One request per OM with the full page text; seven pages is a
 few thousand tokens. Long OMs (eighty pages of photographs and maps) are mostly empty text and
 still fit; the page cap is one hundred and twenty.

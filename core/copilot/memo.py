@@ -288,7 +288,9 @@ pass when it does not, and must name the bid. The body must compare the return t
 threshold, state the return at the ask, name the most sensitive driver, and state the covenant
 floor or breach. The last section lists what the model cannot tell you: reassessment, the
 premium holding, physical condition, and the seller's appetite, plus any low-confidence
-extraction named in the facts."""
+extraction named in the facts.
+Format: body and cannot are JSON arrays of strings, one sentence per element. Do not join
+them into a paragraph."""
 
 
 class ClaudeWriter:

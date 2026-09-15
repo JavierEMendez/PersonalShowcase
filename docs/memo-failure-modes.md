@@ -29,6 +29,13 @@ placeholders (`{year_one}`, `{hold_years}`, `{units}`) and the system prompt lis
 fallback covers the rest. Gap: a fallback is a worse memo than a good model draft. The eval
 counts fallbacks as failures for the model writer so the rate is visible.
 
+**Lists returned as paragraphs.** Observed on the first live run: the model returned the body
+as one paragraph and the cannot section as one string, so the checks counted one sentence and
+one item and fell back to the template, which looked to the reader like the button did
+nothing. The parser now splits a single string on newlines, bullets and numbering, then on
+sentence ends, then on semicolons, and the prompt asks for arrays explicitly. The rejection
+banner names the reason when a fallback still happens.
+
 **The recommendation contradicts the model.** A fluent draft that says "bid" for a deal below
 the threshold is the most dangerous output a memo tool can produce. The check compares the
 recommendation's verb (bid or pass) against the threshold test computed by the engine and
